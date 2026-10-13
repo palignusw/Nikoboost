@@ -46,7 +46,7 @@ export default function OrderSummary({
       </span>
 
       <h3>
-        Mythic+ +
+        Mythic +
         {config.keyLevel}
       </h3>
 
