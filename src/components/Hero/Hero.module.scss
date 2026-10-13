@@ -41,7 +41,6 @@
     transparent 45%
   );
 
-  animation: ambientPulse 9s ease-in-out infinite;
 }
 
 
@@ -618,7 +617,7 @@
   z-index: 4;
   
 background: rgba(10, 14, 25, 0.88);
-backdrop-filter: blur(18px);
+backdrop-filter: none;
 
 }
 
