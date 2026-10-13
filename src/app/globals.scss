@@ -14,11 +14,9 @@ body {
   margin: 0;
 
   background:
-    radial-gradient(
-      circle at 70% -10%,
+    radial-gradient(circle at 70% -10%,
       rgba(128, 100, 244, 0.09),
-      transparent 32%
-    ),
+      transparent 32%),
     $bg-main;
 
   color: $text-primary;
@@ -57,20 +55,16 @@ img {
 }
 
 .container {
-  width: min(
-    calc(100% - 48px),
-    $container
-  );
+  width: min(calc(100% - 48px),
+      $container );
 
   margin-inline: auto;
 }
 
 @media (max-width: 700px) {
   .container {
-    width: min(
-      calc(100% - 32px),
-      $container
-    );
+    width: min(calc(100% - 32px),
+        $container );
   }
 }
 
@@ -84,4 +78,3 @@ html {
     scroll-behavior: auto;
   }
 }
-
