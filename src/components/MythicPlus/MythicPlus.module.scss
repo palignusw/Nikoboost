@@ -1,0 +1,2986 @@
+@use "../../styles/variables" as *;
+
+.section {
+  position: relative;
+
+  padding:
+    80px 0
+    160px;
+
+  background:
+    radial-gradient(
+      circle at 82% 18%,
+      rgba(
+        95,
+        124,
+        255,
+        0.08
+      ),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 15% 65%,
+      rgba(
+        120,
+        184,
+        135,
+        0.025
+      ),
+      transparent 24%
+    ),
+    $bg-main;
+}
+
+/* =========================
+   HEADING
+========================= */
+
+.heading {
+  display: flex;
+
+  align-items: flex-end;
+  justify-content:
+    space-between;
+
+  gap: 50px;
+
+  margin-bottom: 48px;
+
+  h2 {
+    margin:
+      12px 0 0;
+
+    color:
+      $text-primary;
+
+    font-size:
+      clamp(
+        44px,
+        5vw,
+        72px
+      );
+
+    font-weight: 720;
+
+    line-height: 0.98;
+
+    letter-spacing:
+      -0.055em;
+
+    span {
+      color:
+        $brand-light;
+    }
+  }
+
+  > p {
+    max-width: 380px;
+
+    margin:
+      0 0 8px;
+
+    color:
+      $text-secondary;
+
+    font-size: 15px;
+
+    line-height: 1.7;
+  }
+}
+
+.eyebrow {
+  color:
+    $season-light;
+
+  font-size: 11px;
+
+  font-weight: 700;
+
+  letter-spacing:
+    0.15em;
+}
+
+/* =========================
+   MAIN LAYOUT
+========================= */
+
+.layout {
+  display: grid;
+
+  grid-template-columns:
+    minmax(
+      0,
+      1fr
+    )
+    390px;
+
+  gap: 24px;
+
+  align-items:
+    start;
+}
+
+.configurator,
+.summary {
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.075
+    );
+
+  border-radius:
+    22px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(
+        255,
+        255,
+        255,
+        0.035
+      ),
+      rgba(
+        255,
+        255,
+        255,
+        0.008
+      )
+    ),
+    $bg-secondary;
+}
+
+.configurator {
+  padding: 36px;
+}
+
+/* =========================
+   SECTIONS
+========================= */
+
+.optionSection {
+  display: flex;
+
+  flex-direction:
+    column;
+
+  gap: 24px;
+}
+
+.optionHeader {
+  display: flex;
+
+  align-items: center;
+
+  justify-content:
+    space-between;
+
+  gap: 20px;
+
+  > div {
+    display: flex;
+
+    align-items:
+      center;
+
+    gap: 12px;
+
+    > span {
+      color:
+        $text-muted;
+
+      font-size:
+        10px;
+
+      font-weight:
+        700;
+
+      letter-spacing:
+        0.12em;
+    }
+  }
+
+  h3 {
+    margin: 0;
+
+    color:
+      $text-primary;
+
+    font-size:
+      17px;
+
+    font-weight:
+      620;
+  }
+
+  > strong {
+    max-width:
+      350px;
+
+    color:
+      $brand-light;
+
+    font-size:
+      12px;
+
+    font-weight:
+      650;
+
+    text-align:
+      right;
+  }
+}
+
+.divider {
+  height: 1px;
+
+  margin:
+    34px 0;
+
+  background:
+    $border;
+}
+
+/* =========================
+   GENERAL BUTTONS
+========================= */
+
+.option,
+.activeOption {
+  min-height:
+    53px;
+
+  display: flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  padding:
+    0 14px;
+
+  border-radius:
+    11px;
+
+  cursor: pointer;
+
+  font-weight:
+    620;
+
+  transition:
+    transform
+      $transition-fast,
+    color
+      $transition-fast,
+    border-color
+      $transition-fast,
+    background
+      $transition-fast,
+    box-shadow
+      $transition-fast;
+}
+
+.option {
+  color:
+    $text-secondary;
+
+  border:
+    1px solid
+    $border;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.022
+    );
+
+  &:hover:not(
+      :disabled
+    ) {
+    color: white;
+
+    border-color:
+      rgba(
+        142,
+        165,
+        255,
+        0.24
+      );
+
+    background:
+      rgba(
+        95,
+        124,
+        255,
+        0.04
+      );
+  }
+}
+
+.activeOption {
+  color:
+    #eff3ff;
+
+  border:
+    1px solid
+    rgba(
+      142,
+      165,
+      255,
+      0.5
+    );
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(
+        95,
+        124,
+        255,
+        0.16
+      ),
+      rgba(
+        64,
+        88,
+        199,
+        0.06
+      )
+    );
+
+  box-shadow:
+    inset
+      0 0 25px
+      rgba(
+        95,
+        124,
+        255,
+        0.04
+      );
+
+  transform:
+    translateY(
+      -1px
+    );
+}
+
+.option:disabled,
+.activeOption:disabled {
+  opacity: 0.3;
+
+  cursor:
+    not-allowed;
+
+  transform: none;
+}
+
+/* =========================
+   KEY LEVEL
+========================= */
+
+.keyGrid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      10,
+      1fr
+    );
+
+  gap: 9px;
+
+  button {
+    min-width: 0;
+  }
+}
+
+/* =========================
+   RUNS
+========================= */
+
+.runControls {
+  display: flex;
+
+  align-items:
+    stretch;
+
+  gap: 14px;
+}
+
+.quickRuns {
+  flex: 1;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      3,
+      1fr
+    );
+
+  gap: 10px;
+
+  button {
+    flex-direction:
+      column;
+
+    gap: 2px;
+
+    font-size:
+      16px;
+
+    span {
+      color:
+        $text-muted;
+
+      font-size:
+        8px;
+
+      letter-spacing:
+        0.12em;
+    }
+  }
+}
+
+.counter {
+  min-width:
+    180px;
+
+  display: grid;
+
+  grid-template-columns:
+    52px
+    1fr
+    52px;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    $border;
+
+  border-radius:
+    12px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.02
+    );
+
+  button {
+    color:
+      $text-secondary;
+
+    border: 0;
+
+    background:
+      transparent;
+
+    font-size:
+      22px;
+
+    cursor: pointer;
+
+    transition:
+      color
+        $transition-fast,
+      background
+        $transition-fast;
+
+    &:hover:not(
+        :disabled
+      ) {
+      color: white;
+
+      background:
+        rgba(
+          95,
+          124,
+          255,
+          0.07
+        );
+    }
+
+    &:disabled {
+      opacity: 0.25;
+
+      cursor:
+        not-allowed;
+    }
+  }
+
+  strong {
+    display: flex;
+
+    align-items:
+      center;
+
+    justify-content:
+      center;
+
+    color: white;
+
+    border-left:
+      1px solid
+      $border;
+
+    border-right:
+      1px solid
+      $border;
+
+    font-size:
+      18px;
+  }
+}
+
+.discountBadge {
+  align-self:
+    flex-start;
+
+  padding:
+    7px 10px;
+
+  color:
+    $season-light;
+
+  border:
+    1px solid
+    rgba(
+      120,
+      184,
+      135,
+      0.16
+    );
+
+  border-radius:
+    7px;
+
+  background:
+    rgba(
+      120,
+      184,
+      135,
+      0.055
+    );
+
+  font-size: 9px;
+
+  font-weight:
+    750;
+
+  letter-spacing:
+    0.09em;
+}
+
+/* =========================
+   BIG CHOICE CARDS
+========================= */
+
+.twoCards {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      1fr
+    );
+
+  gap: 12px;
+}
+
+.choice,
+.activeChoice {
+  min-height:
+    112px;
+
+  padding: 18px;
+
+  text-align: left;
+
+  border-radius:
+    14px;
+
+  cursor: pointer;
+
+  transition:
+    transform
+      $transition-fast,
+    border-color
+      $transition-fast,
+    background
+      $transition-fast,
+    box-shadow
+      $transition-fast;
+
+  > div {
+    display: flex;
+
+    align-items:
+      center;
+
+    gap: 9px;
+  }
+
+  strong {
+    color:
+      $text-primary;
+
+    font-size:
+      14px;
+  }
+
+  p {
+    margin:
+      9px 0 0;
+
+    color:
+      $text-muted;
+
+    font-size:
+      12px;
+
+    line-height:
+      1.55;
+  }
+
+  em {
+    padding:
+      4px 6px;
+
+    color:
+      $season-light;
+
+    border-radius:
+      5px;
+
+    background:
+      rgba(
+        120,
+        184,
+        135,
+        0.07
+      );
+
+    font-size:
+      7px;
+
+    font-style:
+      normal;
+
+    font-weight:
+      750;
+
+    letter-spacing:
+      0.08em;
+  }
+}
+
+.choice {
+  border:
+    1px solid
+    $border;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.02
+    );
+
+  &:hover {
+    transform:
+      translateY(
+        -2px
+      );
+
+    border-color:
+      rgba(
+        142,
+        165,
+        255,
+        0.22
+      );
+  }
+}
+
+.activeChoice {
+  border:
+    1px solid
+    rgba(
+      142,
+      165,
+      255,
+      0.45
+    );
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(
+        95,
+        124,
+        255,
+        0.11
+      ),
+      rgba(
+        95,
+        124,
+        255,
+        0.025
+      )
+    );
+
+  box-shadow:
+    inset
+      0 0 30px
+      rgba(
+        95,
+        124,
+        255,
+        0.03
+      );
+}
+
+.extraPrice {
+  margin-left: auto;
+
+  color:
+    $gold;
+
+  font-size:
+    10px;
+
+  font-weight:
+    700;
+}
+
+/* =========================
+   CHARACTER
+========================= */
+
+.characterGrid {
+  display: grid;
+
+  grid-template-columns:
+    minmax(
+      0,
+      1fr
+    )
+    minmax(
+      0,
+      1.3fr
+    );
+
+  gap: 14px;
+}
+
+.field,
+.role {
+  padding: 18px;
+
+  border:
+    1px solid
+    $border;
+
+  border-radius:
+    14px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.018
+    );
+
+  > span {
+    display: block;
+
+    margin-bottom:
+      11px;
+
+    color:
+      $text-muted;
+
+    font-size:
+      10px;
+
+    text-transform:
+      uppercase;
+
+    letter-spacing:
+      0.1em;
+  }
+
+  small {
+    display: block;
+
+    margin-top:
+      9px;
+
+    color:
+      $text-muted;
+
+    font-size:
+      10px;
+
+    line-height:
+      1.5;
+  }
+}
+
+.field {
+  select {
+    width: 100%;
+
+    height: 48px;
+
+    padding:
+      0 13px;
+
+    color:
+      $text-primary;
+
+    border:
+      1px solid
+      rgba(
+        255,
+        255,
+        255,
+        0.09
+      );
+
+    border-radius:
+      10px;
+
+    outline: 0;
+
+    background:
+      #0b0f16;
+
+    cursor: pointer;
+
+    &:focus {
+      border-color:
+        rgba(
+          142,
+          165,
+          255,
+          0.45
+        );
+    }
+  }
+}
+
+.role {
+  > div {
+    display: grid;
+
+    grid-template-columns:
+      repeat(
+        3,
+        1fr
+      );
+
+    gap: 8px;
+  }
+}
+
+.mini,
+.activeMini {
+  min-height:
+    48px;
+
+  border-radius:
+    10px;
+
+  cursor: pointer;
+
+  font-size:
+    12px;
+
+  font-weight:
+    620;
+}
+
+.mini {
+  color:
+    $text-secondary;
+
+  border:
+    1px solid
+    $border;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.02
+    );
+}
+
+.activeMini {
+  color: white;
+
+  border:
+    1px solid
+    rgba(
+      142,
+      165,
+      255,
+      0.42
+    );
+
+  background:
+    rgba(
+      95,
+      124,
+      255,
+      0.1
+    );
+}
+
+/* =========================
+   DUNGEON ALLOCATOR
+========================= */
+
+.dungeonAllocator {
+  display: flex;
+
+  flex-direction:
+    column;
+
+  gap: 16px;
+}
+
+.allocationStatus {
+  min-height:
+    66px;
+
+  display: flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    space-between;
+
+  gap: 25px;
+
+  padding:
+    14px 16px;
+
+  border:
+    1px solid
+    $border;
+
+  border-radius:
+    12px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.018
+    );
+
+  > div {
+    display: flex;
+
+    align-items:
+      baseline;
+
+    gap: 7px;
+
+    > span {
+      color:
+        $text-muted;
+
+      font-size:
+        9px;
+
+      letter-spacing:
+        0.09em;
+    }
+
+    > strong {
+      color:
+        $text-primary;
+
+      font-size:
+        18px;
+
+      small {
+        color:
+          $text-muted;
+
+        font-size:
+          11px;
+      }
+    }
+  }
+}
+
+.allAssigned {
+  color:
+    $season-light !important;
+
+  font-weight:
+    700;
+}
+
+.dungeonAllocationGrid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      1fr
+    );
+
+  gap: 10px;
+}
+
+.dungeonAllocation,
+.activeDungeonAllocation {
+  min-height:
+    72px;
+
+  display: flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    space-between;
+
+  gap: 15px;
+
+  padding:
+    12px 14px;
+
+  border-radius:
+    12px;
+
+  transition:
+    border-color
+      $transition-fast,
+    background
+      $transition-fast;
+}
+
+.dungeonAllocation {
+  border:
+    1px solid
+    $border;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.015
+    );
+}
+
+.activeDungeonAllocation {
+  border:
+    1px solid
+    rgba(
+      142,
+      165,
+      255,
+      0.38
+    );
+
+  background:
+    rgba(
+      95,
+      124,
+      255,
+      0.065
+    );
+}
+
+.dungeonName {
+  display: flex;
+
+  flex-direction:
+    column;
+
+  gap: 4px;
+
+  span {
+    color:
+      $text-primary;
+
+    font-size:
+      11px;
+
+    font-weight:
+      600;
+  }
+
+  small {
+    color:
+      $brand-light;
+
+    font-size:
+      9px;
+  }
+}
+
+.dungeonCounter {
+  flex-shrink: 0;
+
+  display: grid;
+
+  grid-template-columns:
+    30px
+    30px
+    30px;
+
+  align-items:
+    center;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    $border;
+
+  border-radius:
+    8px;
+
+  button {
+    height: 32px;
+
+    color:
+      $text-secondary;
+
+    border: 0;
+
+    background:
+      transparent;
+
+    cursor: pointer;
+
+    &:hover:not(
+        :disabled
+      ) {
+      color: white;
+
+      background:
+        rgba(
+          95,
+          124,
+          255,
+          0.1
+        );
+    }
+
+    &:disabled {
+      opacity:
+        0.25;
+
+      cursor:
+        not-allowed;
+    }
+  }
+
+  strong {
+    display: flex;
+
+    align-items:
+      center;
+
+    justify-content:
+      center;
+
+    height: 32px;
+
+    color: white;
+
+    border-left:
+      1px solid
+      $border;
+
+    border-right:
+      1px solid
+      $border;
+
+    font-size:
+      11px;
+  }
+}
+
+/* =========================
+   TRADERS
+========================= */
+
+.traders {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      5,
+      1fr
+    );
+
+  gap: 9px;
+}
+
+.trader,
+.activeTrader {
+  min-height:
+    74px;
+
+  display: flex;
+
+  flex-direction:
+    column;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  gap: 4px;
+
+  border-radius:
+    11px;
+
+  cursor: pointer;
+
+  transition:
+    border-color
+      $transition-fast,
+    background
+      $transition-fast,
+    opacity
+      $transition-fast;
+
+  strong {
+    font-size:
+      14px;
+  }
+
+  span {
+    color:
+      $text-muted;
+
+    font-size:
+      9px;
+  }
+
+  &:disabled {
+    opacity: 0.3;
+
+    cursor:
+      not-allowed;
+  }
+}
+
+.trader {
+  color:
+    $text-secondary;
+
+  border:
+    1px solid
+    $border;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.018
+    );
+
+  &:hover:not(
+      :disabled
+    ) {
+    border-color:
+      rgba(
+        142,
+        165,
+        255,
+        0.22
+      );
+  }
+}
+
+.activeTrader {
+  color: white;
+
+  border:
+    1px solid
+    rgba(
+      142,
+      165,
+      255,
+      0.45
+    );
+
+  background:
+    rgba(
+      95,
+      124,
+      255,
+      0.09
+    );
+}
+
+.helper {
+  margin:
+    -4px 0 0;
+
+  color:
+    $text-muted;
+
+  font-size:
+    11px;
+
+  line-height:
+    1.55;
+
+  strong {
+    color:
+      $text-secondary;
+  }
+}
+
+/* =========================
+   REGION
+========================= */
+
+.regionGrid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      140px
+    );
+
+  gap: 10px;
+}
+
+/* =========================
+   SUMMARY
+========================= */
+
+.summary {
+  position: sticky;
+
+  top: 24px;
+
+  padding: 28px;
+
+  h3 {
+    margin:
+      0 0 25px;
+
+    color:
+      $text-primary;
+
+    font-size:
+      29px;
+
+    font-weight:
+      680;
+
+    letter-spacing:
+      -0.04em;
+  }
+}
+
+.available {
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  gap: 8px;
+
+  margin-bottom:
+    28px;
+
+  color:
+    $season-light;
+
+  font-size:
+    9px;
+
+  font-weight:
+    750;
+
+  letter-spacing:
+    0.11em;
+
+  span {
+    width: 6px;
+
+    height: 6px;
+
+    border-radius:
+      50%;
+
+    background:
+      $season;
+
+    box-shadow:
+      0 0 12px
+      rgba(
+        120,
+        184,
+        135,
+        0.7
+      );
+  }
+}
+
+.summaryLabel {
+  display: block;
+
+  margin-bottom:
+    8px;
+
+  color:
+    $text-muted;
+
+  font-size:
+    9px;
+
+  font-weight:
+    700;
+
+  letter-spacing:
+    0.12em;
+}
+
+.orderInfo,
+.breakdown {
+  overflow: hidden;
+
+  border:
+    1px solid
+    $border;
+
+  border-radius:
+    12px;
+}
+
+.breakdown {
+  margin-top:
+    16px;
+}
+
+.summaryRow {
+  min-height:
+    43px;
+
+  display: flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    space-between;
+
+  gap: 20px;
+
+  padding:
+    0 13px;
+
+  border-bottom:
+    1px solid
+    $border;
+
+  &:last-child {
+    border-bottom: 0;
+  }
+
+  span {
+    color:
+      $text-muted;
+
+    font-size:
+      11px;
+  }
+
+  strong {
+    max-width:
+      190px;
+
+    overflow:
+      hidden;
+
+    color:
+      $text-primary;
+
+    font-size:
+      11px;
+
+    font-weight:
+      620;
+
+    text-align:
+      right;
+
+    text-overflow:
+      ellipsis;
+
+    white-space:
+      nowrap;
+  }
+}
+
+.positive {
+  color:
+    $season-light !important;
+}
+
+/* =========================
+   SELECTED DUNGEONS SUMMARY
+========================= */
+
+.selectedDungeonSummary {
+  margin-top:
+    16px;
+
+  padding: 14px;
+
+  border:
+    1px solid
+    $border;
+
+  border-radius:
+    12px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.015
+    );
+
+  > span {
+    display: block;
+
+    margin-bottom:
+      10px;
+
+    color:
+      $text-muted;
+
+    font-size:
+      9px;
+
+    font-weight:
+      700;
+
+    letter-spacing:
+      0.1em;
+  }
+
+  > div {
+    min-height:
+      30px;
+
+    display: flex;
+
+    align-items:
+      center;
+
+    justify-content:
+      space-between;
+
+    gap: 12px;
+
+    span {
+      color:
+        $text-secondary;
+
+      font-size:
+        10px;
+    }
+
+    strong {
+      color:
+        $brand-light;
+
+      font-size:
+        10px;
+    }
+  }
+}
+
+/* =========================
+   TOTAL
+========================= */
+
+.total {
+  display: flex;
+
+  flex-direction:
+    column;
+
+  gap: 7px;
+
+  padding:
+    24px 0;
+
+  > span {
+    color:
+      $text-muted;
+
+    font-size:
+      10px;
+
+    text-transform:
+      uppercase;
+
+    letter-spacing:
+      0.09em;
+  }
+
+  strong {
+    color:
+      $text-primary;
+
+    font-size:
+      31px;
+
+    font-weight:
+      720;
+
+    letter-spacing:
+      -0.04em;
+
+    small {
+      color:
+        $gold;
+
+      font-size:
+        10px;
+
+      font-weight:
+        750;
+
+      letter-spacing:
+        0.08em;
+    }
+  }
+}
+
+.reserve {
+  width: 100%;
+
+  min-height:
+    56px;
+
+  display: flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  gap: 12px;
+
+  color: white;
+
+  border:
+    1px solid
+    rgba(
+      142,
+      165,
+      255,
+      0.4
+    );
+
+  border-radius:
+    12px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #5f7cff,
+      #4058c7
+    );
+
+  cursor: pointer;
+
+  font-size:
+    14px;
+
+  font-weight:
+    650;
+
+  box-shadow:
+    0 14px 38px
+    rgba(
+      95,
+      124,
+      255,
+      0.15
+    );
+
+  transition:
+    transform
+      $transition-fast,
+    box-shadow
+      $transition-fast;
+
+  span {
+    transition:
+      transform
+      $transition-fast;
+  }
+
+  &:hover {
+    transform:
+      translateY(
+        -2px
+      );
+
+    box-shadow:
+      0 18px 48px
+      rgba(
+        95,
+        124,
+        255,
+        0.23
+      );
+
+    span {
+      transform:
+        translateX(
+          3px
+        );
+    }
+  }
+}
+
+.note {
+  margin:
+    14px 0 0;
+
+  color:
+    $text-muted;
+
+  font-size:
+    10px;
+
+  line-height:
+    1.6;
+
+  text-align:
+    center;
+}
+
+/* =========================
+   TABLET
+========================= */
+
+@media (
+  max-width: 1100px
+) {
+  .keyGrid {
+    grid-template-columns:
+      repeat(
+        7,
+        1fr
+      );
+  }
+
+  .dungeonAllocationGrid {
+    grid-template-columns:
+      1fr;
+  }
+}
+
+/* =========================
+   SUMMARY GOES BELOW
+========================= */
+
+@media (
+  max-width: 950px
+) {
+  .layout {
+    grid-template-columns:
+      1fr;
+  }
+
+  .summary {
+    position:
+      relative;
+
+    top: auto;
+  }
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (
+  max-width: 700px
+) {
+  .section {
+    padding:
+      90px 0
+      110px;
+  }
+
+  .heading {
+    align-items:
+      flex-start;
+
+    flex-direction:
+      column;
+
+    gap: 18px;
+  }
+
+  .configurator {
+    padding: 22px;
+  }
+
+  .keyGrid {
+    grid-template-columns:
+      repeat(
+        4,
+        1fr
+      );
+  }
+
+  .runControls {
+    flex-direction:
+      column;
+  }
+
+  .counter {
+    min-height:
+      54px;
+
+    width: 100%;
+  }
+
+  .twoCards,
+  .characterGrid {
+    grid-template-columns:
+      1fr;
+  }
+
+  .traders {
+    grid-template-columns:
+      repeat(
+        3,
+        1fr
+      );
+  }
+
+  .regionGrid {
+    grid-template-columns:
+      repeat(
+        2,
+        1fr
+      );
+  }
+
+  .allocationStatus {
+    align-items:
+      flex-start;
+
+    flex-direction:
+      column;
+
+    gap: 8px;
+  }
+
+  .dungeonAllocationGrid {
+    grid-template-columns:
+      1fr;
+  }
+
+  .optionHeader {
+    align-items:
+      flex-start;
+  }
+}
+
+/* =========================
+   VERY SMALL MOBILE
+========================= */
+
+@media (
+  max-width: 430px
+) {
+  .keyGrid {
+    grid-template-columns:
+      repeat(
+        3,
+        1fr
+      );
+  }
+
+  .traders {
+    grid-template-columns:
+      repeat(
+        2,
+        1fr
+      );
+  }
+
+  .summary,
+  .configurator {
+    border-radius:
+      17px;
+  }
+}
+
+/* =========================
+   STEPPER
+========================= */
+
+.stepper {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      4,
+      1fr
+    );
+
+  margin-bottom: 22px;
+
+  padding: 6px;
+
+  border:
+    1px solid
+    $border;
+
+  border-radius:
+    15px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.015
+    );
+}
+
+.step {
+  position: relative;
+
+  min-height: 60px;
+
+  display: flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  gap: 10px;
+
+  color:
+    $text-muted;
+
+  border: 0;
+
+  border-radius:
+    11px;
+
+  background:
+    transparent;
+
+  cursor: pointer;
+
+  transition:
+    color
+      $transition-fast,
+    background
+      $transition-fast,
+    box-shadow
+      $transition-fast;
+
+  &:hover {
+    color:
+      $text-primary;
+
+    background:
+      rgba(
+        255,
+        255,
+        255,
+        0.025
+      );
+  }
+}
+
+.stepNumber {
+  width: 26px;
+
+  height: 26px;
+
+  display: flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  border:
+    1px solid
+    $border;
+
+  border-radius:
+    50%;
+
+  font-size:
+    9px;
+
+  font-weight:
+    750;
+
+  transition:
+    border-color
+      $transition-fast,
+    background
+      $transition-fast,
+    color
+      $transition-fast;
+}
+
+.stepLabel {
+  font-size:
+    11px;
+
+  font-weight:
+    650;
+}
+
+.stepActive {
+  color:
+    $text-primary;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(
+        95,
+        124,
+        255,
+        0.12
+      ),
+      rgba(
+        95,
+        124,
+        255,
+        0.035
+      )
+    );
+
+  box-shadow:
+    inset
+      0 0 0 1px
+      rgba(
+        142,
+        165,
+        255,
+        0.16
+      );
+
+  .stepNumber {
+    color: white;
+
+    border-color:
+      rgba(
+        142,
+        165,
+        255,
+        0.5
+      );
+
+    background:
+      rgba(
+        95,
+        124,
+        255,
+        0.16
+      );
+  }
+}
+
+.stepCompleted {
+  color:
+    $text-secondary;
+
+  .stepNumber {
+    color:
+      $season-light;
+
+    border-color:
+      rgba(
+        120,
+        184,
+        135,
+        0.3
+      );
+
+    background:
+      rgba(
+        120,
+        184,
+        135,
+        0.07
+      );
+  }
+}
+
+/* =========================
+   CURRENT STEP
+========================= */
+
+.stepContent {
+  min-height:
+    390px;
+}
+
+.stepDivider {
+  height: 1px;
+
+  margin:
+    34px 0;
+
+  background:
+    $border;
+}
+
+/* =========================
+   STEP NAVIGATION
+========================= */
+
+.stepActions {
+  display: flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    flex-end;
+
+  gap: 12px;
+
+  margin-top:
+    38px;
+
+  padding-top:
+    24px;
+
+  border-top:
+    1px solid
+    $border;
+}
+
+.backButton,
+.continueButton {
+  min-height:
+    52px;
+
+  display: inline-flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  border-radius:
+    11px;
+
+  cursor: pointer;
+
+  font-size:
+    13px;
+
+  font-weight:
+    650;
+
+  transition:
+    transform
+      $transition-fast,
+    border-color
+      $transition-fast,
+    background
+      $transition-fast,
+    box-shadow
+      $transition-fast;
+}
+
+.backButton {
+  padding:
+    0 19px;
+
+  color:
+    $text-secondary;
+
+  border:
+    1px solid
+    $border;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.02
+    );
+
+  &:hover {
+    color:
+      white;
+
+    border-color:
+      rgba(
+        255,
+        255,
+        255,
+        0.15
+      );
+  }
+}
+
+.continueButton {
+  min-width:
+    160px;
+
+  gap: 12px;
+
+  padding:
+    0 22px;
+
+  color: white;
+
+  border:
+    1px solid
+    rgba(
+      142,
+      165,
+      255,
+      0.38
+    );
+
+  background:
+    linear-gradient(
+      135deg,
+      #5f7cff,
+      #4058c7
+    );
+
+  box-shadow:
+    0 12px 32px
+    rgba(
+      95,
+      124,
+      255,
+      0.14
+    );
+
+  span {
+    transition:
+      transform
+      $transition-fast;
+  }
+
+  &:hover {
+    transform:
+      translateY(
+        -2px
+      );
+
+    box-shadow:
+      0 16px 40px
+      rgba(
+        95,
+        124,
+        255,
+        0.22
+      );
+
+    span {
+      transform:
+        translateX(
+          3px
+        );
+    }
+  }
+}
+
+/* =========================
+   REVIEW STEP
+========================= */
+
+.reviewStep {
+  display: flex;
+
+  flex-direction:
+    column;
+
+  gap: 24px;
+}
+
+.reviewHeader {
+  > span {
+    color:
+      $season-light;
+
+    font-size:
+      9px;
+
+    font-weight:
+      750;
+
+    letter-spacing:
+      0.11em;
+  }
+
+  h3 {
+    margin:
+      10px 0 7px;
+
+    color:
+      $text-primary;
+
+    font-size:
+      30px;
+
+    font-weight:
+      680;
+
+    letter-spacing:
+      -0.035em;
+  }
+
+  p {
+    margin: 0;
+
+    color:
+      $text-muted;
+
+    font-size:
+      12px;
+
+    line-height:
+      1.6;
+  }
+}
+
+.reviewGrid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      1fr
+    );
+
+  gap: 10px;
+}
+
+.reviewItem {
+  min-height:
+    72px;
+
+  display: flex;
+
+  flex-direction:
+    column;
+
+  justify-content:
+    center;
+
+  gap: 6px;
+
+  padding:
+    13px 15px;
+
+  border:
+    1px solid
+    $border;
+
+  border-radius:
+    11px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.016
+    );
+
+  span {
+    color:
+      $text-muted;
+
+    font-size:
+      9px;
+
+    text-transform:
+      uppercase;
+
+    letter-spacing:
+      0.08em;
+  }
+
+  strong {
+    color:
+      $text-primary;
+
+    font-size:
+      12px;
+
+    font-weight:
+      620;
+  }
+}
+
+.reviewDungeons {
+  padding:
+    17px;
+
+  border:
+    1px solid
+    $border;
+
+  border-radius:
+    12px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.015
+    );
+
+  > span {
+    display: block;
+
+    margin-bottom:
+      12px;
+
+    color:
+      $text-muted;
+
+    font-size:
+      9px;
+
+    font-weight:
+      750;
+
+    letter-spacing:
+      0.1em;
+  }
+
+  > strong {
+    color:
+      $text-primary;
+
+    font-size:
+      13px;
+  }
+
+  > div {
+    min-height:
+      31px;
+
+    display: flex;
+
+    align-items:
+      center;
+
+    justify-content:
+      space-between;
+
+    gap: 15px;
+
+    span {
+      color:
+        $text-secondary;
+
+      font-size:
+        11px;
+    }
+
+    strong {
+      color:
+        $brand-light;
+
+      font-size:
+        11px;
+    }
+  }
+}
+
+.reviewTotal {
+  display: flex;
+
+  align-items:
+    flex-end;
+
+  justify-content:
+    space-between;
+
+  padding:
+    20px;
+
+  border:
+    1px solid
+    rgba(
+      142,
+      165,
+      255,
+      0.17
+    );
+
+  border-radius:
+    13px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(
+        95,
+        124,
+        255,
+        0.08
+      ),
+      rgba(
+        95,
+        124,
+        255,
+        0.015
+      )
+    );
+
+  > span {
+    color:
+      $text-muted;
+
+    font-size:
+      9px;
+
+    letter-spacing:
+      0.1em;
+  }
+
+  strong {
+    color:
+      white;
+
+    font-size:
+      28px;
+
+    letter-spacing:
+      -0.035em;
+
+    small {
+      color:
+        $gold;
+
+      font-size:
+        9px;
+
+      letter-spacing:
+        0.07em;
+    }
+  }
+}
+
+.reviewHint {
+  margin: 0;
+
+  color:
+    $text-muted;
+
+  font-size:
+    10px;
+}
+
+/* =========================
+   STEPPER MOBILE
+========================= */
+
+@media (
+  max-width: 700px
+) {
+  .stepper {
+    grid-template-columns:
+      repeat(
+        2,
+        1fr
+      );
+
+    gap: 4px;
+  }
+
+  .step {
+    min-height:
+      52px;
+  }
+
+  .stepLabel {
+    font-size:
+      10px;
+  }
+
+  .stepContent {
+    min-height: 0;
+  }
+
+  .stepActions {
+    justify-content:
+      space-between;
+  }
+
+  .continueButton {
+    flex: 1;
+  }
+
+  .reviewGrid {
+    grid-template-columns:
+      1fr;
+  }
+}
+
+
+/* ===================================
+   CHARACTER SETUP — NIKOBOOST
+=================================== */
+
+.characterSetup {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.classSelection {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.classLabel,
+.roleLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: #aab5ce;
+}
+
+.classIconGrid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.classIconButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+
+  min-width: 0;
+  min-height: 104px;
+  padding: 12px 6px;
+
+  background: #151b28;
+  border: 1px solid #303a50;
+  border-radius: 12px;
+
+  color: #aab5ce;
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &:hover {
+    background: #1e2940;
+    border-color: var(--wow-class-color);
+    transform: translateY(-3px);
+
+    .classIconImage {
+      transform: scale(1.08);
+    }
+
+    .className {
+      color: var(--wow-class-color);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid #a5b9ff;
+    outline-offset: 3px;
+  }
+}
+
+.classIconSelected {
+  background: #202e50;
+  border-color: #829aff;
+  box-shadow: 0 0 18px rgba(85, 120, 255, 0.2);
+
+  .className {
+    color: var(--wow-class-color);
+  }
+}
+
+.classIconImage {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 8px;
+
+  transition: transform 0.2s ease;
+}
+
+.className {
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.3;
+  transition: color 0.2s ease;
+}
+
+.armorInfo {
+  color: #8490a8;
+  font-size: 12px;
+}
+
+/* ===================================
+   ROLE SELECTION
+=================================== */
+
+.roleSelection {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  padding: 20px;
+
+  background: #15191f;
+  border: 1px solid #292f3a;
+  border-radius: 14px;
+}
+
+.roleButtonGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.roleCard {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  min-width: 110px;
+  min-height: 50px;
+  padding: 12px 18px;
+
+  background: #111722;
+  border: 1px solid #303a50;
+  border-radius: 10px;
+
+  color: #aab5ce;
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+
+  &:hover {
+    background: #1e2940;
+    border-color: #6b83e8;
+    transform: translateY(-2px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #a5b9ff;
+    outline-offset: 3px;
+  }
+}
+
+.roleCardActive {
+  background: #202e50;
+  border-color: #829aff;
+  color: #ffffff;
+}
+
+.roleCardIcon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.roleNote {
+  color: #8490a8;
+  font-size: 12px;
+}
+
+/* ===================================
+   RESPONSIVE
+=================================== */
+
+@media (max-width: 900px) {
+  .classIconGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .classIconGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .classIconButton {
+    min-height: 95px;
+    padding: 10px 4px;
+  }
+
+  .classIconImage {
+    width: 42px;
+    height: 42px;
+  }
+
+  .className {
+    font-size: 10px;
+  }
+
+  .roleSelection {
+    padding: 14px;
+  }
+
+  .roleCard {
+    min-width: 90px;
+    padding: 10px 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .classIconButton,
+  .classIconImage,
+  .className,
+  .roleCard {
+    transition: none;
+  }
+}
+
+
+/* ===================================
+   DUNGEON VISUAL IMPROVEMENTS
+=================================== */
+
+.dungeonVisualInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.dungeonThumbnail {
+  width: 54px;
+  height: 54px;
+  flex-shrink: 0;
+  overflow: hidden;
+
+  background: #20283a;
+  border: 1px solid #35415a;
+  border-radius: 9px;
+
+  img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+  }
+}
+
+.dungeonProgress {
+  width: 100%;
+  height: 6px;
+  overflow: hidden;
+  background: #202637;
+  border-radius: 20px;
+}
+
+.dungeonProgressFill {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    #5f7cff,
+    #92a8ff
+  );
+  border-radius: inherit;
+  transition: width 0.25s ease;
+}
+
+.dungeonAllocation,
+.activeDungeonAllocation {
+  min-width: 0;
+  gap: 10px;
+}
+
+.dungeonName {
+  min-width: 0;
+
+  span {
+    overflow-wrap: anywhere;
+    line-height: 1.4;
+  }
+}
+
+@media (max-width: 480px) {
+  .dungeonThumbnail {
+    width: 44px;
+    height: 44px;
+  }
+
+  .dungeonVisualInfo {
+    gap: 8px;
+  }
+}
