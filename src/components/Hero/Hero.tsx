@@ -62,7 +62,7 @@ export default function Hero() {
 
             <h1 className={styles.title}>
               MYTHIC+
-              <span> ADVENTURE.</span>
+              <span> ADVENTURE</span>
             </h1>
           </div>
 
