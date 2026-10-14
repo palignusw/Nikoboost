@@ -17,10 +17,10 @@ export default function OrderSummary({
   onReserve,
 }: {
   config:
-    MythicPlusConfig;
+  MythicPlusConfig;
 
   onReserve:
-    () => void;
+  () => void;
 }) {
   return (
     <aside
@@ -64,7 +64,7 @@ export default function OrderSummary({
           label="Mode"
           value={
             config.participation ===
-            "play"
+              "play"
               ? "I Play"
               : "AFK / Minimal"
           }
@@ -72,13 +72,13 @@ export default function OrderSummary({
 
         {config.participation ===
           "play" && (
-          <SummaryRow
-            label="Role"
-            value={formatRole(
-              config.role
-            )}
-          />
-        )}
+            <SummaryRow
+              label="Role"
+              value={formatRole(
+                config.role
+              )}
+            />
+          )}
 
         <SummaryRow
           label="Dungeon"
@@ -158,19 +158,19 @@ export default function OrderSummary({
 
             {config.remainingRuns >
               0 && (
-              <div>
-                <span>
-                  Any dungeon
-                </span>
+                <div>
+                  <span>
+                    Any dungeon
+                  </span>
 
-                <strong>
-                  ×
-                  {
-                    config.remainingRuns
-                  }
-                </strong>
-              </div>
-            )}
+                  <strong>
+                    ×
+                    {
+                      config.remainingRuns
+                    }
+                  </strong>
+                </div>
+              )}
           </div>
         )}
 
@@ -189,82 +189,71 @@ export default function OrderSummary({
         {config.calculation
           .afkExtra >
           0 && (
-          <SummaryRow
-            label="AFK / Minimal"
-            value={`+${config.calculation.afkExtra.toLocaleString(
-              "en-US"
-            )}`}
-          />
-        )}
+            <SummaryRow
+              label="AFK / Minimal"
+              value={`+${config.calculation.afkExtra.toLocaleString(
+                "en-US"
+              )}`}
+            />
+          )}
 
         {config.calculation
           .roleExtra >
           0 && (
-          <SummaryRow
-            label={`${formatRole(
-              config.role
-            )} role`}
-            value={`+${config.calculation.roleExtra.toLocaleString(
-              "en-US"
-            )}`}
-          />
-        )}
+            <SummaryRow
+              label={`${formatRole(
+                config.role
+              )} role`}
+              value={`+${config.calculation.roleExtra.toLocaleString(
+                "en-US"
+              )}`}
+            />
+          )}
 
         {config.calculation
           .specificExtra >
           0 && (
-          <SummaryRow
-            label="Specific dungeons"
-            value={`+${config.calculation.specificExtra.toLocaleString(
-              "en-US"
-            )}`}
-          />
-        )}
+            <SummaryRow
+              label="Specific dungeons"
+              value={`+${config.calculation.specificExtra.toLocaleString(
+                "en-US"
+              )}`}
+            />
+          )}
 
         {config.calculation
           .traderExtra >
           0 && (
-          <SummaryRow
-            label="Loot traders"
-            value={`+${config.calculation.traderExtra.toLocaleString(
-              "en-US"
-            )}`}
-          />
-        )}
+            <SummaryRow
+              label="Loot traders"
+              value={`+${config.calculation.traderExtra.toLocaleString(
+                "en-US"
+              )}`}
+            />
+          )}
 
         {config.calculation
           .discount >
           0 && (
-          <SummaryRow
-            label="Package discount"
-            value={`-${config.calculation.discount.toLocaleString(
-              "en-US"
-            )}`}
-            positive
-          />
-        )}
+            <SummaryRow
+              label="Package discount"
+              value={`-${config.calculation.discount.toLocaleString(
+                "en-US"
+              )}`}
+              positive
+            />
+          )}
       </div>
 
-      <div
-        className={
-          styles.total
-        }
-      >
-        <span>
-          Total
-        </span>
+      <div className={styles.total}>
+        <span>Total</span>
 
-        <strong>
-          {config.calculation.total.toLocaleString(
-            "en-US"
-          )}
-
-          <small>
-            {" "}
-            GOLD
-          </small>
+        <strong data-testid="order-total">
+          {config.calculation.total.toLocaleString("en-US")}
+          <small> GOLD</small>
         </strong>
       </div>
+
 
       <button
         type="button"

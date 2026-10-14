@@ -190,6 +190,220 @@ async function readJson(request: Request): Promise<unknown> {
   }
 }
 
+
+const ALLOWED_TIMEZONES = new Set([
+  "Europe/Berlin",
+  "Europe/London",
+  "Europe/Istanbul",
+  "Asia/Tbilisi",
+  "America/New_York",
+  "America/Chicago",
+  "America/Denver",
+  "America/Los_Angeles",
+  "UTC",
+]);
+
+type ScheduleResult =
+  | { valid: true }
+  | { valid: false; error: string };
+
+function validatePreferredTime(
+  preferredTime: string
+): ScheduleResult {
+  const exactMatch = preferredTime.match(
+    /^(\d{4}-\d{2}-\d{2}) ([01]\d|2[0-3]):([0-5]\d) \(([^()]+)\)$/
+  );
+
+  const flexibleMatch = preferredTime.match(
+    /^Flexible — please contact me \(([^()]+)\)$/
+  );
+
+  // Flexible scheduling requires no fixed start time.
+  if (flexibleMatch) {
+    const timezone = flexibleMatch[1];
+
+    if (!ALLOWED_TIMEZONES.has(timezone)) {
+      return {
+        valid: false,
+        error: "Invalid time zone.",
+      };
+    }
+
+    return { valid: true };
+  }
+
+  if (!exactMatch) {
+    return {
+      valid: false,
+      error: "Invalid preferred date and time.",
+    };
+  }
+
+  const [
+    ,
+    date,
+    hourString,
+    minuteString,
+    timezone,
+  ] = exactMatch;
+
+  if (!ALLOWED_TIMEZONES.has(timezone)) {
+    return {
+      valid: false,
+      error: "Invalid time zone.",
+    };
+  }
+
+  const [year, month, day] = date
+    .split("-")
+    .map(Number);
+
+  const hour = Number(hourString);
+  const minute = Number(minuteString);
+
+  // Check that the calendar date actually exists.
+  const calendarDate = new Date(
+    Date.UTC(year, month - 1, day)
+  );
+
+  if (
+    year < 2020 ||
+    year > 2100 ||
+    calendarDate.getUTCFullYear() !== year ||
+    calendarDate.getUTCMonth() !== month - 1 ||
+    calendarDate.getUTCDate() !== day
+  ) {
+    return {
+      valid: false,
+      error: "Invalid preferred date.",
+    };
+  }
+
+  const formatter = new Intl.DateTimeFormat(
+    "en-GB",
+    {
+      timeZone: timezone,
+      calendar: "gregory",
+      numberingSystem: "latn",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hourCycle: "h23",
+    }
+  );
+
+  function getLocalParts(timestamp: number) {
+    const parts = formatter.formatToParts(
+      new Date(timestamp)
+    );
+
+    const numberPart = (type: string) =>
+      Number(
+        parts.find((part) => part.type === type)
+          ?.value
+      );
+
+    return {
+      year: numberPart("year"),
+      month: numberPart("month"),
+      day: numberPart("day"),
+      hour: numberPart("hour"),
+      minute: numberPart("minute"),
+    };
+  }
+
+  const requestedWallTime = Date.UTC(
+    year,
+    month - 1,
+    day,
+    hour,
+    minute
+  );
+
+  // Collect the possible UTC offsets around
+  // the requested date, including DST transitions.
+  const offsets = new Set<number>();
+
+  for (
+    let hours = -36;
+    hours <= 36;
+    hours += 6
+  ) {
+    const sample =
+      requestedWallTime +
+      hours * 60 * 60 * 1000;
+
+    const local = getLocalParts(sample);
+
+    const displayedAsUTC = Date.UTC(
+      local.year,
+      local.month - 1,
+      local.day,
+      local.hour,
+      local.minute
+    );
+
+    offsets.add(
+      Math.round(
+        (displayedAsUTC - sample) / 60_000
+      )
+    );
+  }
+
+  const matchingInstants = new Set<number>();
+
+  for (const offset of offsets) {
+    const timestamp =
+      requestedWallTime - offset * 60_000;
+
+    const local = getLocalParts(timestamp);
+
+    if (
+      local.year === year &&
+      local.month === month &&
+      local.day === day &&
+      local.hour === hour &&
+      local.minute === minute
+    ) {
+      matchingInstants.add(timestamp);
+    }
+  }
+
+  if (matchingInstants.size === 0) {
+    return {
+      valid: false,
+      error:
+        "This time does not exist in the selected " +
+        "time zone. Please choose another time.",
+    };
+  }
+
+  if (matchingInstants.size > 1) {
+    return {
+      valid: false,
+      error:
+        "This time occurs twice because of a clock " +
+        "change. Please choose another time.",
+    };
+  }
+
+  const timestamp = [...matchingInstants][0];
+
+  if (timestamp <= Date.now()) {
+    return {
+      valid: false,
+      error:
+        "The selected date and time have already " +
+        "passed in your chosen time zone.",
+    };
+  }
+
+  return { valid: true };
+}
+
+
 function formatRole(role: Role) {
   if (role === "dps") return "DPS";
 
@@ -303,6 +517,17 @@ export async function POST(request: Request) {
         400
       );
     }
+    
+const scheduleValidation =
+  validatePreferredTime(preferredTime);
+
+if (!scheduleValidation.valid) {
+  return jsonError(
+    scheduleValidation.error,
+    400
+  );
+}
+
 
     // ORDER VALIDATION
 
