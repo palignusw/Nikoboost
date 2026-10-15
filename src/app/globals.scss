@@ -78,3 +78,58 @@ html {
     scroll-behavior: auto;
   }
 }
+
+
+
+:root {
+  --font-ui: var(--font-sora), Arial, sans-serif;
+  --font-display: var(--font-rajdhani), Arial, sans-serif;
+}
+
+html,
+body {
+  font-family: var(--font-ui);
+}
+
+body {
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Основные заголовки */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+}
+
+/* Обычный текст */
+p,
+li,
+input,
+select,
+textarea {
+  font-family: var(--font-ui);
+}
+
+/* Кнопки */
+button {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+/* Числа */
+[data-price],
+[data-key-level] {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}

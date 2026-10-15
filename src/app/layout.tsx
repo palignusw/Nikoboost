@@ -3,13 +3,30 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.scss";
+import { Sora, Rajdhani } from "next/font/google";
 
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL ||
   "https://www.nikoboost.online";
 
+
+  const sora = Sora({
+  subsets: ["latin"],
+  variable: "--font-sora",
+  display: "swap",
+});
+
+const rajdhani = Rajdhani({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-rajdhani",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
+
+  
 
   title: {
     default: "NikoBoost | WoW Mythic+ Boosting for Gold",
@@ -65,7 +82,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
+      <body className={`${sora.variable} ${rajdhani.variable}`} >
         {children}
 
         <Suspense fallback={null}>

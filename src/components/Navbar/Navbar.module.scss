@@ -155,7 +155,7 @@
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease,
-    background 0.2s ease;
+   background 0.2s ease;
 
   span {
     font-size: 16px;
@@ -378,5 +378,192 @@
   .mobileNav,
   .mobileNav a {
     transition: none;
+  }
+}
+
+
+
+/* ==========================================
+   NIKOBOOST — PREMIUM NAVBAR V2
+   Midnight / Sora + Rajdhani
+========================================== */
+
+/* Main navbar */
+.header {
+  background: rgba(8, 11, 20, 0.82);
+
+  border-bottom:
+    1px solid rgba(150, 169, 255, 0.13);
+
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.14);
+}
+
+.inner {
+  height: 80px;
+  gap: 34px;
+}
+
+/* Branding */
+.logo {
+  position: relative;
+  text-decoration: none;
+}
+
+.logo img {
+  width: auto;
+  height: 62px;
+  max-width: 100%;
+
+  object-fit: contain;
+
+  filter:
+    drop-shadow(0 0 10px rgba(114, 140, 255, 0.12));
+
+  transition:
+    transform 0.25s ease,
+    filter 0.25s ease;
+}
+
+.logo:hover img {
+  transform: scale(1.025);
+
+  filter:
+    drop-shadow(0 0 16px rgba(114, 140, 255, 0.24));
+}
+
+/* Desktop navigation */
+.nav {
+  gap: 32px;
+}
+
+.nav a {
+  font-family: var(--font-sora), Arial, sans-serif;
+
+  color: #b7c2d9;
+
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -0.015em;
+
+  transition: color 0.2s ease;
+}
+
+.nav a:hover,
+.nav a:focus-visible {
+  color: #ffffff;
+}
+
+.nav a::after {
+  height: 2px;
+  bottom: 4px;
+
+  background: linear-gradient(
+    90deg,
+    #718cff,
+    #b3a4ff
+  );
+}
+
+/* Primary CTA */
+.book {
+  min-height: 46px;
+
+  padding: 0 22px;
+  gap: 12px;
+
+  font-family: var(--font-rajdhani), Arial, sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+
+  color: #ffffff;
+
+  border-radius: 10px;
+
+  background: linear-gradient(
+    135deg,
+    #6683ff,
+    #455ed9
+  );
+
+  border:
+    1px solid rgba(175, 191, 255, 0.4);
+
+  box-shadow:
+    0 6px 22px rgba(73, 98, 230, 0.2);
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.book:hover {
+  transform: translateY(-2px);
+
+  background: linear-gradient(
+    135deg,
+    #7993ff,
+    #526de9
+  );
+
+  box-shadow:
+    0 10px 30px rgba(73, 98, 230, 0.3);
+}
+
+.book span {
+  font-family: var(--font-sora), Arial, sans-serif;
+  font-size: 15px;
+}
+
+/* Mobile menu */
+.mobileNav > a {
+  font-family: var(--font-sora), Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.mobileNav > .mobileBook {
+  font-family: var(--font-rajdhani), Arial, sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* Responsive */
+@media (max-width: 850px) {
+  .inner {
+    height: 72px;
+    gap: 12px;
+  }
+
+  .logo img {
+    height: 48px;
+  }
+
+  .book {
+    min-height: 42px;
+    padding: 0 16px;
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 520px) {
+  .inner {
+    height: 68px;
+  }
+
+  .logo img {
+    height: 40px;
+  }
+
+  .book {
+    min-height: 40px;
+    padding: 0 12px;
+    font-size: 14px;
   }
 }

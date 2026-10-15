@@ -3,9 +3,7 @@
 .section {
   position: relative;
 
-  padding:
-    80px 0
-    160px;
+padding: 56px 0 120px;
 
   background:
     radial-gradient(
@@ -2983,4 +2981,187 @@
   .dungeonVisualInfo {
     gap: 8px;
   }
+}
+
+
+/* ==========================================
+   NIKOBOOST — PREMIUM TYPOGRAPHY
+   Sora + Rajdhani
+========================================== */
+
+/* Основной текст конфигуратора */
+.section {
+  font-family: var(--font-sora), sans-serif;
+  color: #e0e6f4;
+}
+
+/* Заголовок Build your perfect run */
+.heading h2 {
+  font-family: var(--font-rajdhani), sans-serif;
+  font-size: clamp(42px, 4.5vw, 64px);
+  font-weight: 700;
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+}
+
+/* Описание рядом с заголовком */
+.heading > p {
+  font-family: var(--font-sora), sans-serif;
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+/* Заголовки Key level / Number of runs */
+.optionHeader h3 {
+  font-family: var(--font-rajdhani), sans-serif;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+/* Выбранное значение справа */
+.optionHeader > strong {
+  font-family: var(--font-rajdhani), sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+/* Кнопки уровней ключей */
+.option,
+.activeOption {
+  font-family: var(--font-rajdhani), sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.015em;
+}
+
+/* Выбор количества забегов */
+.quickRuns button {
+  font-family: var(--font-rajdhani), sans-serif;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.quickRuns button span {
+  font-family: var(--font-sora), sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+}
+
+/* Карточки I Play / AFK */
+.choice strong,
+.activeChoice strong {
+  font-family: var(--font-rajdhani), sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* Описания внутри карточек */
+.choice p,
+.activeChoice p {
+  font-family: var(--font-sora), sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.7;
+}
+
+/* Шаги Run / Character / Dungeons */
+.stepLabel {
+  font-family: var(--font-rajdhani), sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* Заголовок Mythic +10 */
+.summary h3 {
+  font-family: var(--font-rajdhani), sans-serif;
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+/* Строки заказа */
+.summaryRow span {
+  font-family: var(--font-sora), sans-serif;
+  font-size: 12px;
+}
+
+.summaryRow strong {
+  font-family: var(--font-sora), sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Итоговая цена */
+.total strong {
+  font-family: var(--font-rajdhani), sans-serif;
+  font-size: 40px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Кнопка Reserve run */
+.reserve {
+  font-family: var(--font-rajdhani), sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+/* Мелкие пояснения */
+.note,
+.helper {
+  font-family: var(--font-sora), sans-serif;
+  font-size: 11px;
+  line-height: 1.7;
+}
+
+/* NIKOBOOST — READABILITY POLISH */
+
+/* Описания карточек */
+.choice p,
+.activeChoice p {
+  color: #aeb9d0;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+/* Подписи в заказе */
+.summaryRow span {
+  color: #98a5bd;
+  font-size: 12px;
+}
+
+/* Подписи шагов */
+.stepLabel {
+  color: #aebbd6;
+  font-size: 14px;
+}
+
+/* RUN / RUNS под цифрами */
+.quickRuns button span {
+  color: #9ba9c6;
+  font-size: 9px;
+}
+
+/* BEST PRICE */
+.choice em,
+.activeChoice em {
+  font-size: 9px;
+  padding: 5px 7px;
+}
+
+/* GOLD рядом с ценой */
+.total strong small {
+  font-family: var(--font-sora), sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: #e8c477;
+  letter-spacing: 0.06em;
+}
+
+/* Пояснение под кнопкой заказа */
+.note {
+  color: #98a5bd;
+  font-size: 11px;
 }
