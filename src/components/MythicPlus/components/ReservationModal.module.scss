@@ -833,3 +833,23 @@
 .formGrid {
   overflow: visible;
 }
+
+// ========================================
+// SUBMITTING STATE
+// ========================================
+
+.formGrid {
+  input:disabled,
+  textarea:disabled,
+  select:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+
+.scheduleButton:disabled,
+.scheduleActive:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}

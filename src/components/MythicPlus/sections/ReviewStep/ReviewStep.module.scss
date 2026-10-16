@@ -2,187 +2,689 @@
 @use "../../../../styles/variables" as *;
 
 // ========================================
-// NIKOBOOST — REVIEW STEP
-// ========================================
-
-// ========================================
-// REVIEW CONTAINER
+// NIKOBOOST — PREMIUM REVIEW STEP
 // ========================================
 
 .reviewStep {
   display: flex;
   flex-direction: column;
   gap: 24px;
+  min-width: 0;
 }
 
 // ========================================
-// REVIEW HEADER
+// HEADER
 // ========================================
 
 .reviewHeader {
-  > span {
-    color: $season-light;
-    font-size: 9px;
+  h3 {
+    margin: 10px 0 8px;
+
+    color: $text-primary;
+    font-size: clamp(25px, 3vw, 32px);
     font-weight: 750;
-    letter-spacing: 0.11em;
+    letter-spacing: -0.045em;
+    line-height: 1.2;
   }
 
-  h3 {
+  p {
+    max-width: 480px;
+    margin: 0;
+
+    color: $text-muted;
+    font-size: 12px;
+    line-height: 1.75;
+  }
+}
+
+.reviewEyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  color: $season-light;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+}
+
+.statusDot {
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+  background: $season-light;
+
+  box-shadow: 0 0 12px rgba(91, 215, 154, 0.4);
+}
+
+// ========================================
+// OVERVIEW CARD
+// ========================================
+
+.overviewCard {
+  overflow: hidden;
+
+  border: 1px solid rgba(142, 165, 255, 0.25);
+  border-radius: 16px;
+
+  background:
+    radial-gradient(
+      ellipse at 95% 0%,
+      rgba(95, 124, 255, 0.14),
+      transparent 65%
+    ),
+    linear-gradient(
+      135deg,
+      #151d30,
+      #0c111b
+    );
+}
+
+.overviewTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+
+  padding: 25px 24px;
+}
+
+.overviewHeading {
+  min-width: 0;
+
+  > span {
+    color: #95a9e9;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.13em;
+  }
+
+  h4 {
     margin: 10px 0 7px;
-    color: $text-primary;
-    font-size: 30px;
-    font-weight: 680;
-    letter-spacing: -0.035em;
+
+    color: #fff;
+    font-size: clamp(25px, 3vw, 34px);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+
+    span {
+      color: #a5b9ff;
+    }
   }
 
   p {
     margin: 0;
-    color: $text-muted;
+
+    color: #9caac3;
     font-size: 12px;
-    line-height: 1.6;
+  }
+}
+
+.overviewEmblem {
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #c5d1ff;
+
+  border: 1px solid rgba(142, 165, 255, 0.32);
+  border-radius: 18px;
+
+  background: linear-gradient(
+    145deg,
+    rgba(95, 124, 255, 0.25),
+    rgba(95, 124, 255, 0.04)
+  );
+
+  box-shadow: 0 0 35px rgba(95, 124, 255, 0.1);
+
+  font-family: var(--font-rajdhani), sans-serif;
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.05em;
+}
+
+// ========================================
+// OVERVIEW STATS
+// ========================================
+
+.overviewStats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  border-top: 1px solid rgba(142, 165, 255, 0.13);
+
+  background: rgba(0, 0, 0, 0.16);
+
+  > div {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+
+    min-width: 0;
+    padding: 17px 20px;
+
+    &:not(:last-child) {
+      border-right: 1px solid rgba(142, 165, 255, 0.12);
+    }
+
+    span {
+      color: #8290ad;
+      font-size: 9px;
+      font-weight: 750;
+      letter-spacing: 0.08em;
+    }
+
+    strong {
+      color: #eff3ff;
+      font-size: 17px;
+      font-weight: 750;
+    }
   }
 }
 
 // ========================================
-// REVIEW GRID
+// REVIEW SECTIONS
+// ========================================
+
+.reviewSection {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  min-width: 0;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  > div {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    min-width: 0;
+  }
+
+  h4 {
+    margin: 0;
+
+    color: $text-primary;
+    font-size: 15px;
+    font-weight: 750;
+  }
+}
+
+.sectionNumber {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+
+  color: #a5b9ff;
+
+  border: 1px solid rgba(142, 165, 255, 0.18);
+  border-radius: 9px;
+
+  background: rgba(95, 124, 255, 0.08);
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.sectionStatus {
+  flex-shrink: 0;
+
+  color: $season-light;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+}
+
+// ========================================
+// CHARACTER GRID
 // ========================================
 
 .reviewGrid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
 }
 
-// ========================================
-// REVIEW ITEM
-// ========================================
-
 .reviewItem {
-  min-height: 72px;
-
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 6px;
+  align-items: center;
+  gap: 13px;
 
-  padding: 13px 15px;
+  min-width: 0;
+  min-height: 76px;
+  padding: 15px;
+
   border: 1px solid $border;
-  border-radius: 11px;
-  background: rgba(255, 255, 255, 0.016);
+  border-radius: 12px;
 
-  span {
-    color: $text-muted;
-    font-size: 9px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-  }
+  background: rgba(255, 255, 255, 0.018);
 
-  strong {
-    color: $text-primary;
-    font-size: 12px;
-    font-weight: 620;
+  transition:
+    border-color 180ms ease,
+    background 180ms ease;
+
+  &:hover {
+    border-color: rgba(142, 165, 255, 0.26);
+    background: rgba(95, 124, 255, 0.035);
   }
 }
 
-// ========================================
-// SELECTED DUNGEONS
-// ========================================
+.reviewItemIcon {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
 
-.reviewDungeons {
-  padding: 17px;
-  border: 1px solid $border;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.015);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #a5b9ff;
+
+  border: 1px solid rgba(142, 165, 255, 0.13);
+  border-radius: 10px;
+
+  background: rgba(95, 124, 255, 0.07);
+
+  font-size: 18px;
+}
+
+.reviewItemContent {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
 
   > span {
-    display: block;
-    margin-bottom: 12px;
     color: $text-muted;
     font-size: 9px;
-    font-weight: 750;
-    letter-spacing: 0.1em;
+    font-weight: 650;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
   }
 
   > strong {
     color: $text-primary;
     font-size: 13px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
   }
+}
+
+// ========================================
+// DUNGEONS
+// ========================================
+
+.reviewDungeons {
+  overflow: hidden;
+
+  border: 1px solid $border;
+  border-radius: 13px;
+
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.dungeonRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+
+  min-height: 66px;
+  padding: 13px 17px;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.045);
+  }
+}
+
+.dungeonRowInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
 
   > div {
-    min-height: 31px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
 
+    strong {
+      color: $text-primary;
+      font-size: 12px;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    small {
+      color: $text-muted;
+      font-size: 10px;
+    }
+  }
+}
+
+.dungeonIcon {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #a5b9ff;
+
+  border: 1px solid rgba(142, 165, 255, 0.14);
+  border-radius: 9px;
+
+  background: rgba(95, 124, 255, 0.07);
+
+  font-size: 19px;
+}
+
+.dungeonCount {
+  flex-shrink: 0;
+
+  padding: 7px 11px;
+
+  color: #b6c5ff;
+
+  border: 1px solid rgba(142, 165, 255, 0.2);
+  border-radius: 8px;
+
+  background: rgba(95, 124, 255, 0.08);
+
+  font-size: 12px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.dungeonFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  padding: 14px 17px;
+
+  border-top: 1px solid rgba(142, 165, 255, 0.13);
+
+  background: rgba(95, 124, 255, 0.035);
+
+  span {
+    color: $text-muted;
+    font-size: 11px;
+  }
+
+  strong {
+    color: #eff3ff;
+    font-size: 13px;
+    font-weight: 750;
+  }
+}
+
+// ========================================
+// FINAL TOTAL
+// ========================================
+
+.reviewTotal {
+  padding: 23px;
+
+  border: 1px solid rgba(142, 165, 255, 0.35);
+  border-radius: 16px;
+
+  background:
+    radial-gradient(
+      ellipse at 100% 0%,
+      rgba(95, 124, 255, 0.12),
+      transparent 70%
+    ),
+    linear-gradient(
+      135deg,
+      #161e30,
+      #0d121c
+    );
+
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+}
+
+.totalTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+
+  h4 {
+    margin: 7px 0 0;
+
+    color: #eff3ff;
+    font-size: 16px;
+    font-weight: 750;
+  }
+}
+
+.totalEyebrow {
+  color: #91a6e8;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.discountBadge {
+  flex-shrink: 0;
+
+  padding: 8px 11px;
+
+  color: $season-light;
+
+  border: 1px solid rgba(70, 190, 130, 0.2);
+  border-radius: 8px;
+
+  background: rgba(70, 190, 130, 0.08);
+
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.totalAmount {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  margin-top: 19px;
+
+  strong {
+    color: #fff;
+
+    font-family: var(--font-rajdhani), sans-serif;
+    font-size: clamp(35px, 5vw, 48px);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+  }
+
+  > span {
+    color: $gold;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+  }
+}
+
+.totalDivider {
+  height: 1px;
+  margin: 22px 0 16px;
+
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.totalDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+
+  > div {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 15px;
+    gap: 12px;
 
     span {
-      color: $text-secondary;
+      color: #8995ab;
       font-size: 11px;
     }
 
     strong {
-      color: $brand-light;
+      color: #e1e8fa;
       font-size: 11px;
+      font-weight: 700;
     }
   }
 }
 
 // ========================================
-// REVIEW TOTAL
+// FOOTER
 // ========================================
 
-.reviewTotal {
+.reviewFooter {
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
 
-  padding: 20px;
-
-  border: 1px solid rgba(142, 165, 255, 0.17);
-  border-radius: 13px;
-
-  background: linear-gradient(
-    135deg,
-    rgba(95, 124, 255, 0.08),
-    rgba(95, 124, 255, 0.015)
-  );
-
-  > span {
-    color: $text-muted;
-    font-size: 9px;
-    letter-spacing: 0.1em;
-  }
-
-  strong {
-    color: white;
-    font-size: 28px;
-    letter-spacing: -0.035em;
-
-    small {
-      color: $gold;
-      font-size: 9px;
-      letter-spacing: 0.07em;
-    }
-  }
+  padding: 0 2px;
 }
 
-// ========================================
-// REVIEW HINT
-// ========================================
+.footerIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-.reviewHint {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+
+  color: $season-light;
+  border-radius: 50%;
+
+  background: rgba(70, 190, 130, 0.1);
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.reviewFooter p {
   margin: 0;
+
   color: $text-muted;
-  font-size: 10px;
+  font-size: 11px;
+  line-height: 1.7;
 }
 
 // ========================================
-// RESPONSIVE — MOBILE
+// TABLET
+// ========================================
+
+@media (max-width: 900px) {
+  .reviewStep {
+    gap: 20px;
+  }
+}
+
+// ========================================
+// MOBILE
 // ========================================
 
 @media (max-width: 700px) {
   .reviewGrid {
     grid-template-columns: 1fr;
+  }
+
+  .reviewItem {
+    min-height: 68px;
+  }
+
+  .overviewTop {
+    padding: 20px 17px;
+  }
+
+  .overviewStats > div {
+    padding: 14px 12px;
+  }
+
+  .overviewEmblem {
+    width: 58px;
+    height: 58px;
+    font-size: 25px;
+  }
+
+  .reviewTotal {
+    padding: 19px;
+  }
+}
+
+// ========================================
+// SMALL MOBILE
+// ========================================
+
+@media (max-width: 430px) {
+  .reviewHeader h3 {
+    font-size: 26px;
+  }
+
+  .overviewHeading h4 {
+    font-size: 26px;
+  }
+
+  .overviewStats > div {
+    padding: 13px 9px;
+
+    span {
+      font-size: 8px;
+    }
+
+    strong {
+      font-size: 15px;
+    }
+  }
+
+  .sectionHeader h4 {
+    font-size: 13px;
+  }
+
+  .sectionStatus {
+    font-size: 8px;
+  }
+
+  .totalAmount strong {
+    font-size: 37px;
+  }
+}
+
+// ========================================
+// ACCESSIBILITY
+// ========================================
+
+@media (prefers-reduced-motion: reduce) {
+  .reviewItem {
+    transition: none;
   }
 }

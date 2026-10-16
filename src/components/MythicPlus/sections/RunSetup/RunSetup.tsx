@@ -1,5 +1,7 @@
+
 import {
   AFK_SURCHARGE,
+  getRunsDiscount,
 } from "@/data/mythicPlus";
 
 import type {
@@ -19,215 +21,218 @@ export default function RunSetup({
 }: {
   config: MythicPlusConfig;
 }) {
+  const selectedDiscount = Math.round(
+    config.calculation.discountPercent * 100
+  );
+
+  const hasAllocatedDungeons =
+    config.allocatedSpecificRuns > 0;
+
   return (
     <>
+      {/* =====================================
+          01 — KEY LEVEL
+      ===================================== */}
+
       <OptionSection
         number="01"
         title="Key level"
         value={`+${config.keyLevel}`}
       >
-        <div
-          className={
-            styles.keyGrid
-          }
-        >
-          {config.keyLevels.map(
-            (level) => (
+        <div className={styles.keyGrid}>
+          {config.keyLevels.map((level) => {
+            const active =
+              config.keyLevel === level;
+
+            return (
               <button
                 type="button"
-                key={
-                  level
-                }
+                key={level}
+                aria-pressed={active}
+                aria-label={`Mythic Plus ${level}`}
                 className={
-                  config.keyLevel ===
-                  level
+                  active
                     ? styles.activeOption
                     : styles.option
                 }
                 onClick={() =>
-                  config.setKeyLevel(
-                    level
-                  )
+                  config.setKeyLevel(level)
                 }
               >
                 +{level}
               </button>
-            )
-          )}
+            );
+          })}
         </div>
       </OptionSection>
 
       <Divider />
 
+      {/* =====================================
+          02 — NUMBER OF RUNS
+      ===================================== */}
+
       <OptionSection
         number="02"
         title="Number of runs"
         value={`${config.runs} ${
-          config.runs === 1
-            ? "run"
-            : "runs"
+          config.runs === 1 ? "run" : "runs"
         }`}
       >
-        <div
-          className={
-            styles.runControls
-          }
-        >
-
-          <div
-            className={
-              styles.quickRuns
-            }
-          >
+        <div className={styles.runControls}>
+          <div className={styles.quickRuns}>
             {config.quickRunOptions.map(
               (amount) => {
                 const unavailable =
                   amount <
                   config.allocatedSpecificRuns;
 
+                const active =
+                  config.runs === amount;
+
+                const discountPercent =
+                  Math.round(
+                    getRunsDiscount(amount) * 100
+                  );
+
                 return (
                   <button
                     type="button"
-                    key={
-                      amount
-                    }
-                    disabled={
-                      unavailable
-                    }
+                    key={amount}
+                    disabled={unavailable}
+                    aria-pressed={active}
+                    aria-label={`${amount} ${
+                      amount === 1
+                        ? "run"
+                        : "runs"
+                    }${
+                      discountPercent > 0
+                        ? `, save ${discountPercent} percent`
+                        : ""
+                    }`}
                     className={
-                      config.runs ===
-                      amount
+                      active
                         ? styles.activeOption
                         : styles.option
                     }
                     onClick={() =>
-                      config.setRunCount(
-                        amount
-                      )
+                      config.setRunCount(amount)
                     }
                   >
-                    {amount}
+                    <strong>{amount}</strong>
 
-                    <span>
-                      {amount ===
-                      1
+                    <span className={styles.runCaption}>
+                      {amount === 1
                         ? "RUN"
                         : "RUNS"}
                     </span>
+
+                    {discountPercent > 0 && (
+                      <span
+                        className={styles.quickDiscount}
+                      >
+                        SAVE {discountPercent}%
+                      </span>
+                    )}
                   </button>
                 );
               }
             )}
           </div>
 
-          <div
-            className={
-              styles.counter
-            }
-          >
+          <div className={styles.counter}>
             <button
               type="button"
+              aria-label="Decrease number of runs"
               disabled={
-                config.runs <=
-                  1 ||
+                config.runs <= 1 ||
                 config.runs <=
                   config.allocatedSpecificRuns
               }
-              onClick={
-                config.decreaseRuns
-              }
+              onClick={config.decreaseRuns}
             >
               −
             </button>
 
-            <strong>
-              {
-                config.runs
-              }
+            <strong aria-live="polite">
+              {config.runs}
             </strong>
 
             <button
               type="button"
-              disabled={
-                config.runs >=
-                50
-              }
-              onClick={
-                config.increaseRuns
-              }
+              aria-label="Increase number of runs"
+              disabled={config.runs >= 50}
+              onClick={config.increaseRuns}
             >
               +
             </button>
           </div>
-
         </div>
 
-        {config.calculation
-          .discountPercent >
-          0 && (
+        {selectedDiscount > 0 && (
           <div
-            className={
-              styles.discountBadge
-            }
+            className={styles.discountBadge}
           >
-            SAVE{" "}
-            {Math.round(
-              config.calculation
-                .discountPercent *
-                100
-            )}
-            % WITH THIS PACKAGE
+            SAVE {selectedDiscount}% WITH THIS
+            PACKAGE
           </div>
+        )}
+
+        {hasAllocatedDungeons && (
+          <p className={styles.runsHint}>
+            You have already selected{" "}
+            <strong>
+              {config.allocatedSpecificRuns}
+            </strong>{" "}
+            specific{" "}
+            {config.allocatedSpecificRuns === 1
+              ? "run"
+              : "runs"}
+            . To select fewer runs, first
+            adjust your dungeon selection.
+          </p>
         )}
       </OptionSection>
 
       <Divider />
 
+      {/* =====================================
+          03 — PARTICIPATION
+      ===================================== */}
+
       <OptionSection
         number="03"
         title="Participation"
         value={
-          config.participation ===
-          "play"
+          config.participation === "play"
             ? "I Play"
             : "AFK / Minimal"
         }
       >
-        <div
-          className={
-            styles.twoCards
-          }
-        >
+        <div className={styles.twoCards}>
           <ChoiceCard
             active={
-              config.participation ===
-              "play"
+              config.participation === "play"
             }
             title="I Play"
             description="Play normally together with the boosting team."
-            badge="BEST PRICE"
+            badge="PLAY WITH TEAM"
             onClick={() =>
-              config.handleParticipation(
-                "play"
-              )
+              config.handleParticipation("play")
             }
           />
 
           <ChoiceCard
             active={
-              config.participation ===
-              "afk"
+              config.participation === "afk"
             }
             title="AFK / Minimal"
             description="Minimal participation. Some mechanics may still require movement."
             price={`+${Math.round(
-              AFK_SURCHARGE *
-                100
+              AFK_SURCHARGE * 100
             )}%`}
             onClick={() =>
-              config.handleParticipation(
-                "afk"
-              )
+              config.handleParticipation("afk")
             }
           />
         </div>

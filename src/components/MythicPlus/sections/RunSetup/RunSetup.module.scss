@@ -234,3 +234,187 @@
     grid-template-columns: repeat(3, 1fr);
   }
 }
+
+
+// ========================================
+// NIKOBOOST — RUN SETUP UX UPGRADE
+// ========================================
+
+// KEY & RUN BUTTON INTERACTIONS
+
+.option,
+.activeOption {
+  &:focus-visible {
+    outline: 2px solid rgba(142, 165, 255, 0.9);
+    outline-offset: 3px;
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+}
+
+// ========================================
+// QUICK RUN OPTIONS
+// ========================================
+
+.quickRuns {
+  button {
+    position: relative;
+    min-width: 0;
+    min-height: 76px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+
+    padding: 9px 6px;
+
+    > strong {
+      color: inherit;
+      font-family: var(--font-rajdhani), sans-serif;
+      font-size: 21px;
+      font-weight: 750;
+      line-height: 1;
+    }
+
+    .runCaption {
+      color: #9ba9c6;
+      font-family: var(--font-sora), sans-serif;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.09em;
+    }
+
+    .quickDiscount {
+      margin-top: 3px;
+      padding: 3px 6px;
+
+      color: $season-light;
+      border: 1px solid rgba(120, 184, 135, 0.2);
+      border-radius: 5px;
+
+      background: rgba(120, 184, 135, 0.075);
+
+      font-family: var(--font-sora), sans-serif;
+      font-size: 9px;
+      font-weight: 750;
+      letter-spacing: 0.02em;
+
+      white-space: nowrap;
+    }
+  }
+}
+
+// ========================================
+// SELECTED PACKAGE DISCOUNT
+// ========================================
+
+.discountBadge {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 14px;
+
+  animation: discountAppear 260ms ease both;
+}
+
+@keyframes discountAppear {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ========================================
+// RUN ALLOCATION HINT
+// ========================================
+
+.runsHint {
+  margin: 13px 0 0;
+  padding: 12px 14px;
+
+  border: 1px solid rgba(142, 165, 255, 0.15);
+  border-radius: 9px;
+
+  background: rgba(95, 124, 255, 0.045);
+
+  color: $text-secondary;
+  font-family: var(--font-sora), sans-serif;
+  font-size: 11px;
+  line-height: 1.7;
+
+  strong {
+    color: $brand-light;
+    font-weight: 700;
+  }
+}
+
+// ========================================
+// COUNTER
+// ========================================
+
+.counter {
+  button {
+    &:focus-visible {
+      outline: 2px solid rgba(142, 165, 255, 0.8);
+      outline-offset: -3px;
+    }
+  }
+
+  strong {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+// ========================================
+// RESPONSIVE
+// ========================================
+
+@media (max-width: 700px) {
+  .quickRuns {
+    button {
+      min-height: 74px;
+    }
+  }
+
+  .counter {
+    min-width: 0;
+    grid-template-columns: 54px 1fr 54px;
+  }
+}
+
+@media (max-width: 360px) {
+  .quickRuns {
+    gap: 6px;
+
+    button {
+      padding: 8px 3px;
+
+      > strong {
+        font-size: 19px;
+      }
+
+      .quickDiscount {
+        padding: 3px 4px;
+        font-size: 8px;
+      }
+    }
+  }
+}
+
+// ========================================
+// ACCESSIBILITY
+// ========================================
+
+@media (prefers-reduced-motion: reduce) {
+  .discountBadge {
+    animation: none;
+  }
+}

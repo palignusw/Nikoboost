@@ -1,6 +1,9 @@
+
 "use client";
 
 import {
+  useEffect,
+  useRef,
   useState,
 } from "react";
 
@@ -21,268 +24,211 @@ import OrderSummary from "./sections/OrderSummary/OrderSummary";
 import ReviewStep from "./sections/ReviewStep/ReviewStep";
 
 export default function MythicPlus() {
-  const config =
-    useMythicPlusConfig();
+  const config = useMythicPlusConfig();
 
-  const [
-    currentStep,
-    setCurrentStep,
-  ] =
-    useState(1);
+  const configuratorRef = useRef<HTMLDivElement>(null);
 
-  const [
-    reservationOpen,
-    setReservationOpen,
-  ] =
-    useState(false);
+  const [currentStep, setCurrentStep] = useState(1);
+  const [reservationOpen, setReservationOpen] = useState(false);
+  const [showMobileBar, setShowMobileBar] = useState(false);
+
+  // Show the mobile price bar only while
+  // the configurator is visible.
+  useEffect(() => {
+    const element = configuratorRef.current;
+
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setShowMobileBar(entry.isIntersecting);
+      },
+      {
+        threshold: 0,
+      }
+    );
+
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, []);
 
   function scrollToConfigurator() {
     setTimeout(() => {
       document
-        .getElementById(
-          "mythic"
-        )
+        .getElementById("mythic-steps")
         ?.scrollIntoView({
-          behavior:
-            "smooth",
-
-          block:
-            "start",
+          behavior: "smooth",
+          block: "start",
         });
     }, 0);
   }
 
   function nextStep() {
-    setCurrentStep(
-      (step) =>
-        Math.min(
-          4,
-          step + 1
-        )
+    setCurrentStep((step) =>
+      Math.min(4, step + 1)
     );
 
     scrollToConfigurator();
   }
 
   function previousStep() {
-    setCurrentStep(
-      (step) =>
-        Math.max(
-          1,
-          step - 1
-        )
+    setCurrentStep((step) =>
+      Math.max(1, step - 1)
     );
 
     scrollToConfigurator();
   }
 
   function openReservation() {
-    setReservationOpen(
-      true
-    );
+    setReservationOpen(true);
   }
 
   return (
     <section
       id="mythic"
-      className={
-        styles.section
-      }
+      className={styles.section}
     >
       <div className="container">
-
-        <header
-          className={
-            styles.heading
-          }
-        >
+        <header className={styles.heading}>
           <div>
-            <span
-              className={
-                styles.eyebrow
-              }
-            >
-              MYTHIC+
-              CONFIGURATOR
+            <span className={styles.eyebrow}>
+              MYTHIC+ CONFIGURATOR
             </span>
 
             <h2>
               Build your
-              <span>
-                {" "}
-                perfect run.
-              </span>
+              <span> perfect run.</span>
             </h2>
           </div>
 
           <p>
-            Configure exactly
-            what you need.
-            Your price updates
-            instantly.
+            Configure exactly what you need.
+            Your price updates instantly.
           </p>
         </header>
 
-        <Stepper
-          currentStep={
-            currentStep
-          }
-          setCurrentStep={(
-            step
-          ) => {
-            setCurrentStep(
-              step
-            );
-
-            scrollToConfigurator();
-          }}
-        />
-
         <div
-          className={
-            styles.layout
-          }
+          id="mythic-steps"
+          className={styles.stepperAnchor}
         >
+          <Stepper
+            currentStep={currentStep}
+            setCurrentStep={(step) => {
+              setCurrentStep(step);
+              scrollToConfigurator();
+            }}
+          />
+        </div>
+
+        <div className={styles.layout}>
           <div
-            className={
-              styles.configurator
-            }
+            ref={configuratorRef}
+            className={styles.configurator}
           >
-            <div
-              className={
-                styles.stepContent
-              }
-            >
-              {currentStep ===
-                1 && (
-                  <RunSetup
-                    config={
-                      config
-                    }
-                  />
+            <div className={styles.stepContent}>
+              <div
+                key={currentStep}
+                className={styles.stepPanel}
+              >
+                {currentStep === 1 && (
+                  <RunSetup config={config} />
                 )}
 
-              {currentStep ===
-                2 && (
-                  <CharacterSetup
-                    config={
-                      config
-                    }
-                  />
+                {currentStep === 2 && (
+                  <CharacterSetup config={config} />
                 )}
 
-              {currentStep ===
-                3 && (
+                {currentStep === 3 && (
                   <>
-                    <DungeonSetup
-                      config={
-                        config
-                      }
-                    />
+                    <DungeonSetup config={config} />
 
                     <div
-                      className={
-                        styles.stepDivider
-                      }
+                      className={styles.stepDivider}
                     />
 
-                    <LootSetup
-                      config={
-                        config
-                      }
-                    />
+                    <LootSetup config={config} />
                   </>
                 )}
 
-              {currentStep ===
-                4 && (
-                  <ReviewStep
-                    config={
-                      config
-                    }
-                  />
+                {currentStep === 4 && (
+                  <ReviewStep config={config} />
                 )}
+              </div>
             </div>
 
-            <div
-              className={
-                styles.stepActions
-              }
-            >
-              {currentStep >
-                1 && (
-                  <button
-                    type="button"
-                    className={
-                      styles.backButton
-                    }
-                    onClick={
-                      previousStep
-                    }
-                  >
-                    ← Back
-                  </button>
-                )}
-
-              {currentStep <
-                4 ? (
+            <div className={styles.stepActions}>
+              {currentStep > 1 && (
                 <button
                   type="button"
-                  className={
-                    styles.continueButton
-                  }
-                  onClick={
-                    nextStep
-                  }
+                  className={styles.backButton}
+                  onClick={previousStep}
+                >
+                  ← Back
+                </button>
+              )}
+
+              {currentStep < 4 ? (
+                <button
+                  type="button"
+                  className={styles.continueButton}
+                  onClick={nextStep}
                 >
                   Continue
-
-                  <span>
-                    →
-                  </span>
+                  <span>→</span>
                 </button>
               ) : (
                 <button
                   type="button"
-                  className={
-                    styles.continueButton
-                  }
-                  onClick={
-                    openReservation
-                  }
+                  className={styles.continueButton}
+                  onClick={openReservation}
                 >
                   Reserve run
-
-                  <span>
-                    →
-                  </span>
+                  <span>→</span>
                 </button>
               )}
             </div>
           </div>
 
           <OrderSummary
-            config={
-              config
-            }
-            onReserve={
-              openReservation
-            }
+            config={config}
+            onReserve={openReservation}
           />
         </div>
       </div>
 
+      {/* Mobile floating price bar */}
+      {showMobileBar && !reservationOpen && (
+        <div className={styles.mobilePriceBar}>
+          <div className={styles.mobilePriceInfo}>
+            <span className={styles.mobilePriceLabel}>
+              TOTAL PRICE
+            </span>
+
+            <strong className={styles.mobilePriceValue}>
+              {config.calculation.total.toLocaleString(
+                "en-US"
+              )}
+              <small> GOLD</small>
+            </strong>
+          </div>
+
+          <button
+            type="button"
+            className={styles.mobileReserveButton}
+            onClick={openReservation}
+          >
+            Reserve run
+            <span aria-hidden="true">→</span>
+          </button>
+        </div>
+      )}
+
       <ReservationModal
-        open={
-          reservationOpen
-        }
-        config={
-          config
-        }
+        open={reservationOpen}
+        config={config}
         onClose={() =>
-          setReservationOpen(
-            false
-          )
+          setReservationOpen(false)
         }
       />
     </section>

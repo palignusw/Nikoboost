@@ -75,154 +75,190 @@ export default function DungeonSetup({
         />
       </div>
 
-      {config.specificDungeon && (
-        <div className={styles.dungeonAllocator}>
-          <div className={styles.allocationStatus}>
-            <div>
-              <span>RUNS ASSIGNED</span>
-              <strong>
-                {config.allocatedSpecificRuns}
-                <small>/{config.runs}</small>
-              </strong>
-            </div>
+    
+{config.specificDungeon && (
+  <div className={styles.dungeonAllocator}>
 
-            <div>
-              {config.remainingRuns > 0 ? (
-                <>
-                  <strong>
-                    {config.remainingRuns}
-                  </strong>
-                  <span>
-                    {config.remainingRuns === 1
-                      ? "run remains Any Dungeon"
-                      : "runs remain Any Dungeon"}
-                  </span>
-                </>
-              ) : (
-                <span
-                  className={styles.allAssigned}
-                >
-                  ✓ ALL RUNS ASSIGNED
-                </span>
-              )}
-            </div>
-          </div>
+    {/* INFORMATION BLOCK */}
+    <div className={styles.allocationIntro}>
+      <div className={styles.allocationIntroIcon}>
+        ✦
+      </div>
 
+      <div>
+        <strong>Customize your dungeon runs</strong>
+
+        <p>
+          Assign runs to your preferred dungeons.
+          Any unassigned runs will remain
+          <span> Any dungeon</span> at the standard price.
+        </p>
+      </div>
+    </div>
+
+    {/* ALLOCATION STATUS */}
+    <div className={styles.allocationStatus}>
+      <div>
+        <span>RUNS ASSIGNED</span>
+
+        <strong>
+          {config.allocatedSpecificRuns}
+          <small>/{config.runs}</small>
+        </strong>
+      </div>
+
+      <div>
+        {config.remainingRuns > 0 ? (
+          <>
+            <strong>
+              {config.remainingRuns}
+            </strong>
+
+            <span>
+              {config.remainingRuns === 1
+                ? "run remains Any Dungeon"
+                : "runs remain Any Dungeon"}
+            </span>
+          </>
+        ) : (
+          <span className={styles.allAssigned}>
+            ✓ ALL RUNS ASSIGNED
+          </span>
+        )}
+      </div>
+    </div>
+
+    {/* ALLOCATION BREAKDOWN */}
+    <div className={styles.allocationBreakdown}>
+      <div className={styles.breakdownItem}>
+        <span
+          className={styles.breakdownDotSpecific}
+        />
+
+        <span>Specific dungeons</span>
+
+        <strong>
+          {config.allocatedSpecificRuns}
+        </strong>
+      </div>
+
+      <div className={styles.breakdownItem}>
+        <span
+          className={styles.breakdownDotAny}
+        />
+
+        <span>Any dungeon</span>
+
+        <strong>
+          {config.remainingRuns}
+        </strong>
+      </div>
+    </div>
+
+    {/* PROGRESS BAR */}
+    <div
+      className={styles.dungeonProgress}
+      role="progressbar"
+      aria-label="Specific dungeon runs assigned"
+      aria-valuenow={config.allocatedSpecificRuns}
+      aria-valuemin={0}
+      aria-valuemax={config.runs}
+    >
+      <div
+        className={styles.dungeonProgressFill}
+        style={{ width: `${progress}%` }}
+      />
+    </div>
+
+    {/* DUNGEON ALLOCATION GRID */}
+    <div className={styles.dungeonAllocationGrid}>
+      {dungeons.map((dungeonName) => {
+        const amount =
+          config.dungeonCounts[dungeonName];
+
+        const maxReached =
+          config.allocatedSpecificRuns >=
+          config.runs;
+
+        const image =
+          dungeonImages[dungeonName];
+
+        return (
           <div
-            className={styles.dungeonProgress}
-            role="progressbar"
-            aria-label="Specific dungeon runs assigned"
-            aria-valuenow={
-              config.allocatedSpecificRuns
+            key={dungeonName}
+            className={
+              amount > 0
+                ? styles.activeDungeonAllocation
+                : styles.dungeonAllocation
             }
-            aria-valuemin={0}
-            aria-valuemax={config.runs}
           >
-            <div
-              className={styles.dungeonProgressFill}
-              style={{ width: `${progress}%` }}
-            />
+            {/* DUNGEON IMAGE AND NAME */}
+            <div className={styles.dungeonVisualInfo}>
+              <div className={styles.dungeonThumbnail}>
+                <img
+                  src={`/images/dungeons/${image}.jpg`}
+                  alt=""
+                  loading="lazy"
+                  onError={(event) => {
+                    event.currentTarget.style.display =
+                      "none";
+                  }}
+                />
+              </div>
+
+              <div className={styles.dungeonName}>
+                <span>{dungeonName}</span>
+
+                {amount > 0 && (
+                  <small>
+                    {amount}{" "}
+                    {amount === 1
+                      ? "run"
+                      : "runs"}
+                  </small>
+                )}
+              </div>
+            </div>
+
+            {/* DUNGEON RUN COUNTER */}
+            <div className={styles.dungeonCounter}>
+              <button
+                type="button"
+                aria-label={`Remove one ${dungeonName} run`}
+                disabled={amount === 0}
+                onClick={() =>
+                  config.changeDungeonAmount(
+                    dungeonName,
+                    -1
+                  )
+                }
+              >
+                −
+              </button>
+
+              <strong>{amount}</strong>
+
+              <button
+                type="button"
+                aria-label={`Add one ${dungeonName} run`}
+                disabled={maxReached}
+                onClick={() =>
+                  config.changeDungeonAmount(
+                    dungeonName,
+                    1
+                  )
+                }
+              >
+                +
+              </button>
+            </div>
           </div>
+        );
+      })}
+    </div>
+  </div>
+)}
 
-          <div
-            className={styles.dungeonAllocationGrid}
-          >
-            {dungeons.map((dungeonName) => {
-              const amount =
-                config.dungeonCounts[dungeonName];
-
-              const maxReached =
-                config.allocatedSpecificRuns >=
-                config.runs;
-
-              const image =
-                dungeonImages[dungeonName];
-
-              return (
-                <div
-                  key={dungeonName}
-                  className={
-                    amount > 0
-                      ? styles.activeDungeonAllocation
-                      : styles.dungeonAllocation
-                  }
-                >
-                  <div
-                    className={
-                      styles.dungeonVisualInfo
-                    }
-                  >
-                    <div
-                      className={
-                        styles.dungeonThumbnail
-                      }
-                    >
-                      <img
-                        src={`/images/dungeons/${image}.jpg`}
-                        alt=""
-                        loading="lazy"
-                        onError={(event) => {
-                          event.currentTarget.style.display =
-                            "none";
-                        }}
-                      />
-                    </div>
-
-                    <div className={styles.dungeonName}>
-                      <span>{dungeonName}</span>
-
-                      {amount > 0 && (
-                        <small>
-                          {amount}{" "}
-                          {amount === 1
-                            ? "run"
-                            : "runs"}
-                        </small>
-                      )}
-                    </div>
-                  </div>
-
-                  <div
-                    className={
-                      styles.dungeonCounter
-                    }
-                  >
-                    <button
-                      type="button"
-                      aria-label={`Remove one ${dungeonName} run`}
-                      disabled={amount === 0}
-                      onClick={() =>
-                        config.changeDungeonAmount(
-                          dungeonName,
-                          -1
-                        )
-                      }
-                    >
-                      −
-                    </button>
-
-                    <strong>{amount}</strong>
-
-                    <button
-                      type="button"
-                      aria-label={`Add one ${dungeonName} run`}
-                      disabled={maxReached}
-                      onClick={() =>
-                        config.changeDungeonAmount(
-                          dungeonName,
-                          1
-                        )
-                      }
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
     </OptionSection>
   );
 }

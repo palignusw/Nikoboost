@@ -249,6 +249,18 @@ export default function ReservationModal({
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [timezone, setTimezone] = useState("Europe/Berlin");
+  useEffect(() => {
+    try {
+      const detectedTimezone =
+        Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+      if (detectedTimezone) {
+        setTimezone(detectedTimezone);
+      }
+    } catch {
+      // Keep the default timezone.
+    }
+  }, []);
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -655,6 +667,7 @@ export default function ReservationModal({
                 <label>
                   <span>BattleTag *</span>
                   <input
+                  disabled={submitting}
                     required
                     autoComplete="off"
                     maxLength={80}
@@ -672,6 +685,7 @@ export default function ReservationModal({
                 <label>
                   <span>Discord *</span>
                   <input
+                  disabled={submitting}
                     required
                     maxLength={80}
                     value={form.discord}
@@ -688,6 +702,7 @@ export default function ReservationModal({
                 <label>
                   <span>Character Name *</span>
                   <input
+                  disabled={submitting}
                     required
                     maxLength={80}
                     value={form.character}
@@ -704,6 +719,7 @@ export default function ReservationModal({
                 <label>
                   <span>Realm *</span>
                   <input
+                  disabled={submitting}
                     required
                     maxLength={80}
                     value={form.realm}
@@ -730,6 +746,7 @@ export default function ReservationModal({
 
               <div className={styles.scheduleOptions}>
                 <button
+                  disabled={submitting}
                   type="button"
                   className={
                     scheduleMode === "exact"
@@ -743,6 +760,7 @@ export default function ReservationModal({
                 </button>
 
                 <button
+                disabled={submitting}
                   type="button"
                   className={
                     scheduleMode === "flexible"
@@ -751,7 +769,10 @@ export default function ReservationModal({
                   }
                   aria-pressed={scheduleMode === "flexible"}
                   onClick={() => setScheduleMode("flexible")}
+                  
+
                 >
+                  
                   Flexible time
                 </button>
               </div>
@@ -788,12 +809,19 @@ export default function ReservationModal({
                 <label className={styles.full}>
                   <span>Your Time Zone *</span>
                   <select
+                  disabled={submitting}
                     required
                     value={timezone}
                     onChange={(event) =>
                       setTimezone(event.target.value)
                     }
                   >
+                    {!timezones.some((zone) => zone.value === timezone) && (
+                      <option value={timezone}>
+                        Your local time zone ({timezone})
+                      </option>
+                    )}
+
                     {timezones.map((zone) => (
                       <option
                         key={zone.value}
@@ -822,6 +850,7 @@ export default function ReservationModal({
                 <label className={styles.full}>
                   <span>Comment (optional)</span>
                   <textarea
+                  disabled={submitting}
                     rows={3}
                     maxLength={700}
                     value={form.comment}

@@ -380,3 +380,184 @@
     transition: none;
   }
 }
+
+
+// ========================================
+// NIKOBOOST — CHARACTER UX UPGRADE
+// ========================================
+
+// SELECTED CHARACTER INFORMATION
+
+.selectedClassInfo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  padding: 15px 17px;
+
+  border: 1px solid rgba(142, 165, 255, 0.16);
+  border-radius: 12px;
+
+  background: linear-gradient(
+    135deg,
+    rgba(95, 124, 255, 0.065),
+    rgba(95, 124, 255, 0.015)
+  );
+}
+
+.selectedClassText {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  > span {
+    color: #8490a8;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+  }
+
+  > strong {
+    color: #eff3ff;
+
+    font-family: var(--font-rajdhani), sans-serif;
+    font-size: 19px;
+    font-weight: 700;
+  }
+}
+
+.armorBadge {
+  padding: 8px 12px;
+
+  border: 1px solid rgba(142, 165, 255, 0.22);
+  border-radius: 8px;
+
+  background: rgba(95, 124, 255, 0.09);
+
+  color: #b6c5ff;
+
+  font-size: 11px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+// ========================================
+// ROLE CARDS
+// ========================================
+
+.roleButtonGrid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(min(100%, 135px), 1fr)
+  );
+  gap: 10px;
+}
+
+.roleCard {
+  position: relative;
+
+  min-width: 0;
+  min-height: 72px;
+
+  justify-content: flex-start;
+  gap: 12px;
+
+  padding: 13px 14px;
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.roleCardActive {
+  border-color: rgba(142, 165, 255, 0.65);
+
+  background: linear-gradient(
+    135deg,
+    rgba(95, 124, 255, 0.19),
+    rgba(64, 88, 199, 0.07)
+  );
+
+  box-shadow:
+    inset 0 0 0 1px rgba(142, 165, 255, 0.06),
+    0 0 20px rgba(95, 124, 255, 0.06);
+}
+
+.roleCardIcon {
+  flex-shrink: 0;
+  font-size: 22px;
+}
+
+.roleCardContent {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+
+  min-width: 0;
+
+  > strong {
+    color: #eff3ff;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  > small {
+    font-size: 9px;
+    font-weight: 750;
+    letter-spacing: 0.04em;
+  }
+}
+
+.roleExtra {
+  color: #e8c477;
+}
+
+.roleFree {
+  color: $season-light;
+}
+
+.roleCheck {
+  position: absolute;
+  top: 7px;
+  right: 9px;
+
+  color: #a5b9ff;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+// ========================================
+// MOBILE
+// ========================================
+
+@media (max-width: 480px) {
+  .selectedClassInfo {
+    padding: 13px;
+  }
+
+  .roleButtonGrid {
+    grid-template-columns: repeat(
+      auto-fit,
+      minmax(min(100%, 120px), 1fr)
+    );
+    gap: 8px;
+  }
+
+  .roleCard {
+    min-height: 70px;
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .roleCardIcon {
+    font-size: 19px;
+  }
+
+  .roleCardContent > strong {
+    font-size: 12px;
+  }
+}

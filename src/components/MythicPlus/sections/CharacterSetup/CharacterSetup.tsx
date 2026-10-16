@@ -108,9 +108,17 @@ export default function CharacterSetup({
             })}
           </div>
 
-          <small className={styles.armorInfo}>
-            Armor: {config.armorType}
-          </small>
+   <div className={styles.selectedClassInfo}>
+  <div className={styles.selectedClassText}>
+    <span>SELECTED CHARACTER</span>
+
+    <strong>{config.playerClass}</strong>
+  </div>
+
+  <div className={styles.armorBadge}>
+    {config.armorType} Armor
+  </div>
+</div>
         </div>
 
         <div className={styles.roleSelection}>
@@ -121,40 +129,66 @@ export default function CharacterSetup({
           {config.participation === "play" ? (
             <>
               <div className={styles.roleButtonGrid}>
-                {config.allowedRoles.map((role) => {
-                  const selected =
-                    config.role === role;
+            
+{config.allowedRoles.map((role) => {
+  const selected = config.role === role;
 
-                  const icon =
-                    roleIcons[role.toLowerCase()] ?? "◆";
+  const icon =
+    roleIcons[role.toLowerCase()] ?? "◆";
 
-                  return (
-                    <button
-                      type="button"
-                      key={role}
-                      aria-pressed={selected}
-                      onClick={() =>
-                        config.setRole(role)
-                      }
-                      className={`${styles.roleCard} ${
-                        selected
-                          ? styles.roleCardActive
-                          : ""
-                      }`}
-                    >
-                      <span
-                        className={styles.roleCardIcon}
-                        aria-hidden="true"
-                      >
-                        {icon}
-                      </span>
+  const surcharge =
+    Math.round(roleSurcharges[role] * 100);
 
-                      <span>
-                        {formatRole(role)}
-                      </span>
-                    </button>
-                  );
-                })}
+  return (
+    <button
+      type="button"
+      key={role}
+      aria-pressed={selected}
+      aria-label={`${formatRole(role)}${
+        surcharge > 0
+          ? `, ${surcharge}% extra`
+          : ", no role surcharge"
+      }`}
+      onClick={() => config.setRole(role)}
+      className={`${styles.roleCard} ${
+        selected ? styles.roleCardActive : ""
+      }`}
+    >
+      <span
+        className={styles.roleCardIcon}
+        aria-hidden="true"
+      >
+        {icon}
+      </span>
+
+      <span className={styles.roleCardContent}>
+        <strong>{formatRole(role)}</strong>
+
+        <small
+          className={
+            surcharge > 0
+              ? styles.roleExtra
+              : styles.roleFree
+          }
+        >
+          {surcharge > 0
+            ? `+${surcharge}%`
+            : "NO EXTRA"}
+        </small>
+      </span>
+
+      {selected && (
+        <span
+          className={styles.roleCheck}
+          aria-hidden="true"
+        >
+          ✓
+        </span>
+      )}
+    </button>
+  );
+})}
+
               </div>
 
               {roleSurcharges[config.role] > 0 && (

@@ -1,8 +1,11 @@
+
 "use client";
 
 import {
   useMemo,
   useState,
+  type Dispatch,
+  type SetStateAction,
 } from "react";
 
 import {
@@ -27,267 +30,205 @@ const keyLevels = Array.from(
   (_, index) => index + 2
 );
 
-const quickRunOptions = [
-  1,
-  4,
-  8,
-];
+const quickRunOptions = [1, 4, 8];
 
-const classes =
-  Object.keys(classArmor);
+const classes = Object.keys(classArmor);
 
-function createEmptyDungeonCounts(): Record<
-  DungeonName,
-  number
-> {
+function createEmptyDungeonCounts(): Record<DungeonName, number> {
   return Object.fromEntries(
-    dungeons.map(
-      (dungeon) => [
-        dungeon,
-        0,
-      ]
-    )
-  ) as Record<
-    DungeonName,
-    number
-  >;
+    dungeons.map((dungeon) => [dungeon, 0])
+  ) as Record<DungeonName, number>;
 }
 
-export function formatRole(
-  role: Role
-) {
+export function formatRole(role: Role) {
   if (role === "dps") {
     return "DPS";
   }
 
-  return (
-    role[0].toUpperCase() +
-    role.slice(1)
-  );
+  return role[0].toUpperCase() + role.slice(1);
 }
 
 export function useMythicPlusConfig() {
-  const [
-    keyLevel,
-    setKeyLevel,
-  ] = useState(10);
+  // ========================================
+  // RUN CONFIGURATION
+  // ========================================
 
-  const [
-    runs,
-    setRuns,
-  ] = useState(1);
+  const [keyLevel, setKeyLevel] = useState(10);
 
-  const [
-    participation,
-    setParticipation,
-  ] =
-    useState<Participation>(
-      "play"
-    );
+  const [runs, setRuns] = useState(1);
 
-  const [
-    region,
-    setRegion,
-  ] =
+  const [participation, setParticipation] =
+    useState<Participation>("play");
+
+  const [region, setRegion] =
     useState<Region>("EU");
 
-  const [
-    role,
-    setRole,
-  ] =
-    useState<Role>("dps");
+  // ========================================
+  // CHARACTER CONFIGURATION
+  // ========================================
 
-  const [
-    playerClass,
-    setPlayerClass,
-  ] =
+  const [role, setRole] = useState<Role>("dps");
+
+  const [playerClass, setPlayerClass] =
     useState("Rogue");
 
-  const [
-    specificDungeon,
-    setSpecificDungeon,
-  ] =
+  const armorType = classArmor[playerClass];
+
+  const allowedRoles = classRoles[playerClass];
+
+  // ========================================
+  // DUNGEON CONFIGURATION
+  // ========================================
+
+  const [specificDungeon, setSpecificDungeon] =
     useState(false);
 
-  const [
-    dungeonCounts,
-    setDungeonCounts,
-  ] = useState<
-    Record<
-      DungeonName,
-      number
-    >
-  >(
-    createEmptyDungeonCounts
-  );
-
-  const [
-    traders,
-    setTraders,
-  ] =
-    useState(0);
-
-  const armorType =
-    classArmor[playerClass];
-
-  const allowedRoles =
-    classRoles[playerClass];
-
-  const maxTraders =
-    getMaxTraders(
-      armorType
+  const [dungeonCounts, setDungeonCounts] =
+    useState<Record<DungeonName, number>>(
+      createEmptyDungeonCounts
     );
 
-  const allocatedSpecificRuns =
-    useMemo(() => {
-      return Object.values(
-        dungeonCounts
-      ).reduce(
-        (
-          total,
-          amount
-        ) =>
-          total + amount,
-        0
+  // ========================================
+  // LOOT TRADERS
+  // ========================================
+
+  const [traders, setTradersState] = useState(0);
+
+  const maxTraders = getMaxTraders(armorType);
+
+  // Сохраняем совместимость с React setter.
+  // При этом не позволяем выйти за лимит.
+
+  const setTraders: Dispatch<SetStateAction<number>> = (
+    value
+  ) => {
+    setTradersState((current) => {
+      const requested =
+        typeof value === "function"
+          ? value(current)
+          : value;
+
+      if (!Number.isFinite(requested)) {
+        return current;
+      }
+
+      return Math.max(
+        0,
+        Math.min(maxTraders, Math.trunc(requested))
       );
-    }, [dungeonCounts]);
+    });
+  };
 
-  const remainingRuns =
-    runs -
-    allocatedSpecificRuns;
+  // ========================================
+  // DUNGEON ALLOCATION
+  // ========================================
 
-  const selectedDungeons =
-    useMemo(() => {
-      return dungeons
-        .filter(
-          (dungeon) =>
-            dungeonCounts[
-              dungeon
-            ] > 0
-        )
-        .map(
-          (dungeon) => ({
-            dungeon,
-            count:
-              dungeonCounts[
-                dungeon
-              ],
-          })
-        );
-    }, [dungeonCounts]);
+  const allocatedSpecificRuns = useMemo(() => {
+    return Object.values(dungeonCounts).reduce(
+      (total, amount) => total + amount,
+      0
+    );
+  }, [dungeonCounts]);
 
-  const calculation =
-    useMemo(() => {
-      const singleRun =
-        basePrices[
-          keyLevel
-        ];
+  const remainingRuns = runs - allocatedSpecificRuns;
 
-      const base =
-        singleRun *
-        runs;
+  const selectedDungeons = useMemo(() => {
+    return dungeons
+      .filter((dungeon) => dungeonCounts[dungeon] > 0)
+      .map((dungeon) => ({
+        dungeon,
+        count: dungeonCounts[dungeon],
+      }));
+  }, [dungeonCounts]);
 
-      const afkExtra =
-        participation ===
-        "afk"
-          ? Math.round(
-              base *
-                AFK_SURCHARGE
-            )
-          : 0;
+  // ========================================
+  // PRICE CALCULATION
+  // ========================================
 
-      const roleExtra =
-        participation ===
-        "play"
-          ? Math.round(
-              base *
-                roleSurcharges[
-                  role
-                ]
-            )
-          : 0;
+  const calculation = useMemo(() => {
+    const singleRun = basePrices[keyLevel];
 
-      const specificExtra =
-        Math.round(
-          singleRun *
-            allocatedSpecificRuns *
-            SPECIFIC_DUNGEON_SURCHARGE
-        );
+    const base = singleRun * runs;
 
-      const traderExtra =
-        Math.round(
-          base *
-            traderSurcharges[
-              traders
-            ]
-        );
+    const afkExtra =
+      participation === "afk"
+        ? Math.round(base * AFK_SURCHARGE)
+        : 0;
 
-      const extras =
-        afkExtra +
-        roleExtra +
-        specificExtra +
-        traderExtra;
+    const roleExtra =
+      participation === "play"
+        ? Math.round(base * roleSurcharges[role])
+        : 0;
 
-      const beforeDiscount =
-        base +
-        extras;
+    const specificExtra = Math.round(
+      singleRun *
+        allocatedSpecificRuns *
+        SPECIFIC_DUNGEON_SURCHARGE
+    );
 
-      const discountPercent =
-        getRunsDiscount(
-          runs
-        );
+    const traderExtra = Math.round(
+      base * traderSurcharges[traders]
+    );
 
-      const discount =
-        Math.round(
-          beforeDiscount *
-            discountPercent
-        );
+    const extras =
+      afkExtra +
+      roleExtra +
+      specificExtra +
+      traderExtra;
 
-      const total =
-        beforeDiscount -
-        discount;
+    const beforeDiscount = base + extras;
 
-      return {
-        singleRun,
-        base,
+    const discountPercent = getRunsDiscount(runs);
 
-        afkExtra,
-        roleExtra,
-        specificExtra,
-        traderExtra,
+    const discount = Math.round(
+      beforeDiscount * discountPercent
+    );
 
-        extras,
+    const total = beforeDiscount - discount;
 
-        discount,
-        discountPercent,
+    return {
+      singleRun,
+      base,
 
-        total,
-      };
-    }, [
-      keyLevel,
-      runs,
-      participation,
-      role,
-      allocatedSpecificRuns,
-      traders,
-    ]);
+      afkExtra,
+      roleExtra,
+      specificExtra,
+      traderExtra,
 
-  function setRunCount(
-    amount: number
-  ) {
-    const next =
-      Math.max(
-        1,
-        Math.min(
-          50,
-          amount
-        )
-      );
+      extras,
 
-    if (
-      next <
-      allocatedSpecificRuns
-    ) {
+      discount,
+      discountPercent,
+
+      total,
+    };
+  }, [
+    keyLevel,
+    runs,
+    participation,
+    role,
+    allocatedSpecificRuns,
+    traders,
+  ]);
+
+  // ========================================
+  // RUN COUNT HANDLERS
+  // ========================================
+
+  function setRunCount(amount: number) {
+    if (!Number.isFinite(amount)) {
+      return;
+    }
+
+    const next = Math.max(
+      1,
+      Math.min(50, Math.trunc(amount))
+    );
+
+    // Нельзя уменьшить количество runs
+    // ниже уже распределённых подземелий.
+
+    if (next < allocatedSpecificRuns) {
       return;
     }
 
@@ -295,137 +236,132 @@ export function useMythicPlusConfig() {
   }
 
   function decreaseRuns() {
-    setRunCount(
-      runs - 1
-    );
+    setRunCount(runs - 1);
   }
 
   function increaseRuns() {
-    setRunCount(
-      runs + 1
-    );
+    setRunCount(runs + 1);
   }
 
-  function handleParticipation(
-    value: Participation
-  ) {
-    setParticipation(
-      value
-    );
+  // ========================================
+  // PARTICIPATION HANDLER
+  // ========================================
 
-    if (
-      value === "afk"
-    ) {
+  function handleParticipation(value: Participation) {
+    setParticipation(value);
+
+    if (value === "afk") {
       setRole("dps");
     }
   }
 
-  function handleClassChange(
-    newClass: string
-  ) {
-    setPlayerClass(
-      newClass
+  // ========================================
+  // CLASS CHANGE HANDLER
+  // ========================================
+
+  function handleClassChange(newClass: string) {
+    if (!Object.prototype.hasOwnProperty.call(classArmor, newClass)) {
+      return;
+    }
+
+    const newRoles = classRoles[newClass];
+    const newArmor = classArmor[newClass];
+
+    setPlayerClass(newClass);
+
+    // Если текущая роль недоступна новому классу,
+    // автоматически выбираем допустимую.
+
+    setRole((currentRole) => {
+      if (newRoles.includes(currentRole)) {
+        return currentRole;
+      }
+
+      return newRoles[0];
+    });
+
+    // Корректируем количество Loot Traders
+    // при смене типа брони.
+
+    const newMaxTraders = getMaxTraders(newArmor);
+
+    setTradersState((current) =>
+      Math.min(current, newMaxTraders)
     );
-
-    const newRoles =
-      classRoles[
-        newClass
-      ];
-
-    const newArmor =
-      classArmor[
-        newClass
-      ];
-
-    if (
-      !newRoles.includes(
-        role
-      )
-    ) {
-      setRole(
-        newRoles[0]
-      );
-    }
-
-    const newMaxTraders =
-      getMaxTraders(
-        newArmor
-      );
-
-    if (
-      traders >
-      newMaxTraders
-    ) {
-      setTraders(
-        newMaxTraders
-      );
-    }
   }
 
-  function handleSpecificDungeon(
-    value: boolean
-  ) {
-    setSpecificDungeon(
-      value
-    );
+  // ========================================
+  // SPECIFIC DUNGEON HANDLER
+  // ========================================
+
+  function handleSpecificDungeon(value: boolean) {
+    setSpecificDungeon(value);
 
     if (!value) {
-      setDungeonCounts(
-        createEmptyDungeonCounts()
-      );
+      setDungeonCounts(createEmptyDungeonCounts());
     }
   }
+
+  // ========================================
+  // DUNGEON AMOUNT HANDLER
+  // ========================================
 
   function changeDungeonAmount(
     dungeonName: DungeonName,
     difference: number
   ) {
-    setDungeonCounts(
-      (current) => {
-        const currentAmount =
-          current[
-            dungeonName
-          ];
+    if (!Number.isFinite(difference)) {
+      return;
+    }
 
-        const currentTotal =
-          Object.values(
-            current
-          ).reduce(
-            (
-              total,
-              amount
-            ) =>
-              total +
-              amount,
-            0
-          );
+    const change = Math.trunc(difference);
 
-        if (
-          difference < 0 &&
-          currentAmount <=
-            0
-        ) {
-          return current;
-        }
+    if (change === 0) {
+      return;
+    }
 
-        if (
-          difference > 0 &&
-          currentTotal >=
-            runs
-        ) {
-          return current;
-        }
-
-        return {
-          ...current,
-
-          [dungeonName]:
-            currentAmount +
-            difference,
-        };
+    setDungeonCounts((current) => {
+      if (!Object.prototype.hasOwnProperty.call(current, dungeonName)) {
+        return current;
       }
-    );
+
+      const currentAmount = current[dungeonName];
+
+      const currentTotal = Object.values(current).reduce(
+        (total, amount) => total + amount,
+        0
+      );
+
+      // Сколько максимум можно выделить
+      // именно этому подземелью.
+
+      const maxForDungeon = Math.max(
+        0,
+        runs - (currentTotal - currentAmount)
+      );
+
+      const nextAmount = Math.max(
+        0,
+        Math.min(
+          maxForDungeon,
+          currentAmount + change
+        )
+      );
+
+      if (nextAmount === currentAmount) {
+        return current;
+      }
+
+      return {
+        ...current,
+        [dungeonName]: nextAmount,
+      };
+    });
   }
+
+  // ========================================
+  // PUBLIC CONFIG API
+  // ========================================
 
   return {
     keyLevels,
@@ -473,7 +409,6 @@ export function useMythicPlusConfig() {
   };
 }
 
-export type MythicPlusConfig =
-  ReturnType<
-    typeof useMythicPlusConfig
-  >;
+export type MythicPlusConfig = ReturnType<
+  typeof useMythicPlusConfig
+>;

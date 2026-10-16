@@ -183,3 +183,399 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+
+// ========================================
+// NIKOBOOST — LOOT SETUP UX UPGRADE
+// ========================================
+
+// INTRO
+
+.lootIntro {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+
+  margin-bottom: 17px;
+  padding: 15px;
+
+  border: 1px solid rgba(142, 165, 255, 0.16);
+  border-radius: 12px;
+
+  background: linear-gradient(
+    135deg,
+    rgba(95, 124, 255, 0.085),
+    rgba(95, 124, 255, 0.015)
+  );
+}
+
+.lootIntroIcon {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #b6c5ff;
+  border: 1px solid rgba(142, 165, 255, 0.2);
+  border-radius: 10px;
+
+  background: rgba(95, 124, 255, 0.1);
+
+  font-size: 20px;
+}
+
+.lootIntroText {
+  min-width: 0;
+
+  strong {
+    display: block;
+    margin-bottom: 5px;
+
+    color: #eff3ff;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0;
+
+    color: $text-secondary;
+    font-size: 11px;
+    line-height: 1.7;
+  }
+}
+
+// ========================================
+// TRADER OPTIONS
+// ========================================
+
+.traders {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.trader,
+.activeTrader {
+  position: relative;
+
+  min-width: 0;
+  min-height: 110px;
+  gap: 8px;
+
+  padding: 14px 8px;
+
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease;
+
+  > strong {
+    font-family: var(--font-rajdhani), sans-serif;
+    font-size: 21px;
+    font-weight: 800;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #a5b9ff;
+    outline-offset: 3px;
+  }
+
+  &:hover:not(:disabled) {
+    transform: translateY(-3px);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+}
+
+.trader {
+  &:hover:not(:disabled) {
+    border-color: rgba(142, 165, 255, 0.45);
+    background: rgba(95, 124, 255, 0.06);
+  }
+}
+
+.activeTrader {
+  border-color: rgba(142, 165, 255, 0.65);
+
+  background: linear-gradient(
+    145deg,
+    rgba(95, 124, 255, 0.18),
+    rgba(64, 88, 199, 0.045)
+  );
+
+  box-shadow:
+    inset 0 0 0 1px rgba(142, 165, 255, 0.06),
+    0 0 22px rgba(95, 124, 255, 0.08);
+}
+
+.traderIcon {
+  color: #91a6ff !important;
+  font-size: 22px !important;
+  line-height: 1;
+}
+
+.traderPrice {
+  color: #e0bc72 !important;
+  font-size: 10px !important;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.traderSelectedMark {
+  position: absolute;
+  top: 7px;
+  right: 9px;
+
+  color: #b6c5ff !important;
+  font-size: 11px !important;
+  font-weight: 800;
+}
+
+// ========================================
+// LOOT SUMMARY
+// ========================================
+
+.lootSummary {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  margin-top: 16px;
+  padding: 17px;
+
+  border: 1px solid rgba(142, 165, 255, 0.16);
+  border-radius: 13px;
+
+  background: rgba(255, 255, 255, 0.018);
+}
+
+.lootSummaryTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  > div {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    > strong {
+      color: #eff3ff;
+      font-size: 15px;
+      font-weight: 750;
+    }
+  }
+}
+
+.summaryEyebrow {
+  color: $text-muted;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.summaryPrice,
+.summaryFree {
+  flex-shrink: 0;
+
+  padding: 8px 11px;
+  border-radius: 8px;
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.summaryPrice {
+  color: #e8c477;
+  border: 1px solid rgba(232, 196, 119, 0.2);
+  background: rgba(232, 196, 119, 0.07);
+}
+
+.summaryFree {
+  color: $season-light;
+  border: 1px solid rgba(70, 190, 130, 0.2);
+  background: rgba(70, 190, 130, 0.06);
+}
+
+.lootSummaryDivider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.armorRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  span {
+    color: $text-muted;
+    font-size: 11px;
+  }
+
+  strong {
+    color: #b6c5ff;
+    font-size: 12px;
+    font-weight: 700;
+  }
+}
+
+.lootDisclaimer {
+  margin: 0;
+
+  color: $text-muted;
+  font-size: 10px;
+  line-height: 1.65;
+}
+
+.availabilityNote {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+
+  margin: 12px 0 0;
+
+  color: #b6a987;
+  font-size: 11px;
+  line-height: 1.6;
+
+  span {
+    flex-shrink: 0;
+    font-size: 14px;
+  }
+}
+
+// ========================================
+// REGION
+// ========================================
+
+.regionGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.option,
+.activeOption {
+  position: relative;
+
+  min-width: 0;
+  min-height: 74px;
+
+  justify-content: flex-start;
+  gap: 13px;
+
+  padding: 14px 18px;
+
+  &:focus-visible {
+    outline: 2px solid #a5b9ff;
+    outline-offset: 3px;
+  }
+}
+
+.regionSymbol {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+
+  color: #a9baff;
+
+  border: 1px solid rgba(142, 165, 255, 0.16);
+  border-radius: 9px;
+
+  background: rgba(95, 124, 255, 0.07);
+
+  font-size: 17px;
+}
+
+.regionContent {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+
+  strong {
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  small {
+    color: $text-muted;
+    font-size: 10px;
+    font-family: var(--font-geist-sans), sans-serif;
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+}
+
+.regionSelectedMark {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+
+  color: #b6c5ff;
+  font-size: 12px;
+}
+
+.regionHint {
+  margin: 12px 0 0;
+
+  color: $text-muted;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+// ========================================
+// RESPONSIVE
+// ========================================
+
+@media (max-width: 700px) {
+  .traders {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 430px) {
+  .traders {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .trader,
+  .activeTrader {
+    min-height: 100px;
+  }
+
+  .option,
+  .activeOption {
+    padding: 12px;
+    gap: 9px;
+  }
+
+  .regionSymbol {
+    width: 29px;
+    height: 29px;
+  }
+
+  .regionContent strong {
+    font-size: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trader,
+  .activeTrader,
+  .option,
+  .activeOption {
+    transition: none;
+  }
+}
