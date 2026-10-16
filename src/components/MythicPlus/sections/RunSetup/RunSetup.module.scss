@@ -1,4 +1,236 @@
+@use "../../../../styles/variables" as *;
 
-@use "../../Base";
-@use "../../RunSetup";
-@use "../../Responsive";
+// ========================================
+// NIKOBOOST — RUN SETUP
+// ========================================
+
+// ========================================
+// COMMON OPTION BUTTONS
+// ========================================
+
+.option,
+.activeOption {
+  min-height: 53px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 14px;
+  border-radius: 11px;
+  cursor: pointer;
+
+  font-family: var(--font-rajdhani), sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.015em;
+
+  transition:
+    transform $transition-fast,
+    color $transition-fast,
+    border-color $transition-fast,
+    background $transition-fast,
+    box-shadow $transition-fast;
+}
+
+.option {
+  color: $text-secondary;
+  border: 1px solid $border;
+  background: rgba(255, 255, 255, 0.022);
+
+  &:hover:not(:disabled) {
+    color: white;
+    border-color: rgba(142, 165, 255, 0.24);
+    background: rgba(95, 124, 255, 0.04);
+  }
+}
+
+.activeOption {
+  color: #eff3ff;
+  border: 1px solid rgba(142, 165, 255, 0.5);
+
+  background: linear-gradient(
+    135deg,
+    rgba(95, 124, 255, 0.16),
+    rgba(64, 88, 199, 0.06)
+  );
+
+  box-shadow: inset 0 0 25px rgba(95, 124, 255, 0.04);
+  transform: translateY(-1px);
+}
+
+.option:disabled,
+.activeOption:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: none;
+}
+
+// ========================================
+// KEY LEVEL GRID
+// ========================================
+
+.keyGrid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 9px;
+
+  button {
+    min-width: 0;
+  }
+}
+
+// ========================================
+// RUN CONTROLS
+// ========================================
+
+.runControls {
+  display: flex;
+  align-items: stretch;
+  gap: 14px;
+}
+
+// ========================================
+// QUICK RUN OPTIONS
+// ========================================
+
+.quickRuns {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+
+  button {
+    flex-direction: column;
+    gap: 2px;
+
+    font-family: var(--font-rajdhani), sans-serif;
+    font-size: 19px;
+    font-weight: 700;
+
+    span {
+      color: #9ba9c6;
+      font-family: var(--font-sora), sans-serif;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+    }
+  }
+}
+
+// ========================================
+// RUN COUNTER
+// ========================================
+
+.counter {
+  min-width: 180px;
+  display: grid;
+  grid-template-columns: 52px 1fr 52px;
+  overflow: hidden;
+
+  border: 1px solid $border;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+
+  button {
+    color: $text-secondary;
+    border: 0;
+    background: transparent;
+    font-size: 22px;
+    cursor: pointer;
+
+    transition:
+      color $transition-fast,
+      background $transition-fast;
+
+    &:hover:not(:disabled) {
+      color: white;
+      background: rgba(95, 124, 255, 0.07);
+    }
+
+    &:disabled {
+      opacity: 0.25;
+      cursor: not-allowed;
+    }
+  }
+
+  strong {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: white;
+    border-left: 1px solid $border;
+    border-right: 1px solid $border;
+    font-size: 18px;
+  }
+}
+
+// ========================================
+// PACKAGE DISCOUNT
+// ========================================
+
+.discountBadge {
+  align-self: flex-start;
+  padding: 7px 10px;
+
+  color: $season-light;
+  border: 1px solid rgba(120, 184, 135, 0.16);
+  border-radius: 7px;
+  background: rgba(120, 184, 135, 0.055);
+
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.09em;
+}
+
+// ========================================
+// PARTICIPATION LAYOUT
+// ========================================
+
+.twoCards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+// ========================================
+// RESPONSIVE — TABLET
+// ========================================
+
+@media (max-width: 1100px) {
+  .keyGrid {
+    grid-template-columns: repeat(7, 1fr);
+  }
+}
+
+// ========================================
+// RESPONSIVE — MOBILE
+// ========================================
+
+@media (max-width: 700px) {
+  .keyGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .runControls {
+    flex-direction: column;
+  }
+
+  .counter {
+    min-height: 54px;
+    width: 100%;
+  }
+
+  .twoCards {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ========================================
+// RESPONSIVE — SMALL MOBILE
+// ========================================
+
+@media (max-width: 430px) {
+  .keyGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

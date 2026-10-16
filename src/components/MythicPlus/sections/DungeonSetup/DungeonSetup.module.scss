@@ -1,4 +1,284 @@
 
-@use "../../Base";
-@use "../../DungeonSetup";
-@use "../../Responsive";
+@use "../../../../styles/variables" as *;
+
+// ========================================
+// NIKOBOOST — DUNGEON SETUP
+// ========================================
+
+// ========================================
+// DUNGEON ALLOCATOR
+// ========================================
+
+.dungeonAllocator {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+// ========================================
+// ALLOCATION STATUS
+// ========================================
+
+.allocationStatus {
+  min-height: 66px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 25px;
+  padding: 14px 16px;
+
+  border: 1px solid $border;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.018);
+
+  > div {
+    display: flex;
+    align-items: baseline;
+    gap: 7px;
+
+    > span {
+      color: $text-muted;
+      font-size: 9px;
+      letter-spacing: 0.09em;
+    }
+
+    > strong {
+      color: $text-primary;
+      font-size: 18px;
+
+      small {
+        color: $text-muted;
+        font-size: 11px;
+      }
+    }
+  }
+}
+
+.allAssigned {
+  color: $season-light !important;
+  font-weight: 700;
+}
+
+// ========================================
+// DUNGEON ALLOCATION GRID
+// ========================================
+
+.dungeonAllocationGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+// ========================================
+// DUNGEON ALLOCATION CARDS
+// ========================================
+
+.dungeonAllocation,
+.activeDungeonAllocation {
+  min-width: 0;
+  min-height: 72px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  padding: 12px 14px;
+  border-radius: 12px;
+
+  transition:
+    border-color $transition-fast,
+    background $transition-fast;
+}
+
+// Default dungeon card
+
+.dungeonAllocation {
+  border: 1px solid $border;
+  background: rgba(255, 255, 255, 0.015);
+}
+
+// Selected dungeon card
+
+.activeDungeonAllocation {
+  border: 1px solid rgba(142, 165, 255, 0.38);
+  background: rgba(95, 124, 255, 0.065);
+}
+
+// ========================================
+// DUNGEON NAME
+// ========================================
+
+.dungeonName {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  span {
+    color: $text-primary;
+    font-size: 11px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+    line-height: 1.4;
+  }
+
+  small {
+    color: $brand-light;
+    font-size: 9px;
+  }
+}
+
+// ========================================
+// DUNGEON COUNTER
+// ========================================
+
+.dungeonCounter {
+  flex-shrink: 0;
+
+  display: grid;
+  grid-template-columns: 30px 30px 30px;
+  align-items: center;
+
+  overflow: hidden;
+
+  border: 1px solid $border;
+  border-radius: 8px;
+
+  button {
+    height: 32px;
+
+    color: $text-secondary;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+      color: white;
+      background: rgba(95, 124, 255, 0.1);
+    }
+
+    &:disabled {
+      opacity: 0.25;
+      cursor: not-allowed;
+    }
+  }
+
+  strong {
+    height: 32px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: white;
+
+    border-left: 1px solid $border;
+    border-right: 1px solid $border;
+
+    font-size: 11px;
+  }
+}
+
+// ========================================
+// DUNGEON VISUAL INFORMATION
+// ========================================
+
+.dungeonVisualInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+// ========================================
+// DUNGEON THUMBNAIL
+// ========================================
+
+.dungeonThumbnail {
+  width: 54px;
+  height: 54px;
+  flex-shrink: 0;
+
+  overflow: hidden;
+
+  border: 1px solid #35415a;
+  border-radius: 9px;
+  background: #20283a;
+
+  img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+  }
+}
+
+// ========================================
+// DUNGEON PROGRESS
+// ========================================
+
+.dungeonProgress {
+  width: 100%;
+  height: 6px;
+
+  overflow: hidden;
+
+  border-radius: 20px;
+  background: #202637;
+}
+
+.dungeonProgressFill {
+  height: 100%;
+
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    #5f7cff,
+    #92a8ff
+  );
+
+  transition: width 0.25s ease;
+}
+
+// ========================================
+// RESPONSIVE — TABLET
+// ========================================
+
+@media (max-width: 1100px) {
+  .dungeonAllocationGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ========================================
+// RESPONSIVE — MOBILE
+// ========================================
+
+@media (max-width: 700px) {
+  .dungeonAllocationGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .allocationStatus {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+// ========================================
+// RESPONSIVE — SMALL MOBILE
+// ========================================
+
+@media (max-width: 480px) {
+  .dungeonThumbnail {
+    width: 44px;
+    height: 44px;
+  }
+
+  .dungeonVisualInfo {
+    gap: 8px;
+  }
+}

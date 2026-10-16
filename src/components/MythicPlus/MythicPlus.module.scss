@@ -1,9 +1,266 @@
-@use "./Base";
-@use "./RunSetup";
-@use "./CharacterSetup";
-@use "./DungeonSetup";
-@use "./LootSetup";
-@use "./OrderSummary";
-@use "./Stepper";
-@use "./ReviewStep";
-@use "./Responsive";
+
+@use "../../styles/variables" as *;
+
+// ========================================
+// NIKOBOOST — MYTHIC+ MAIN SECTION
+// ========================================
+
+// ========================================
+// SECTION
+// ========================================
+
+.section {
+  position: relative;
+  padding: 56px 0 120px;
+
+  background:
+    radial-gradient(
+      circle at 82% 18%,
+      rgba(95, 124, 255, 0.08),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 15% 65%,
+      rgba(120, 184, 135, 0.025),
+      transparent 24%
+    ),
+    $bg-main;
+
+  font-family: var(--font-sora), sans-serif;
+  color: #e0e6f4;
+}
+
+// ========================================
+// HEADING
+// ========================================
+
+.heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 50px;
+  margin-bottom: 48px;
+
+  h2 {
+    margin: 12px 0 0;
+    color: $text-primary;
+
+    font-family: var(--font-rajdhani), sans-serif;
+    font-size: clamp(42px, 4.5vw, 64px);
+    font-weight: 700;
+    line-height: 1.04;
+    letter-spacing: -0.035em;
+
+    span {
+      color: $brand-light;
+    }
+  }
+
+  > p {
+    max-width: 380px;
+    margin: 0 0 8px;
+
+    color: $text-secondary;
+    font-size: 14px;
+    line-height: 1.75;
+  }
+}
+
+.eyebrow {
+  color: $season-light;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+}
+
+// ========================================
+// MAIN LAYOUT
+// ========================================
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 390px;
+  gap: 24px;
+  align-items: start;
+}
+
+// ========================================
+// CONFIGURATOR CONTAINER
+// ========================================
+
+.configurator {
+  padding: 36px;
+
+  border: 1px solid rgba(255, 255, 255, 0.075);
+  border-radius: 22px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.035),
+      rgba(255, 255, 255, 0.008)
+    ),
+    $bg-secondary;
+}
+
+// ========================================
+// STEP CONTENT
+// ========================================
+
+.stepContent {
+  min-height: 390px;
+}
+
+// ========================================
+// STEP DIVIDER
+// ========================================
+
+.stepDivider {
+  height: 1px;
+  margin: 34px 0;
+  background: $border;
+}
+
+// ========================================
+// STEP ACTIONS
+// ========================================
+
+.stepActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+
+  margin-top: 38px;
+  padding-top: 24px;
+
+  border-top: 1px solid $border;
+}
+
+// ========================================
+// NAVIGATION BUTTONS
+// ========================================
+
+.backButton,
+.continueButton {
+  min-height: 52px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 11px;
+
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 650;
+
+  transition:
+    transform $transition-fast,
+    border-color $transition-fast,
+    background $transition-fast,
+    box-shadow $transition-fast;
+}
+
+// ========================================
+// BACK BUTTON
+// ========================================
+
+.backButton {
+  padding: 0 19px;
+
+  color: $text-secondary;
+  border: 1px solid $border;
+  background: rgba(255, 255, 255, 0.02);
+
+  &:hover {
+    color: white;
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+}
+
+// ========================================
+// CONTINUE / RESERVE BUTTON
+// ========================================
+
+.continueButton {
+  min-width: 160px;
+  gap: 12px;
+  padding: 0 22px;
+
+  color: white;
+
+  border: 1px solid rgba(142, 165, 255, 0.38);
+  background: linear-gradient(
+    135deg,
+    #5f7cff,
+    #4058c7
+  );
+
+  box-shadow: 0 12px 32px rgba(95, 124, 255, 0.14);
+
+  span {
+    transition: transform $transition-fast;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 40px rgba(95, 124, 255, 0.22);
+
+    span {
+      transform: translateX(3px);
+    }
+  }
+}
+
+// ========================================
+// RESPONSIVE — TABLET
+// ========================================
+
+@media (max-width: 950px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ========================================
+// RESPONSIVE — MOBILE
+// ========================================
+
+@media (max-width: 700px) {
+  .section {
+    padding: 90px 0 110px;
+  }
+
+  .heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .configurator {
+    padding: 22px;
+  }
+
+  .stepContent {
+    min-height: 0;
+  }
+
+  .stepActions {
+    justify-content: space-between;
+  }
+
+  .continueButton {
+    flex: 1;
+  }
+}
+
+// ========================================
+// RESPONSIVE — SMALL MOBILE
+// ========================================
+
+@media (max-width: 430px) {
+  .configurator {
+    border-radius: 17px;
+  }
+}

@@ -1,4 +1,185 @@
 
-@use "../../Base";
-@use "../../LootSetup";
-@use "../../Responsive";
+@use "../../../../styles/variables" as *;
+
+// ========================================
+// NIKOBOOST — LOOT SETUP
+// ========================================
+
+// ========================================
+// LOOT TRADERS GRID
+// ========================================
+
+.traders {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 9px;
+}
+
+// ========================================
+// TRADER BUTTONS
+// ========================================
+
+.trader,
+.activeTrader {
+  min-height: 74px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+
+  border-radius: 11px;
+  cursor: pointer;
+
+  transition:
+    border-color $transition-fast,
+    background $transition-fast,
+    opacity $transition-fast;
+
+  strong {
+    font-size: 14px;
+  }
+
+  span {
+    color: $text-muted;
+    font-size: 9px;
+  }
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+}
+
+// ========================================
+// DEFAULT TRADER
+// ========================================
+
+.trader {
+  color: $text-secondary;
+  border: 1px solid $border;
+  background: rgba(255, 255, 255, 0.018);
+
+  &:hover:not(:disabled) {
+    border-color: rgba(142, 165, 255, 0.22);
+  }
+}
+
+// ========================================
+// ACTIVE TRADER
+// ========================================
+
+.activeTrader {
+  color: white;
+  border: 1px solid rgba(142, 165, 255, 0.45);
+  background: rgba(95, 124, 255, 0.09);
+}
+
+// ========================================
+// REGION GRID
+// ========================================
+
+.regionGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 140px);
+  gap: 10px;
+}
+
+// ========================================
+// REGION OPTION BUTTONS
+// ========================================
+
+.option,
+.activeOption {
+  min-height: 53px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 14px;
+  border-radius: 11px;
+  cursor: pointer;
+
+  font-family: var(--font-rajdhani), sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.015em;
+
+  transition:
+    transform $transition-fast,
+    color $transition-fast,
+    border-color $transition-fast,
+    background $transition-fast,
+    box-shadow $transition-fast;
+}
+
+.option {
+  color: $text-secondary;
+  border: 1px solid $border;
+  background: rgba(255, 255, 255, 0.022);
+
+  &:hover:not(:disabled) {
+    color: white;
+    border-color: rgba(142, 165, 255, 0.24);
+    background: rgba(95, 124, 255, 0.04);
+  }
+}
+
+.activeOption {
+  color: #eff3ff;
+  border: 1px solid rgba(142, 165, 255, 0.5);
+
+  background: linear-gradient(
+    135deg,
+    rgba(95, 124, 255, 0.16),
+    rgba(64, 88, 199, 0.06)
+  );
+
+  box-shadow: inset 0 0 25px rgba(95, 124, 255, 0.04);
+  transform: translateY(-1px);
+}
+
+.option:disabled,
+.activeOption:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: none;
+}
+
+// ========================================
+// HELPER TEXT
+// ========================================
+
+.helper {
+  margin: -4px 0 0;
+
+  color: $text-muted;
+  font-size: 11px;
+  line-height: 1.7;
+
+  strong {
+    color: $text-secondary;
+  }
+}
+
+// ========================================
+// RESPONSIVE — MOBILE
+// ========================================
+
+@media (max-width: 700px) {
+  .traders {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+// ========================================
+// RESPONSIVE — SMALL MOBILE
+// ========================================
+
+@media (max-width: 430px) {
+  .traders {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

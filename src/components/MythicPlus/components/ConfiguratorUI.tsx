@@ -2,8 +2,7 @@ import type {
   ReactNode,
 } from "react";
 
-import styles from "../MythicPlus.module.scss";
-
+import styles from "./ConfiguratorUI.module.scss";
 export function Divider() {
   return (
     <div

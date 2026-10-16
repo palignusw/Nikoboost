@@ -1,4 +1,4 @@
-import styles from "../MythicPlus.module.scss";
+import styles from "./Stepper.module.scss";
 
 const steps = [
   {
