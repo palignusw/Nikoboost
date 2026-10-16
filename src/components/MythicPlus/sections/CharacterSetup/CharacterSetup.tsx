@@ -1,9 +1,9 @@
 
 import { roleSurcharges } from "@/data/mythicPlus";
-import type { MythicPlusConfig } from "../hooks/useMythicPlusConfig";
-import { formatRole } from "../hooks/useMythicPlusConfig";
-import { OptionSection } from "../components/ConfiguratorUI";
-import styles from "../MythicPlus.module.scss";
+import type { MythicPlusConfig } from "../../hooks/useMythicPlusConfig";
+import { formatRole } from "../../hooks/useMythicPlusConfig";
+import { OptionSection } from "../../components/ConfiguratorUI";
+import styles from "./CharacterSetup.module.scss";
 
 const classIcons: Record<string, string> = {
   Warrior: "warrior",

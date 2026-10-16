@@ -13,12 +13,12 @@ import {
 import Stepper from "./components/Stepper";
 import ReservationModal from "./components/ReservationModal";
 
-import RunSetup from "./sections/RunSetup";
-import CharacterSetup from "./sections/CharacterSetup";
-import DungeonSetup from "./sections/DungeonSetup";
-import LootSetup from "./sections/LootSetup";
-import OrderSummary from "./sections/OrderSummary";
-import ReviewStep from "./sections/ReviewStep";
+import RunSetup from "./sections/RunSetup/RunSetup";
+import CharacterSetup from "./sections/CharacterSetup/CharacterSetup";
+import DungeonSetup from "./sections/DungeonSetup/DungeonSetup";
+import LootSetup from "./sections/LootSetup/LootSetup";
+import OrderSummary from "./sections/OrderSummary/OrderSummary";
+import ReviewStep from "./sections/ReviewStep/ReviewStep";
 
 export default function MythicPlus() {
   const config =

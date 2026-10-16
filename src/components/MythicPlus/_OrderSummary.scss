@@ -1,0 +1,203 @@
+@use "../../styles/variables" as *;
+
+// ========================================
+// ORDER SUMMARY
+// ========================================
+
+.summary {
+  position: sticky;
+  top: 24px;
+  padding: 28px;
+
+  h3 {
+    margin: 0 0 25px;
+    color: $text-primary;
+    font-family: var(--font-rajdhani), sans-serif;
+    font-size: 34px;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+}
+
+.available {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 28px;
+  color: $season-light;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.11em;
+
+  span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: $season;
+    box-shadow: 0 0 12px rgba(120, 184, 135, 0.7);
+  }
+}
+
+.summaryLabel {
+  display: block;
+  margin-bottom: 8px;
+  color: $text-muted;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.orderInfo,
+.breakdown {
+  overflow: hidden;
+  border: 1px solid $border;
+  border-radius: 12px;
+}
+
+.breakdown {
+  margin-top: 16px;
+}
+
+.summaryRow {
+  min-height: 43px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 0 13px;
+  border-bottom: 1px solid $border;
+
+  &:last-child {
+    border-bottom: 0;
+  }
+
+  span {
+    color: #98a5bd;
+    font-family: var(--font-sora), sans-serif;
+    font-size: 12px;
+  }
+
+  strong {
+    max-width: 190px;
+    overflow: hidden;
+    color: $text-primary;
+    font-family: var(--font-sora), sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: right;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.positive {
+  color: $season-light !important;
+}
+
+.selectedDungeonSummary {
+  margin-top: 16px;
+  padding: 14px;
+  border: 1px solid $border;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.015);
+
+  > span {
+    display: block;
+    margin-bottom: 10px;
+    color: $text-muted;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+  }
+
+  > div {
+    min-height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    span {
+      color: $text-secondary;
+      font-size: 10px;
+    }
+
+    strong {
+      color: $brand-light;
+      font-size: 10px;
+    }
+  }
+}
+
+.total {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 24px 0;
+
+  > span {
+    color: $text-muted;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+  }
+
+  strong {
+    color: $text-primary;
+    font-family: var(--font-rajdhani), sans-serif;
+    font-size: 40px;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    font-variant-numeric: tabular-nums;
+
+    small {
+      color: #e8c477;
+      font-family: var(--font-sora), sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+    }
+  }
+}
+
+.reserve {
+  width: 100%;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: white;
+  border: 1px solid rgba(142, 165, 255, 0.4);
+  border-radius: 12px;
+  background: linear-gradient(135deg, #5f7cff, #4058c7);
+  cursor: pointer;
+  font-family: var(--font-rajdhani), sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  box-shadow: 0 14px 38px rgba(95, 124, 255, 0.15);
+  transition:
+    transform $transition-fast,
+    box-shadow $transition-fast;
+
+  span {
+    transition: transform $transition-fast;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 48px rgba(95, 124, 255, 0.23);
+
+    span {
+      transform: translateX(3px);
+    }
+  }
+}
+
+.note {
+  margin: 14px 0 0;
+  color: #98a5bd;
+  font-size: 11px;
+  line-height: 1.6;
+  text-align: center;
+}

@@ -6,14 +6,14 @@ import {
 
 import type {
   MythicPlusConfig,
-} from "../hooks/useMythicPlusConfig";
+} from "../../hooks/useMythicPlusConfig";
 
 import {
   ChoiceCard,
   OptionSection,
-} from "../components/ConfiguratorUI";
+} from "../../components/ConfiguratorUI";
 
-import styles from "../MythicPlus.module.scss";
+import styles from "./DungeonSetup.module.scss";
 
 const dungeonImages: Record<string, string> = {
   "Altar of Fangs": "altar-of-fangs",

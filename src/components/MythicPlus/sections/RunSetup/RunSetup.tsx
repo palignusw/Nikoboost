@@ -4,15 +4,15 @@ import {
 
 import type {
   MythicPlusConfig,
-} from "../hooks/useMythicPlusConfig";
+} from "../../hooks/useMythicPlusConfig";
 
 import {
   ChoiceCard,
   Divider,
   OptionSection,
-} from "../components/ConfiguratorUI";
+} from "../../components/ConfiguratorUI";
 
-import styles from "../MythicPlus.module.scss";
+import styles from "./RunSetup.module.scss";
 
 export default function RunSetup({
   config,

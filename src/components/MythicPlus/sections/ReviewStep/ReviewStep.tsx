@@ -1,12 +1,12 @@
 import type {
   MythicPlusConfig,
-} from "../hooks/useMythicPlusConfig";
+}from "../../hooks/useMythicPlusConfig";
 
 import {
   formatRole,
-} from "../hooks/useMythicPlusConfig";
+} from "../../hooks/useMythicPlusConfig";
 
-import styles from "../MythicPlus.module.scss";
+import styles from "./ReviewStep.module.scss";
 
 export default function ReviewStep({
   config,

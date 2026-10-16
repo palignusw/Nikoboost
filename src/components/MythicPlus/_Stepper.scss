@@ -1,0 +1,154 @@
+@use "../../styles/variables" as *;
+
+// ========================================
+// STEPPER
+// ========================================
+
+.stepper {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin-bottom: 22px;
+  padding: 6px;
+  border: 1px solid $border;
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.step {
+  position: relative;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: $text-muted;
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+  cursor: pointer;
+  transition:
+    color $transition-fast,
+    background $transition-fast,
+    box-shadow $transition-fast;
+
+  &:hover {
+    color: $text-primary;
+    background: rgba(255, 255, 255, 0.025);
+  }
+}
+
+.stepNumber {
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid $border;
+  border-radius: 50%;
+  font-size: 9px;
+  font-weight: 750;
+  transition:
+    border-color $transition-fast,
+    background $transition-fast,
+    color $transition-fast;
+}
+
+.stepLabel {
+  color: #aebbd6;
+  font-family: var(--font-rajdhani), sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.stepActive {
+  color: $text-primary;
+  background: linear-gradient(
+    135deg,
+    rgba(95, 124, 255, 0.12),
+    rgba(95, 124, 255, 0.035)
+  );
+  box-shadow: inset 0 0 0 1px rgba(142, 165, 255, 0.16);
+
+  .stepNumber {
+    color: white;
+    border-color: rgba(142, 165, 255, 0.5);
+    background: rgba(95, 124, 255, 0.16);
+  }
+}
+
+.stepCompleted {
+  color: $text-secondary;
+
+  .stepNumber {
+    color: $season-light;
+    border-color: rgba(120, 184, 135, 0.3);
+    background: rgba(120, 184, 135, 0.07);
+  }
+}
+
+.stepContent {
+  min-height: 390px;
+}
+
+.stepActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 38px;
+  padding-top: 24px;
+  border-top: 1px solid $border;
+}
+
+.backButton,
+.continueButton {
+  min-height: 52px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 11px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 650;
+  transition:
+    transform $transition-fast,
+    border-color $transition-fast,
+    background $transition-fast,
+    box-shadow $transition-fast;
+}
+
+.backButton {
+  padding: 0 19px;
+  color: $text-secondary;
+  border: 1px solid $border;
+  background: rgba(255, 255, 255, 0.02);
+
+  &:hover {
+    color: white;
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+}
+
+.continueButton {
+  min-width: 160px;
+  gap: 12px;
+  padding: 0 22px;
+  color: white;
+  border: 1px solid rgba(142, 165, 255, 0.38);
+  background: linear-gradient(135deg, #5f7cff, #4058c7);
+  box-shadow: 0 12px 32px rgba(95, 124, 255, 0.14);
+
+  span {
+    transition: transform $transition-fast;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 40px rgba(95, 124, 255, 0.22);
+
+    span {
+      transform: translateX(3px);
+    }
+  }
+}

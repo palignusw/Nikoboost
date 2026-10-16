@@ -1,16 +1,16 @@
 import type {
   MythicPlusConfig,
-} from "../hooks/useMythicPlusConfig";
+} from "../../hooks/useMythicPlusConfig";
 
 import {
   formatRole,
-} from "../hooks/useMythicPlusConfig";
+} from "../../hooks/useMythicPlusConfig";
 
 import {
   SummaryRow,
-} from "../components/ConfiguratorUI";
+} from "../../components/ConfiguratorUI";
 
-import styles from "../MythicPlus.module.scss";
+import styles from "./OrderSummary.module.scss";
 
 export default function OrderSummary({
   config,

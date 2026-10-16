@@ -5,14 +5,14 @@ import {
 
 import type {
   MythicPlusConfig,
-} from "../hooks/useMythicPlusConfig";
+} from "../../hooks/useMythicPlusConfig";
 
 import {
   Divider,
   OptionSection,
-} from "../components/ConfiguratorUI";
+} from "../../components/ConfiguratorUI";
 
-import styles from "../MythicPlus.module.scss";
+import styles from "./LootSetup.module.scss";
 
 export default function LootSetup({
   config,
