@@ -255,3 +255,56 @@
     transition: none;
   }
 }
+
+// ========================================
+// NIKOBOOST — MOBILE SPACING REFINEMENT
+// ========================================
+
+@media (max-width: 700px) {
+  .optionSection {
+    gap: 16px;
+  }
+
+  .divider {
+    margin: 22px 0;
+  }
+
+  .choice,
+  .activeChoice {
+    min-height: 100px;
+    padding: 15px 16px;
+    border-radius: 12px;
+
+    > div {
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    strong {
+      font-size: 18px;
+    }
+
+    p {
+      margin-top: 8px;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    em {
+      padding: 4px 7px;
+      font-size: 9px;
+    }
+  }
+
+  .optionHeader {
+    gap: 12px;
+
+    h3 {
+      font-size: 18px;
+    }
+
+    > strong {
+      font-size: 14px;
+    }
+  }
+}

@@ -471,3 +471,48 @@
     animation: none;
   }
 }
+
+// ========================================
+// NIKOBOOST — TYPOGRAPHY CONSISTENCY
+// ========================================
+
+.section {
+  font-family: var(--font-sora), sans-serif;
+}
+
+.intro {
+  h2 {
+    font-family: var(--font-rajdhani), sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.035em;
+    line-height: 1.04;
+  }
+}
+
+.helpInfo {
+  strong {
+    font-family: var(--font-rajdhani), sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+  }
+}
+
+.questionContent {
+  strong {
+    font-family: var(--font-rajdhani), sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+  }
+}
+
+.answer {
+  p {
+    font-family: var(--font-sora), sans-serif;
+  }
+}
+
+.configure {
+  font-family: var(--font-rajdhani), sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+}

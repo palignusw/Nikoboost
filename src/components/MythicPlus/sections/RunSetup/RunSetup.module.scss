@@ -418,3 +418,66 @@
     animation: none;
   }
 }
+
+// ========================================
+// COMPACT MOBILE KEY LEVEL GRID
+// ========================================
+
+@media (max-width: 700px) {
+  .keyGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  .keyGrid .option,
+  .keyGrid .activeOption {
+    min-height: 46px;
+    padding: 0 5px;
+
+    border-radius: 9px;
+    font-size: 16px;
+    line-height: 1;
+  }
+}
+
+@media (max-width: 360px) {
+  .keyGrid {
+    gap: 5px;
+  }
+
+  .keyGrid .option,
+  .keyGrid .activeOption {
+    min-height: 44px;
+    font-size: 15px;
+  }
+}
+
+// ========================================
+// COMPACT MOBILE PARTICIPATION
+// ========================================
+
+@media (max-width: 700px) {
+  .twoCards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+
+    > * {
+      min-width: 0;
+      height: 100%;
+    }
+  }
+}
+
+@media (max-width: 360px) {
+  .twoCards {
+    gap: 7px;
+  }
+}
+
+
+@media (max-width: 700px) {
+  .twoCards {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}

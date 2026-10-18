@@ -41,9 +41,9 @@ export default function RunSetup({
       >
         <div className={styles.keyGrid}>
           {config.keyLevels.map((level) => {
-    const active =
-  config.confirmed.keyLevel &&
-  config.keyLevel === level;
+            const active =
+              config.confirmed.keyLevel &&
+              config.keyLevel === level;
 
             return (
               <button
@@ -76,9 +76,8 @@ export default function RunSetup({
       <OptionSection
         number="02"
         title="Number of runs"
-        value={`${config.runs} ${
-          config.runs === 1 ? "run" : "runs"
-        }`}
+        value={`${config.runs} ${config.runs === 1 ? "run" : "runs"
+          }`}
       >
         <div className={styles.runControls}>
           <div className={styles.quickRuns}>
@@ -88,9 +87,9 @@ export default function RunSetup({
                   amount <
                   config.allocatedSpecificRuns;
 
-         const active =
-  config.confirmed.runs &&
-  config.runs === amount;
+                const active =
+                  config.confirmed.runs &&
+                  config.runs === amount;
 
                 const discountPercent =
                   Math.round(
@@ -103,15 +102,13 @@ export default function RunSetup({
                     key={amount}
                     disabled={unavailable}
                     aria-pressed={active}
-                    aria-label={`${amount} ${
-                      amount === 1
+                    aria-label={`${amount} ${amount === 1
                         ? "run"
                         : "runs"
-                    }${
-                      discountPercent > 0
+                      }${discountPercent > 0
                         ? `, save ${discountPercent} percent`
                         : ""
-                    }`}
+                      }`}
                     className={
                       active
                         ? styles.activeOption
@@ -149,7 +146,7 @@ export default function RunSetup({
               disabled={
                 config.runs <= 1 ||
                 config.runs <=
-                  config.allocatedSpecificRuns
+                config.allocatedSpecificRuns
               }
               onClick={config.decreaseRuns}
             >
@@ -206,17 +203,19 @@ export default function RunSetup({
         number="03"
         title="Participation"
         value={
-          config.participation === "play"
-            ? "I Play"
-            : "AFK / Minimal"
+          !config.confirmed.participation
+            ? "Not selected"
+            : config.participation === "play"
+              ? "I Play"
+              : "AFK / Minimal"
         }
       >
         <div className={styles.twoCards}>
           <ChoiceCard
-        active={
-  config.confirmed.participation &&
-  config.participation === "play"
-}
+            active={
+              config.confirmed.participation &&
+              config.participation === "play"
+            }
             title="I Play"
             description="Play normally together with the boosting team."
             badge="PLAY WITH TEAM"
@@ -226,10 +225,10 @@ export default function RunSetup({
           />
 
           <ChoiceCard
-        active={
-  config.confirmed.participation &&
-  config.participation === "afk"
-}
+            active={
+              config.confirmed.participation &&
+              config.participation === "afk"
+            }
             title="AFK / Minimal"
             description="Minimal participation. Some mechanics may still require movement."
             price={`+${Math.round(

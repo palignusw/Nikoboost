@@ -11,6 +11,7 @@ import styles from "./MythicPlus.module.scss";
 
 import {
   useMythicPlusConfig,
+  formatRole,
 } from "./hooks/useMythicPlusConfig";
 
 import Stepper from "./components/Stepper";
@@ -31,10 +32,16 @@ type MissingField = {
   section: string;
 };
 
+const NOT_SELECTED = "Not selected";
+
 export default function MythicPlus() {
   const config = useMythicPlusConfig();
 
-  const configuratorRef = useRef<HTMLDivElement>(null);
+  const configuratorRef =
+    useRef<HTMLDivElement>(null);
+
+  const actionsRef =
+    useRef<HTMLDivElement>(null);
 
   const transitionLockedRef = useRef(false);
 
@@ -52,14 +59,22 @@ export default function MythicPlus() {
   const [reservationOpen, setReservationOpen] =
     useState(false);
 
-  const [showMobileBar, setShowMobileBar] =
-    useState(false);
-
   const [validationAttempted, setValidationAttempted] =
     useState(false);
 
+  // Mobile price panel
+  const [configuratorVisible, setConfiguratorVisible] =
+    useState(false);
+
+  const [actionsNear, setActionsNear] =
+    useState(false);
+
+
+  const [priceExpanded, setPriceExpanded] =
+    useState(false);
+
   // ========================================
-  // VALIDATION
+  // STEP VALIDATION
   // ========================================
 
   function getMissingFields(step: Step): MissingField[] {
@@ -127,7 +142,8 @@ export default function MythicPlus() {
       ) {
         missing.push({
           id: "dungeonAllocation",
-          message: "Assign at least one specific dungeon run",
+          message:
+            "Assign at least one specific dungeon run",
           section: "Dungeon",
         });
       }
@@ -135,7 +151,8 @@ export default function MythicPlus() {
       if (!config.confirmed.traders) {
         missing.push({
           id: "traders",
-          message: "Choose loot traders (None is allowed)",
+          message:
+            "Choose loot traders (None is allowed)",
           section: "Loot traders",
         });
       }
@@ -152,7 +169,8 @@ export default function MythicPlus() {
     return missing;
   }
 
-  const missingFields = getMissingFields(currentStep);
+  const missingFields =
+    getMissingFields(currentStep);
 
   const step1Complete =
     getMissingFields(1).length === 0;
@@ -201,27 +219,62 @@ export default function MythicPlus() {
     missingFields.length > 0;
 
   // ========================================
-  // MOBILE PRICE BAR
+  // MOBILE PRICE VISIBILITY
   // ========================================
 
   useEffect(() => {
-    const element = configuratorRef.current;
+    const configurator =
+      configuratorRef.current;
 
-    if (!element) return;
+    const actions =
+      actionsRef.current;
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setShowMobileBar(entry.isIntersecting);
-      },
-      {
-        threshold: 0,
-      }
-    );
+    if (!configurator || !actions) return;
 
-    observer.observe(element);
 
-    return () => observer.disconnect();
-  }, []);
+    const configuratorObserver =
+      new IntersectionObserver(
+        ([entry]) => {
+          setConfiguratorVisible(
+            entry.isIntersecting
+          );
+        },
+        {
+          threshold: 0,
+        }
+      );
+
+    // Hide the floating bar BEFORE the
+    // navigation buttons reach the bottom.
+    const actionsObserver =
+      new IntersectionObserver(
+        ([entry]) => {
+          setActionsNear(entry.isIntersecting);
+        },
+        {
+          rootMargin: "0px 0px 120px 0px",
+          threshold: 0,
+        }
+      );
+
+
+
+    configuratorObserver.observe(configurator);
+    actionsObserver.observe(actions);
+
+    return () => {
+      configuratorObserver.disconnect();
+      actionsObserver.disconnect();
+    };
+  }, [currentStep]);
+
+  const showMobilePrice = !reservationOpen;
+
+  useEffect(() => {
+    if (!showMobilePrice) {
+      setPriceExpanded(false);
+    }
+  }, [showMobilePrice]);
 
   // ========================================
   // CLEANUP
@@ -236,7 +289,7 @@ export default function MythicPlus() {
   }, []);
 
   // ========================================
-  // SCROLL HELPERS
+  // SCROLL
   // ========================================
 
   function scrollToConfigurator() {
@@ -251,7 +304,8 @@ export default function MythicPlus() {
   }
 
   function scrollToField(sectionTitle: string) {
-    const container = configuratorRef.current;
+    const container =
+      configuratorRef.current;
 
     if (!container) return;
 
@@ -260,8 +314,8 @@ export default function MythicPlus() {
         "section"
       );
 
-    const target = Array.from(sections).find(
-      (section) => {
+    const target =
+      Array.from(sections).find((section) => {
         const heading =
           section.querySelector("header h3");
 
@@ -269,8 +323,7 @@ export default function MythicPlus() {
           heading?.textContent?.trim() ===
           sectionTitle
         );
-      }
-    );
+      });
 
     if (!target) {
       scrollToConfigurator();
@@ -282,7 +335,6 @@ export default function MythicPlus() {
       block: "center",
     });
 
-    // Brief visual highlight of the missing field.
     if (
       typeof target.animate === "function" &&
       !window.matchMedia(
@@ -341,6 +393,7 @@ export default function MythicPlus() {
 
   function goToStep(step: Step) {
     setValidationAttempted(false);
+    setPriceExpanded(false);
     setCurrentStep(step);
     scrollToConfigurator();
   }
@@ -414,8 +467,10 @@ export default function MythicPlus() {
 
     setCurrentStep(step);
     setValidationAttempted(true);
+    setPriceExpanded(false);
 
-    const firstMissing = getMissingFields(step)[0];
+    const firstMissing =
+      getMissingFields(step)[0];
 
     if (firstMissing) {
       setTimeout(() => {
@@ -429,21 +484,18 @@ export default function MythicPlus() {
   // ========================================
 
   function openReservation() {
-    if (!canReserve) {
-      return;
-    }
+    if (!canReserve) return;
 
+    setPriceExpanded(false);
     setReservationOpen(true);
   }
 
   function handlePrimaryAction() {
-    // An earlier step became incomplete.
     if (firstIncompleteStep < currentStep) {
       returnToIncompleteStep();
       return;
     }
 
-    // Final step.
     if (currentStep === 4) {
       if (canReserve) {
         openReservation();
@@ -454,7 +506,6 @@ export default function MythicPlus() {
       return;
     }
 
-    // Show specific missing fields.
     if (!currentStepComplete) {
       showValidationErrors();
       return;
@@ -462,6 +513,75 @@ export default function MythicPlus() {
 
     nextStep();
   }
+
+  // ========================================
+  // MOBILE ORDER PREVIEW
+  // ========================================
+
+  const mobilePriceRows = [
+    {
+      label: "Key level",
+      value: config.confirmed.keyLevel
+        ? `+${config.keyLevel}`
+        : NOT_SELECTED,
+    },
+    {
+      label: "Runs",
+      value: config.confirmed.runs
+        ? String(config.runs)
+        : NOT_SELECTED,
+    },
+    {
+      label: "Mode",
+      value: config.confirmed.participation
+        ? config.participation === "play"
+          ? "I Play"
+          : "AFK / Minimal"
+        : NOT_SELECTED,
+    },
+    {
+      label: "Class",
+      value: config.confirmed.playerClass
+        ? config.playerClass
+        : NOT_SELECTED,
+    },
+    {
+      label: "Role",
+      value:
+        config.confirmed.participation &&
+          config.participation === "afk"
+          ? "Not required"
+          : config.confirmed.playerClass &&
+            (
+              config.confirmed.role ||
+              config.allowedRoles.length === 1
+            )
+            ? formatRole(config.role)
+            : NOT_SELECTED,
+    },
+    {
+      label: "Dungeon",
+      value: !config.confirmed.dungeon
+        ? NOT_SELECTED
+        : config.specificDungeon
+          ? `${config.allocatedSpecificRuns}/${config.runs} specific`
+          : "Any",
+    },
+    {
+      label: "Traders",
+      value: config.confirmed.traders
+        ? config.traders > 0
+          ? `+${config.traders}`
+          : "None"
+        : NOT_SELECTED,
+    },
+    {
+      label: "Region",
+      value: config.confirmed.region
+        ? config.region
+        : NOT_SELECTED,
+    },
+  ];
 
   // ========================================
   // RENDER
@@ -536,8 +656,6 @@ export default function MythicPlus() {
                 )}
               </div>
             </div>
-
-            {/* VALIDATION ERRORS */}
 
             {showErrors && (
               <div
@@ -617,9 +735,10 @@ export default function MythicPlus() {
               </div>
             )}
 
-            {/* STEP ACTIONS */}
-
-            <div className={styles.stepActions}>
+            <div
+              ref={actionsRef}
+              className={styles.stepActions}
+            >
               {currentStep > 1 && (
                 <button
                   type="button"
@@ -643,34 +762,109 @@ export default function MythicPlus() {
               </button>
             </div>
           </div>
-
-          <OrderSummary
+          <div className={styles.desktopSummary}>      <OrderSummary
             config={config}
             canReserve={canReserve}
             onReserve={handlePrimaryAction}
           />
+          </div>
         </div>
       </div>
 
-      {/* MOBILE PRICE BAR — PRICE ONLY */}
+      {/* MOBILE FLOATING PRICE */}
 
-      {showMobileBar && !reservationOpen && (
-        <div className={styles.mobilePriceBar}>
-          <div className={styles.mobilePriceInfo}>
-            <span className={styles.mobilePriceLabel}>
-              {canReserve
-                ? "TOTAL PRICE"
-                : "ESTIMATED PRICE"}
+      {showMobilePrice && (
+        <div
+          className={styles.mobilePriceBar}
+          role="region"
+          aria-label="Live order price"
+        >
+          <div
+            id="mobile-price-details"
+            className={styles.mobilePriceDetails}
+            hidden={!priceExpanded}
+          >
+            <div
+              className={styles.mobilePriceDetailsTitle}
+            >
+              YOUR ORDER
+            </div>
+
+            {mobilePriceRows.map((row) => (
+              <div
+                key={row.label}
+                className={styles.mobilePriceDetailsRow}
+              >
+                <span>{row.label}</span>
+                <strong>{row.value}</strong>
+              </div>
+            ))}
+
+            <p
+              className={styles.mobilePriceDetailsHint}
+            >
+              {config.canReserve
+                ? "Your configuration is complete."
+                : "Price updates as you configure your run."}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            className={styles.mobilePriceToggle}
+            aria-expanded={priceExpanded}
+            aria-controls="mobile-price-details"
+            aria-label={
+              priceExpanded
+                ? "Close order preview"
+                : "Expand order preview"
+            }
+            onClick={() =>
+              setPriceExpanded((previous) => !previous)
+            }
+          >
+            <span className={styles.mobilePriceInfo}>
+              <span
+                className={styles.mobilePriceLabel}
+              >
+                {!config.confirmed.keyLevel
+                  ? "SELECT OPTIONS"
+                  : config.canReserve
+                    ? "TOTAL PRICE"
+                    : "ESTIMATED PRICE"}
+              </span>
+
+              <strong
+                className={styles.mobilePriceValue}
+              >
+                {config.confirmed.keyLevel
+                  ? config.calculation.total.toLocaleString("en-US")
+                  : "—"}
+
+                <small> GOLD</small>
+              </strong>
             </span>
 
-            <strong className={styles.mobilePriceValue}>
-              {config.calculation.total.toLocaleString(
-                "en-US"
-              )}
+            <span
+              className={styles.mobilePriceExpand}
+              aria-hidden="true"
+            >
+              <span>
+                {priceExpanded
+                  ? "Close"
+                  : "Details"}
+              </span>
 
-              <small> GOLD</small>
-            </strong>
-          </div>
+              <span
+                className={`${styles.mobilePriceChevron} ${priceExpanded
+                  ? styles.mobilePriceChevronOpen
+                  : ""
+                  }`}
+              >
+                ↑
+              </span>
+            </span>
+          </button>
         </div>
       )}
 
