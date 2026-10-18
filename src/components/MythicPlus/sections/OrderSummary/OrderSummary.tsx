@@ -55,8 +55,8 @@ export default function OrderSummary({
   const discountPercent =
     beforeDiscount > 0
       ? Math.round(
-          (discount / beforeDiscount) * 100
-        )
+        (discount / beforeDiscount) * 100
+      )
       : 0;
 
   const roleAutoSelected =
@@ -68,6 +68,11 @@ export default function OrderSummary({
 
   const configurationComplete =
     config.canReserve;
+  const showPrice =
+    confirmed.keyLevel &&
+    confirmed.runs;
+
+
 
   return (
     <aside className={styles.summary}>
@@ -118,16 +123,16 @@ export default function OrderSummary({
 
         {(!confirmed.participation ||
           participation === "play") && (
-          <SummaryRow
-            label="Role"
-            value={
-              confirmed.participation &&
-              roleSelected
-                ? formatRole(config.role)
-                : NOT_SELECTED
-            }
-          />
-        )}
+            <SummaryRow
+              label="Role"
+              value={
+                confirmed.participation &&
+                  roleSelected
+                  ? formatRole(config.role)
+                  : NOT_SELECTED
+              }
+            />
+          )}
 
         <SummaryRow
           label="Dungeon"
@@ -209,48 +214,50 @@ export default function OrderSummary({
           </div>
         )}
 
-      <div className={styles.breakdown}>
-        <SummaryRow
-          label="Base"
-          value={formatGold(base)}
-        />
-
-        {afkExtra > 0 && (
+      {showPrice && (
+        <div className={styles.breakdown}>
           <SummaryRow
-            label="AFK / Minimal"
-            value={`+${formatGold(afkExtra)}`}
+            label="Base"
+            value={formatGold(base)}
           />
-        )}
 
-        {roleExtra > 0 && (
-          <SummaryRow
-            label={`${formatRole(config.role)} role`}
-            value={`+${formatGold(roleExtra)}`}
-          />
-        )}
+          {afkExtra > 0 && (
+            <SummaryRow
+              label="AFK / Minimal"
+              value={`+${formatGold(afkExtra)}`}
+            />
+          )}
 
-        {specificExtra > 0 && (
-          <SummaryRow
-            label="Specific dungeons"
-            value={`+${formatGold(specificExtra)}`}
-          />
-        )}
+          {roleExtra > 0 && (
+            <SummaryRow
+              label={`${formatRole(config.role)} role`}
+              value={`+${formatGold(roleExtra)}`}
+            />
+          )}
 
-        {traderExtra > 0 && (
-          <SummaryRow
-            label="Loot traders"
-            value={`+${formatGold(traderExtra)}`}
-          />
-        )}
+          {specificExtra > 0 && (
+            <SummaryRow
+              label="Specific dungeons"
+              value={`+${formatGold(specificExtra)}`}
+            />
+          )}
 
-        {discount > 0 && (
-          <SummaryRow
-            label="Package discount"
-            value={`-${formatGold(discount)}`}
-            positive
-          />
-        )}
-      </div>
+          {traderExtra > 0 && (
+            <SummaryRow
+              label="Loot traders"
+              value={`+${formatGold(traderExtra)}`}
+            />
+          )}
+
+          {discount > 0 && (
+            <SummaryRow
+              label="Package discount"
+              value={`-${formatGold(discount)}`}
+              positive
+            />
+          )}
+        </div>
+      )}
 
       <div className={styles.total}>
         <div className={styles.totalHeader}>
@@ -260,7 +267,7 @@ export default function OrderSummary({
               : "ESTIMATED PRICE"}
           </span>
 
-          {discountPercent > 0 && (
+          {showPrice && discountPercent > 0 && (
             <span className={styles.discountBadge}>
               SAVE {discountPercent}%
             </span>
@@ -272,17 +279,23 @@ export default function OrderSummary({
           aria-live="polite"
           aria-atomic="true"
         >
-          <strong
-            key={total}
-            className={styles.priceValue}
-            data-testid="order-total"
-          >
-            {formatGold(total)}
-            <small> GOLD</small>
-          </strong>
+          {showPrice ? (
+            <strong
+              key={total}
+              className={styles.priceValue}
+              data-testid="order-total"
+            >
+              {formatGold(total)}
+              <small> GOLD</small>
+            </strong>
+          ) : (
+            <span className={styles.totalLabel}>
+              Select key level and runs
+            </span>
+          )}
         </div>
 
-        {discount > 0 && (
+        {showPrice && discount > 0 && (
           <p className={styles.savingsText}>
             You save {formatGold(discount)} gold
             with this package

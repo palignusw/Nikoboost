@@ -2,6 +2,7 @@
 import {
   AFK_SURCHARGE,
   getRunsDiscount,
+  basePrices,
 } from "@/data/mythicPlus";
 
 import type {
@@ -15,6 +16,8 @@ import {
 } from "../../components/ConfiguratorUI";
 
 import styles from "./RunSetup.module.scss";
+
+
 
 export default function RunSetup({
   config,
@@ -45,22 +48,60 @@ export default function RunSetup({
               config.confirmed.keyLevel &&
               config.keyLevel === level;
 
+            const price = basePrices[level];
+
+            const formattedPrice =
+              price.toLocaleString("en-US");
+
+            const shortPrice =
+              price >= 1_000_000
+                ? `${+(price / 1_000_000).toFixed(2)}M`
+                : `${+(price / 1_000).toFixed(1)}K`;
+
             return (
               <button
                 type="button"
                 key={level}
                 aria-pressed={active}
-                aria-label={`Mythic Plus ${level}`}
-                className={
-                  active
-                    ? styles.activeOption
-                    : styles.option
-                }
+                aria-label={`Mythic Plus ${level}, ${formattedPrice} gold per run`}
+                className={`${active
+                  ? styles.activeOption
+                  : styles.option
+                  } ${styles.keyButton}`}
                 onClick={() =>
                   config.setKeyLevel(level)
                 }
               >
-                +{level}
+                <span className={styles.keyNumber}>
+                  +{level}
+                </span>
+
+                {/* Mobile: visible price */}
+                <span
+                  className={styles.keyMobilePrice}
+                  aria-hidden="true"
+                >
+                  {shortPrice}
+                </span>
+
+                {/* Desktop: hover tooltip */}
+                <span
+                  className={styles.keyTooltip}
+                  aria-hidden="true"
+                >
+                  <span className={styles.tooltipLabel}>
+                    KEY +{level}
+                  </span>
+
+                  <strong className={styles.tooltipPrice}>
+                    {formattedPrice}
+                    <span> GOLD</span>
+                  </strong>
+
+                  <span className={styles.tooltipFooter}>
+                    PER RUN
+                  </span>
+                </span>
               </button>
             );
           })}
@@ -103,8 +144,8 @@ export default function RunSetup({
                     disabled={unavailable}
                     aria-pressed={active}
                     aria-label={`${amount} ${amount === 1
-                        ? "run"
-                        : "runs"
+                      ? "run"
+                      : "runs"
                       }${discountPercent > 0
                         ? `, save ${discountPercent} percent`
                         : ""

@@ -47,11 +47,9 @@
   color: #eff3ff;
   border: 1px solid rgba(142, 165, 255, 0.5);
 
-  background: linear-gradient(
-    135deg,
-    rgba(95, 124, 255, 0.16),
-    rgba(64, 88, 199, 0.06)
-  );
+  background: linear-gradient(135deg,
+      rgba(95, 124, 255, 0.16),
+      rgba(64, 88, 199, 0.06));
 
   box-shadow: inset 0 0 25px rgba(95, 124, 255, 0.04);
   transform: translateY(-1px);
@@ -272,7 +270,7 @@
 
     padding: 9px 6px;
 
-    > strong {
+    >strong {
       color: inherit;
       font-family: var(--font-rajdhani), sans-serif;
       font-size: 21px;
@@ -397,7 +395,7 @@
     button {
       padding: 8px 3px;
 
-      > strong {
+      >strong {
         font-size: 19px;
       }
 
@@ -461,7 +459,7 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 9px;
 
-    > * {
+    >* {
       min-width: 0;
       height: 100%;
     }
@@ -479,5 +477,184 @@
   .twoCards {
     grid-template-columns: 1fr;
     gap: 10px;
+  }
+}
+
+// ========================================
+// NIKOBOOST — KEY PRICE PREVIEW
+// ========================================
+
+.keyButton {
+  position: relative;
+  isolation: isolate;
+
+  &:hover,
+  &:focus-visible {
+    z-index: 20;
+  }
+}
+
+.keyNumber {
+  display: block;
+  line-height: 1;
+}
+
+// ========================================
+// DESKTOP TOOLTIP
+// ========================================
+
+.keyTooltip {
+  position: absolute;
+  z-index: 30;
+
+  left: 50%;
+  bottom: calc(100% + 12px);
+
+  width: max-content;
+  min-width: 145px;
+  max-width: 220px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+
+  padding: 13px 17px;
+
+  border: 1px solid rgba(142, 165, 255, 0.25);
+  border-radius: 11px;
+
+  background: #111a2c;
+
+  box-shadow:
+    0 12px 35px rgba(0, 0, 0, 0.5),
+    0 0 25px rgba(95, 124, 255, 0.07);
+
+  opacity: 0;
+  visibility: hidden;
+
+  transform:
+    translate(-50%, 6px) scale(0.96);
+
+  pointer-events: none;
+
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease,
+    visibility 180ms ease;
+
+  &::after {
+    content: "";
+
+    position: absolute;
+    top: 100%;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    border: 6px solid transparent;
+    border-top-color: #111a2c;
+  }
+}
+
+.tooltipLabel {
+  color: #8e9fca;
+
+  font-family: var(--font-sora), sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.tooltipPrice {
+  color: #f2f5ff;
+
+  font-family: var(--font-rajdhani), sans-serif;
+  font-size: 23px;
+  font-weight: 750;
+  line-height: 1;
+
+  white-space: nowrap;
+
+  span {
+    color: #9bacff;
+    font-size: 12px;
+  }
+}
+
+.tooltipFooter {
+  color: #7788a9;
+
+  font-family: var(--font-sora), sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+}
+
+// Show tooltip only on devices with hover
+
+@media (hover: hover) and (pointer: fine) {
+
+  .keyButton:hover .keyTooltip,
+  .keyButton:focus-visible .keyTooltip {
+    opacity: 1;
+    visibility: visible;
+
+    transform:
+      translate(-50%, 0) scale(1);
+  }
+}
+
+// ========================================
+// MOBILE PRICE
+// ========================================
+
+.keyMobilePrice {
+  display: none;
+}
+
+@media (max-width: 700px),
+(hover: none) {
+  .keyGrid .keyButton {
+    min-height: 59px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+
+    padding: 8px 4px;
+  }
+
+  .keyMobilePrice {
+    display: block;
+
+    color: #8394b6;
+
+    font-family: var(--font-sora), sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 1;
+
+    white-space: nowrap;
+  }
+
+  .activeOption.keyButton .keyMobilePrice {
+    color: #b6c5ff;
+  }
+
+  .keyTooltip {
+    display: none;
+  }
+}
+
+// ========================================
+// REDUCED MOTION
+// ========================================
+
+@media (prefers-reduced-motion: reduce) {
+  .keyTooltip {
+    transition: none;
   }
 }

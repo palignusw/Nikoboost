@@ -270,6 +270,10 @@ export default function MythicPlus() {
 
   const showMobilePrice = !reservationOpen;
 
+  const showPrice =
+    config.confirmed.keyLevel &&
+    config.confirmed.runs;
+
   useEffect(() => {
     if (!showMobilePrice) {
       setPriceExpanded(false);
@@ -824,24 +828,20 @@ export default function MythicPlus() {
             }
           >
             <span className={styles.mobilePriceInfo}>
-              <span
-                className={styles.mobilePriceLabel}
-              >
-                {!config.confirmed.keyLevel
+              <span className={styles.mobilePriceLabel}>
+                {!showPrice
                   ? "SELECT OPTIONS"
                   : config.canReserve
                     ? "TOTAL PRICE"
                     : "ESTIMATED PRICE"}
               </span>
 
-              <strong
-                className={styles.mobilePriceValue}
-              >
-                {config.confirmed.keyLevel
+              <strong className={styles.mobilePriceValue}>
+                {showPrice
                   ? config.calculation.total.toLocaleString("en-US")
                   : "—"}
 
-                <small> GOLD</small>
+                {showPrice && <small> GOLD</small>}
               </strong>
             </span>
 
