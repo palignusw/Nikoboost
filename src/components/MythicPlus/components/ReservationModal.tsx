@@ -17,6 +17,10 @@ import type { MythicPlusConfig } from "../hooks/useMythicPlusConfig";
 import { formatRole } from "../hooks/useMythicPlusConfig";
 
 import styles from "./ReservationModal.module.scss";
+import {
+  downloadOrderPdf,
+  type OrderReceipt,
+} from "./downloadOrderPdf";
 
 type Props = {
   open: boolean;
@@ -268,6 +272,11 @@ export default function ReservationModal({
   const [orderId, setOrderId] = useState("");
   const [finalTotal, setFinalTotal] = useState<number | null>(null);
   const [copied, setCopied] = useState(false);
+  const [receipt, setReceipt] =
+    useState<OrderReceipt | null>(null);
+
+  const [downloading, setDownloading] =
+    useState(false);
 
   const modalRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -283,7 +292,11 @@ export default function ReservationModal({
 
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape" && !submitting) {
-        onClose();
+        if (orderId) {
+          window.location.assign("/");
+        } else {
+          onClose();
+        }
         return;
       }
 
@@ -332,7 +345,7 @@ export default function ReservationModal({
         previousFocus.focus();
       }
     };
-  }, [open, onClose, submitting]);
+  }, [open, onClose, submitting, orderId]);
 
   useEffect(() => {
     if (open) {
@@ -340,6 +353,8 @@ export default function ReservationModal({
       setOrderId("");
       setFinalTotal(null);
       setCopied(false);
+      setReceipt(null);
+      setDownloading(false);
     }
   }, [open]);
 
@@ -422,8 +437,25 @@ export default function ReservationModal({
         throw new Error("Invalid confirmation from server.");
       }
 
+      if (
+        !data.receipt ||
+        data.receipt.orderId !== data.orderId ||
+        data.receipt.total !== data.total
+      ) {
+        throw new Error(
+          "Invalid order receipt from server."
+        );
+      }
+
+      setReceipt(data.receipt as OrderReceipt);
       setOrderId(data.orderId);
       setFinalTotal(data.total);
+
+      // Clear the submitted customer form.
+      setForm({ ...emptyForm });
+      setDate("");
+      setTime("");
+      setScheduleMode("exact");
     } catch (submitError) {
       setError(
         submitError instanceof Error
@@ -442,6 +474,28 @@ export default function ReservationModal({
     } catch {
       setError("Could not copy automatically. Select the Order ID to copy it.");
     }
+  }
+  async function handleDownloadPdf() {
+    if (!receipt || downloading) return;
+
+    setError("");
+    setDownloading(true);
+
+    try {
+      await downloadOrderPdf(receipt);
+    } catch (downloadError) {
+      console.error(downloadError);
+      setError(
+        "Could not generate PDF. Please try again."
+      );
+    } finally {
+      setDownloading(false);
+    }
+  }
+
+  function goToHomepage() {
+    // Full navigation resets the configurator state too.
+    window.location.assign("/");
   }
 
   const mode =
@@ -484,7 +538,7 @@ export default function ReservationModal({
           type="button"
           className={styles.close}
           aria-label="Close reservation"
-          onClick={onClose}
+          onClick={orderId ? goToHomepage : onClose}
           disabled={submitting}
         >
           ×
@@ -541,20 +595,26 @@ export default function ReservationModal({
               contact us about this reservation.
             </p>
 
-            <button
-              type="button"
-              className={styles.done}
-              onClick={() => {
-                setForm(emptyForm);
-                setDate("");
-                setTime("");
-                setScheduleMode("exact");
-                setCopied(false);
-                onClose();
-              }}
-            >
-              Done
-            </button>
+            <div className={styles.receiptActions}>
+              <button
+                type="button"
+                className={styles.downloadReceipt}
+                onClick={handleDownloadPdf}
+                disabled={!receipt || downloading}
+              >
+                {downloading
+                  ? "Generating PDF..."
+                  : "↓ Download PDF Receipt"}
+              </button>
+
+              <button
+                type="button"
+                className={styles.done}
+                onClick={goToHomepage}
+              >
+                Back to Homepage →
+              </button>
+            </div>
           </div>
         ) : (
           <>
@@ -668,7 +728,7 @@ export default function ReservationModal({
                 <label>
                   <span>BattleTag *</span>
                   <input
-                  disabled={submitting}
+                    disabled={submitting}
                     required
                     autoComplete="off"
                     maxLength={80}
@@ -686,7 +746,7 @@ export default function ReservationModal({
                 <label>
                   <span>Discord *</span>
                   <input
-                  disabled={submitting}
+                    disabled={submitting}
                     required
                     maxLength={80}
                     value={form.discord}
@@ -703,7 +763,7 @@ export default function ReservationModal({
                 <label>
                   <span>Character Name *</span>
                   <input
-                  disabled={submitting}
+                    disabled={submitting}
                     required
                     maxLength={80}
                     value={form.character}
@@ -720,7 +780,7 @@ export default function ReservationModal({
                 <label>
                   <span>Realm *</span>
                   <input
-                  disabled={submitting}
+                    disabled={submitting}
                     required
                     maxLength={80}
                     value={form.realm}
@@ -761,7 +821,7 @@ export default function ReservationModal({
                 </button>
 
                 <button
-                disabled={submitting}
+                  disabled={submitting}
                   type="button"
                   className={
                     scheduleMode === "flexible"
@@ -770,10 +830,10 @@ export default function ReservationModal({
                   }
                   aria-pressed={scheduleMode === "flexible"}
                   onClick={() => setScheduleMode("flexible")}
-                  
+
 
                 >
-                  
+
                   Flexible time
                 </button>
               </div>
@@ -810,7 +870,7 @@ export default function ReservationModal({
                 <label className={styles.full}>
                   <span>Your Time Zone *</span>
                   <select
-                  disabled={submitting}
+                    disabled={submitting}
                     required
                     value={timezone}
                     onChange={(event) =>
@@ -851,7 +911,7 @@ export default function ReservationModal({
                 <label className={styles.full}>
                   <span>Comment (optional)</span>
                   <textarea
-                  disabled={submitting}
+                    disabled={submitting}
                     rows={3}
                     maxLength={700}
                     value={form.comment}

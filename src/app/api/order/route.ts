@@ -15,6 +15,7 @@ import {
   traderSurcharges,
   type Role,
 } from "@/data/mythicPlus";
+import type { OrderReceipt } from "@/components/MythicPlus/components/downloadOrderPdf";
 
 
 const RATE_WINDOW = 10 * 60 * 1000;
@@ -33,6 +34,7 @@ type DuplicateRecord = {
   state: "pending" | "sent";
   orderId?: string;
   total?: number;
+  receipt?: OrderReceipt;
 };
 
 const rateLimits = new Map<string, RateRecord>();
@@ -794,6 +796,7 @@ export async function POST(request: Request) {
           ok: true,
           orderId: existing.orderId,
           total: existing.total,
+          receipt: existing.receipt,
           duplicate: true,
         });
       }
@@ -814,6 +817,36 @@ export async function POST(request: Request) {
       .toUpperCase()}-${randomUUID()
         .slice(0, 4)
         .toUpperCase()}`;
+    const receipt: OrderReceipt = {
+      orderId,
+      createdAt: new Date().toISOString(),
+      total,
+
+      customer: {
+        battleTag,
+        discord,
+        character,
+        realm,
+        comment,
+      },
+
+      service: {
+        keyLevel,
+        runs,
+        mode: modeLabel,
+        region,
+        playerClass,
+        role: roleLabel,
+        armor: armorType,
+        traders,
+        dungeons: dungeonLines,
+      },
+
+      schedule: {
+        preferredTime,
+        tbilisiTime,
+      },
+    };
 
     // DISCORD MESSAGE
 
@@ -927,12 +960,14 @@ export async function POST(request: Request) {
         expiresAt: Date.now() + DUPLICATE_WINDOW,
         orderId,
         total,
+        receipt,
       });
 
       return NextResponse.json({
         ok: true,
         orderId,
         total,
+        receipt,
       });
     } catch (error) {
       console.error("Discord delivery error:", error);
