@@ -31,7 +31,6 @@ const keyLevels = Array.from(
 );
 
 const quickRunOptions = [1, 4, 8];
-
 const classes = Object.keys(classArmor);
 
 function createEmptyDungeonCounts(): Record<DungeonName, number> {
@@ -41,44 +40,43 @@ function createEmptyDungeonCounts(): Record<DungeonName, number> {
 }
 
 export function formatRole(role: Role) {
-  if (role === "dps") {
-    return "DPS";
-  }
-
-  return role[0].toUpperCase() + role.slice(1);
+  return role === "dps"
+    ? "DPS"
+    : role[0].toUpperCase() + role.slice(1);
 }
 
+type ConfirmedChoices = {
+  keyLevel: boolean;
+  runs: boolean;
+  participation: boolean;
+  playerClass: boolean;
+  role: boolean;
+  dungeon: boolean;
+  traders: boolean;
+  region: boolean;
+};
+
 export function useMythicPlusConfig() {
-  // ========================================
-  // RUN CONFIGURATION
-  // ========================================
+  // Default values are for estimated pricing only.
+  // They are not confirmed user choices.
 
-  const [keyLevel, setKeyLevel] = useState(10);
-
+  const [keyLevel, setKeyLevelState] = useState(10);
   const [runs, setRuns] = useState(1);
 
   const [participation, setParticipation] =
     useState<Participation>("play");
 
-  const [region, setRegion] =
+  const [region, setRegionState] =
     useState<Region>("EU");
 
-  // ========================================
-  // CHARACTER CONFIGURATION
-  // ========================================
-
-  const [role, setRole] = useState<Role>("dps");
+  const [role, setRoleState] =
+    useState<Role>("dps");
 
   const [playerClass, setPlayerClass] =
     useState("Rogue");
 
   const armorType = classArmor[playerClass];
-
   const allowedRoles = classRoles[playerClass];
-
-  // ========================================
-  // DUNGEON CONFIGURATION
-  // ========================================
 
   const [specificDungeon, setSpecificDungeon] =
     useState(false);
@@ -88,40 +86,122 @@ export function useMythicPlusConfig() {
       createEmptyDungeonCounts
     );
 
-  // ========================================
-  // LOOT TRADERS
-  // ========================================
-
   const [traders, setTradersState] = useState(0);
-
   const maxTraders = getMaxTraders(armorType);
 
-  // Сохраняем совместимость с React setter.
-  // При этом не позволяем выйти за лимит.
+  const [confirmed, setConfirmed] =
+    useState<ConfirmedChoices>({
+      keyLevel: false,
+      runs: false,
+      participation: false,
+      playerClass: false,
+      role: false,
+      dungeon: false,
+      traders: false,
+      region: false,
+    });
 
-  const setTraders: Dispatch<SetStateAction<number>> = (
-    value
-  ) => {
-    setTradersState((current) => {
+  // KEY LEVEL
+
+  const setKeyLevel: Dispatch<SetStateAction<number>> =
+    (value) => {
       const requested =
         typeof value === "function"
-          ? value(current)
+          ? value(keyLevel)
+          : value;
+
+      if (
+        !Number.isInteger(requested) ||
+        requested < 2 ||
+        requested > 20
+      ) {
+        return;
+      }
+
+      setKeyLevelState(requested);
+
+      setConfirmed((previous) => ({
+        ...previous,
+        keyLevel: true,
+      }));
+    };
+
+  // ROLE
+
+  const setRole: Dispatch<SetStateAction<Role>> =
+    (value) => {
+      if (
+        !confirmed.playerClass ||
+        participation === "afk"
+      ) {
+        return;
+      }
+
+      const requested =
+        typeof value === "function"
+          ? value(role)
+          : value;
+
+      if (!allowedRoles.includes(requested)) {
+        return;
+      }
+
+      setRoleState(requested);
+
+      setConfirmed((previous) => ({
+        ...previous,
+        role: true,
+      }));
+    };
+
+  // REGION
+
+  const setRegion: Dispatch<SetStateAction<Region>> =
+    (value) => {
+      const requested =
+        typeof value === "function"
+          ? value(region)
+          : value;
+
+      if (requested !== "EU" && requested !== "NA") {
+        return;
+      }
+
+      setRegionState(requested);
+
+      setConfirmed((previous) => ({
+        ...previous,
+        region: true,
+      }));
+    };
+
+  // LOOT TRADERS
+
+  const setTraders: Dispatch<SetStateAction<number>> =
+    (value) => {
+      const requested =
+        typeof value === "function"
+          ? value(traders)
           : value;
 
       if (!Number.isFinite(requested)) {
-        return current;
+        return;
       }
 
-      return Math.max(
+      const next = Math.max(
         0,
         Math.min(maxTraders, Math.trunc(requested))
       );
-    });
-  };
 
-  // ========================================
+      setTradersState(next);
+
+      setConfirmed((previous) => ({
+        ...previous,
+        traders: true,
+      }));
+    };
+
   // DUNGEON ALLOCATION
-  // ========================================
 
   const allocatedSpecificRuns = useMemo(() => {
     return Object.values(dungeonCounts).reduce(
@@ -141,13 +221,10 @@ export function useMythicPlusConfig() {
       }));
   }, [dungeonCounts]);
 
-  // ========================================
   // PRICE CALCULATION
-  // ========================================
 
   const calculation = useMemo(() => {
     const singleRun = basePrices[keyLevel];
-
     const base = singleRun * runs;
 
     const afkExtra =
@@ -189,17 +266,13 @@ export function useMythicPlusConfig() {
     return {
       singleRun,
       base,
-
       afkExtra,
       roleExtra,
       specificExtra,
       traderExtra,
-
       extras,
-
       discount,
       discountPercent,
-
       total,
     };
   }, [
@@ -211,9 +284,7 @@ export function useMythicPlusConfig() {
     traders,
   ]);
 
-  // ========================================
-  // RUN COUNT HANDLERS
-  // ========================================
+  // RUN COUNT
 
   function setRunCount(amount: number) {
     if (!Number.isFinite(amount)) {
@@ -225,14 +296,16 @@ export function useMythicPlusConfig() {
       Math.min(50, Math.trunc(amount))
     );
 
-    // Нельзя уменьшить количество runs
-    // ниже уже распределённых подземелий.
-
     if (next < allocatedSpecificRuns) {
       return;
     }
 
     setRuns(next);
+
+    setConfirmed((previous) => ({
+      ...previous,
+      runs: true,
+    }));
   }
 
   function decreaseRuns() {
@@ -243,68 +316,89 @@ export function useMythicPlusConfig() {
     setRunCount(runs + 1);
   }
 
-  // ========================================
-  // PARTICIPATION HANDLER
-  // ========================================
+  // PARTICIPATION
 
   function handleParticipation(value: Participation) {
-    setParticipation(value);
-
-    if (value === "afk") {
-      setRole("dps");
-    }
-  }
-
-  // ========================================
-  // CLASS CHANGE HANDLER
-  // ========================================
-
-  function handleClassChange(newClass: string) {
-    if (!Object.prototype.hasOwnProperty.call(classArmor, newClass)) {
+    if (value !== "play" && value !== "afk") {
       return;
     }
 
-    const newRoles = classRoles[newClass];
-    const newArmor = classArmor[newClass];
+    setParticipation(value);
 
-    setPlayerClass(newClass);
+    setConfirmed((previous) => ({
+      ...previous,
+      participation: true,
+      role: value === "afk" ? false : previous.role,
+    }));
 
-    // Если текущая роль недоступна новому классу,
-    // автоматически выбираем допустимую.
-
-    setRole((currentRole) => {
-      if (newRoles.includes(currentRole)) {
-        return currentRole;
-      }
-
-      return newRoles[0];
-    });
-
-    // Корректируем количество Loot Traders
-    // при смене типа брони.
-
-    const newMaxTraders = getMaxTraders(newArmor);
-
-    setTradersState((current) =>
-      Math.min(current, newMaxTraders)
-    );
+    if (value === "afk") {
+      setRoleState("dps");
+    }
   }
 
-  // ========================================
-  // SPECIFIC DUNGEON HANDLER
-  // ========================================
+  // CLASS CHANGE
+
+function handleClassChange(newClass: string) {
+  if (
+    !Object.prototype.hasOwnProperty.call(
+      classArmor,
+      newClass
+    )
+  ) {
+    return;
+  }
+
+  const changed = playerClass !== newClass;
+  const newRoles = classRoles[newClass];
+
+  const hasSingleRole = newRoles.length === 1;
+
+  setPlayerClass(newClass);
+
+  setRoleState((currentRole) => {
+    if (hasSingleRole) {
+      return newRoles[0];
+    }
+
+    return newRoles.includes(currentRole)
+      ? currentRole
+      : newRoles[0];
+  });
+
+  setConfirmed((previous) => ({
+    ...previous,
+    playerClass: true,
+    role: hasSingleRole
+      ? true
+      : changed
+        ? false
+        : previous.role,
+    traders: changed
+      ? false
+      : previous.traders,
+  }));
+
+  if (changed) {
+    setTradersState(0);
+  }
+}
+
+  // DUNGEON TYPE
 
   function handleSpecificDungeon(value: boolean) {
     setSpecificDungeon(value);
+
+    setConfirmed((previous) => ({
+      ...previous,
+      dungeon: true,
+    }));
 
     if (!value) {
       setDungeonCounts(createEmptyDungeonCounts());
     }
   }
 
-  // ========================================
-  // DUNGEON AMOUNT HANDLER
-  // ========================================
+  // SPECIFIC DUNGEON COUNTS
 
   function changeDungeonAmount(
     dungeonName: DungeonName,
@@ -321,7 +415,12 @@ export function useMythicPlusConfig() {
     }
 
     setDungeonCounts((current) => {
-      if (!Object.prototype.hasOwnProperty.call(current, dungeonName)) {
+      if (
+        !Object.prototype.hasOwnProperty.call(
+          current,
+          dungeonName
+        )
+      ) {
         return current;
       }
 
@@ -331,9 +430,6 @@ export function useMythicPlusConfig() {
         (total, amount) => total + amount,
         0
       );
-
-      // Сколько максимум можно выделить
-      // именно этому подземелью.
 
       const maxForDungeon = Math.max(
         0,
@@ -359,9 +455,35 @@ export function useMythicPlusConfig() {
     });
   }
 
-  // ========================================
-  // PUBLIC CONFIG API
-  // ========================================
+  // STEP VALIDATION
+
+  const stepComplete = {
+    1:
+      confirmed.keyLevel &&
+      confirmed.runs &&
+      confirmed.participation,
+
+    2:
+      confirmed.playerClass &&
+      (
+        participation === "afk" ||
+        confirmed.role
+      ),
+
+    3:
+      confirmed.dungeon &&
+      (
+        !specificDungeon ||
+        allocatedSpecificRuns > 0
+      ) &&
+      confirmed.traders &&
+      confirmed.region,
+  };
+
+  const canReserve =
+    stepComplete[1] &&
+    stepComplete[2] &&
+    stepComplete[3];
 
   return {
     keyLevels,
@@ -406,6 +528,9 @@ export function useMythicPlusConfig() {
     selectedDungeons,
 
     calculation,
+    confirmed,
+    stepComplete,
+    canReserve,
   };
 }
 

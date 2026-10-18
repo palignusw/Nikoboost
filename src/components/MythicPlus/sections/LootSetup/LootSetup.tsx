@@ -20,10 +20,12 @@ export default function LootSetup({
 }: {
   config: MythicPlusConfig;
 }) {
-  const selectedSurcharge =
-    Math.round(
-      traderSurcharges[config.traders] * 100
-    );
+  const selectedSurcharge = Math.round(
+    traderSurcharges[config.traders] * 100
+  );
+
+  const tradersConfirmed = config.confirmed.traders;
+  const regionConfirmed = config.confirmed.region;
 
   return (
     <>
@@ -31,13 +33,15 @@ export default function LootSetup({
         number="06"
         title="Loot traders"
         value={
-          config.traders === 0
-            ? "Personal loot"
-            : `+${config.traders} ${
-                config.traders === 1
-                  ? "trader"
-                  : "traders"
-              }`
+          !tradersConfirmed
+            ? "Not selected"
+            : config.traders === 0
+              ? "Personal loot"
+              : `+${config.traders} ${
+                  config.traders === 1
+                    ? "trader"
+                    : "traders"
+                }`
         }
       >
         <div className={styles.lootIntro}>
@@ -46,7 +50,9 @@ export default function LootSetup({
           </div>
 
           <div className={styles.lootIntroText}>
-            <strong>Increase your loot opportunities</strong>
+            <strong>
+              Increase your loot opportunities
+            </strong>
 
             <p>
               Add teammates with matching armor types
@@ -61,12 +67,12 @@ export default function LootSetup({
               amount > config.maxTraders;
 
             const selected =
+              tradersConfirmed &&
               config.traders === amount;
 
-            const surcharge =
-              Math.round(
-                traderSurcharges[amount] * 100
-              );
+            const surcharge = Math.round(
+              traderSurcharges[amount] * 100
+            );
 
             return (
               <button
@@ -134,41 +140,53 @@ export default function LootSetup({
               </span>
 
               <strong>
-                {config.traders === 0
-                  ? "Personal loot"
-                  : `${config.traders} ${
-                      config.traders === 1
-                        ? "Loot Trader"
-                        : "Loot Traders"
-                    }`}
+                {!tradersConfirmed
+                  ? "Awaiting selection"
+                  : config.traders === 0
+                    ? "Personal loot"
+                    : `${config.traders} ${
+                        config.traders === 1
+                          ? "Loot Trader"
+                          : "Loot Traders"
+                      }`}
               </strong>
             </div>
 
-            <span
-              className={
-                selectedSurcharge > 0
-                  ? styles.summaryPrice
-                  : styles.summaryFree
-              }
-            >
-              {selectedSurcharge > 0
-                ? `+${selectedSurcharge}%`
-                : "NO EXTRA"}
-            </span>
+            {tradersConfirmed && (
+              <span
+                className={
+                  selectedSurcharge > 0
+                    ? styles.summaryPrice
+                    : styles.summaryFree
+                }
+              >
+                {selectedSurcharge > 0
+                  ? `+${selectedSurcharge}%`
+                  : "NO EXTRA"}
+              </span>
+            )}
           </div>
 
-          <div className={styles.lootSummaryDivider} />
+          <div
+            className={styles.lootSummaryDivider}
+          />
 
           <div className={styles.armorRow}>
             <span>Matching armor</span>
 
-            <strong>{config.armorType}</strong>
+            <strong>
+              {config.confirmed.playerClass
+                ? config.armorType
+                : "Not selected"}
+            </strong>
           </div>
 
           <p className={styles.lootDisclaimer}>
-            {config.traders === 0
-              ? "No additional loot traders selected."
-              : "Traders can offer eligible tradable items. Specific drops are not guaranteed."}
+            {!tradersConfirmed
+              ? "Choose how many loot traders you want. Select None if you don't need additional traders."
+              : config.traders === 0
+                ? "No additional loot traders selected."
+                : "Traders can offer eligible tradable items. Specific drops are not guaranteed."}
           </p>
         </div>
 
@@ -187,12 +205,17 @@ export default function LootSetup({
       <OptionSection
         number="07"
         title="Region"
-        value={config.region}
+        value={
+          regionConfirmed
+            ? config.region
+            : "Not selected"
+        }
       >
         <div className={styles.regionGrid}>
           {(["EU", "NA"] as Region[]).map(
             (region) => {
               const selected =
+                regionConfirmed &&
                 config.region === region;
 
               return (
@@ -209,11 +232,15 @@ export default function LootSetup({
                       : styles.option
                   }
                 >
-                  <span className={styles.regionSymbol}>
+                  <span
+                    className={styles.regionSymbol}
+                  >
                     {region === "EU" ? "✦" : "◆"}
                   </span>
 
-                  <span className={styles.regionContent}>
+                  <span
+                    className={styles.regionContent}
+                  >
                     <strong>{region}</strong>
 
                     <small>
@@ -225,7 +252,9 @@ export default function LootSetup({
 
                   {selected && (
                     <span
-                      className={styles.regionSelectedMark}
+                      className={
+                        styles.regionSelectedMark
+                      }
                       aria-hidden="true"
                     >
                       ✓

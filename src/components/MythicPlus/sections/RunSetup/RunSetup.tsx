@@ -41,8 +41,9 @@ export default function RunSetup({
       >
         <div className={styles.keyGrid}>
           {config.keyLevels.map((level) => {
-            const active =
-              config.keyLevel === level;
+    const active =
+  config.confirmed.keyLevel &&
+  config.keyLevel === level;
 
             return (
               <button
@@ -87,8 +88,9 @@ export default function RunSetup({
                   amount <
                   config.allocatedSpecificRuns;
 
-                const active =
-                  config.runs === amount;
+         const active =
+  config.confirmed.runs &&
+  config.runs === amount;
 
                 const discountPercent =
                   Math.round(
@@ -211,9 +213,10 @@ export default function RunSetup({
       >
         <div className={styles.twoCards}>
           <ChoiceCard
-            active={
-              config.participation === "play"
-            }
+        active={
+  config.confirmed.participation &&
+  config.participation === "play"
+}
             title="I Play"
             description="Play normally together with the boosting team."
             badge="PLAY WITH TEAM"
@@ -223,9 +226,10 @@ export default function RunSetup({
           />
 
           <ChoiceCard
-            active={
-              config.participation === "afk"
-            }
+        active={
+  config.confirmed.participation &&
+  config.participation === "afk"
+}
             title="AFK / Minimal"
             description="Minimal participation. Some mechanics may still require movement."
             price={`+${Math.round(

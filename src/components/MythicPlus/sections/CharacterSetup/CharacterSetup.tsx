@@ -1,8 +1,22 @@
 
-import { roleSurcharges } from "@/data/mythicPlus";
-import type { MythicPlusConfig } from "../../hooks/useMythicPlusConfig";
-import { formatRole } from "../../hooks/useMythicPlusConfig";
-import { OptionSection } from "../../components/ConfiguratorUI";
+import type { CSSProperties } from "react";
+
+import {
+  roleSurcharges,
+} from "@/data/mythicPlus";
+
+import type {
+  MythicPlusConfig,
+} from "../../hooks/useMythicPlusConfig";
+
+import {
+  formatRole,
+} from "../../hooks/useMythicPlusConfig";
+
+import {
+  OptionSection,
+} from "../../components/ConfiguratorUI";
+
 import styles from "./CharacterSetup.module.scss";
 
 const classIcons: Record<string, string> = {
@@ -48,11 +62,21 @@ export default function CharacterSetup({
 }: {
   config: MythicPlusConfig;
 }) {
+  const classConfirmed =
+    config.confirmed.playerClass;
+
+  const roleConfirmed =
+    config.confirmed.role;
+
   return (
     <OptionSection
       number="04"
       title="Your character"
-      value={config.armorType}
+      value={
+        classConfirmed
+          ? config.armorType
+          : "Not selected"
+      }
     >
       <div className={styles.characterSetup}>
         <div className={styles.classSelection}>
@@ -63,9 +87,11 @@ export default function CharacterSetup({
           <div className={styles.classIconGrid}>
             {config.classes.map((wowClass) => {
               const selected =
+                classConfirmed &&
                 config.playerClass === wowClass;
 
               const iconName = classIcons[wowClass];
+
               const classColor =
                 classColors[wowClass] ?? "#FFFFFF";
 
@@ -87,7 +113,7 @@ export default function CharacterSetup({
                   style={
                     {
                       "--wow-class-color": classColor,
-                    } as React.CSSProperties
+                    } as CSSProperties
                   }
                 >
                   {iconName && (
@@ -108,17 +134,23 @@ export default function CharacterSetup({
             })}
           </div>
 
-   <div className={styles.selectedClassInfo}>
-  <div className={styles.selectedClassText}>
-    <span>SELECTED CHARACTER</span>
+          <div className={styles.selectedClassInfo}>
+            <div className={styles.selectedClassText}>
+              <span>SELECTED CHARACTER</span>
 
-    <strong>{config.playerClass}</strong>
-  </div>
+              <strong>
+                {classConfirmed
+                  ? config.playerClass
+                  : "Choose a class"}
+              </strong>
+            </div>
 
-  <div className={styles.armorBadge}>
-    {config.armorType} Armor
-  </div>
-</div>
+            {classConfirmed && (
+              <div className={styles.armorBadge}>
+                {config.armorType} Armor
+              </div>
+            )}
+          </div>
         </div>
 
         <div className={styles.roleSelection}>
@@ -126,86 +158,103 @@ export default function CharacterSetup({
             Role
           </span>
 
-          {config.participation === "play" ? (
-            <>
-              <div className={styles.roleButtonGrid}>
-            
-{config.allowedRoles.map((role) => {
-  const selected = config.role === role;
-
-  const icon =
-    roleIcons[role.toLowerCase()] ?? "◆";
-
-  const surcharge =
-    Math.round(roleSurcharges[role] * 100);
-
-  return (
-    <button
-      type="button"
-      key={role}
-      aria-pressed={selected}
-      aria-label={`${formatRole(role)}${
-        surcharge > 0
-          ? `, ${surcharge}% extra`
-          : ", no role surcharge"
-      }`}
-      onClick={() => config.setRole(role)}
-      className={`${styles.roleCard} ${
-        selected ? styles.roleCardActive : ""
-      }`}
-    >
-      <span
-        className={styles.roleCardIcon}
-        aria-hidden="true"
-      >
-        {icon}
-      </span>
-
-      <span className={styles.roleCardContent}>
-        <strong>{formatRole(role)}</strong>
-
-        <small
-          className={
-            surcharge > 0
-              ? styles.roleExtra
-              : styles.roleFree
-          }
-        >
-          {surcharge > 0
-            ? `+${surcharge}%`
-            : "NO EXTRA"}
-        </small>
-      </span>
-
-      {selected && (
-        <span
-          className={styles.roleCheck}
-          aria-hidden="true"
-        >
-          ✓
-        </span>
-      )}
-    </button>
-  );
-})}
-
-              </div>
-
-              {roleSurcharges[config.role] > 0 && (
-                <small className={styles.roleNote}>
-                  +
-                  {Math.round(
-                    roleSurcharges[config.role] * 100
-                  )}
-                  % composition adjustment
-                </small>
-              )}
-            </>
-          ) : (
+          {!classConfirmed ? (
+            <small className={styles.roleNote}>
+              Choose your class first to select
+              your role.
+            </small>
+          ) : config.participation === "afk" ? (
             <small className={styles.roleNote}>
               Role is not used for AFK /
               minimal participation.
             </small>
+          ) : (
+            <>
+              <div className={styles.roleButtonGrid}>
+                {config.allowedRoles.map((role) => {
+                  const selected =
+                    roleConfirmed &&
+                    config.role === role;
+
+                  const icon =
+                    roleIcons[role.toLowerCase()] ??
+                    "◆";
+
+                  const surcharge = Math.round(
+                    roleSurcharges[role] * 100
+                  );
+
+                  return (
+                    <button
+                      type="button"
+                      key={role}
+                      aria-pressed={selected}
+                      aria-label={`${formatRole(role)}${
+                        surcharge > 0
+                          ? `, ${surcharge}% extra`
+                          : ", no role surcharge"
+                      }`}
+                      onClick={() =>
+                        config.setRole(role)
+                      }
+                      className={`${styles.roleCard} ${
+                        selected
+                          ? styles.roleCardActive
+                          : ""
+                      }`}
+                    >
+                      <span
+                        className={styles.roleCardIcon}
+                        aria-hidden="true"
+                      >
+                        {icon}
+                      </span>
+
+                      <span
+                        className={styles.roleCardContent}
+                      >
+                        <strong>
+                          {formatRole(role)}
+                        </strong>
+
+                        <small
+                          className={
+                            surcharge > 0
+                              ? styles.roleExtra
+                              : styles.roleFree
+                          }
+                        >
+                          {surcharge > 0
+                            ? `+${surcharge}%`
+                            : "NO EXTRA"}
+                        </small>
+                      </span>
+
+                      {selected && (
+                        <span
+                          className={styles.roleCheck}
+                          aria-hidden="true"
+                        >
+                          ✓
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {roleConfirmed &&
+                roleSurcharges[config.role] > 0 && (
+                  <small className={styles.roleNote}>
+                    +
+                    {Math.round(
+                      roleSurcharges[config.role] *
+                        100
+                    )}
+                    % composition adjustment
+                  </small>
+                )}
+            </>
           )}
         </div>
       </div>
