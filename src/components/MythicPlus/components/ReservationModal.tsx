@@ -42,17 +42,18 @@ const emptyForm: CustomerForm = {
   website: "",
 };
 
-const timezones = [
-  { value: "Europe/Berlin", label: "Central Europe (CET/CEST)" },
-  { value: "Europe/London", label: "United Kingdom (GMT/BST)" },
-  { value: "Europe/Istanbul", label: "Türkiye (UTC+3)" },
-  { value: "Asia/Tbilisi", label: "Georgia (UTC+4)" },
-  { value: "America/New_York", label: "US Eastern (ET)" },
-  { value: "America/Chicago", label: "US Central (CT)" },
-  { value: "America/Denver", label: "US Mountain (MT)" },
-  { value: "America/Los_Angeles", label: "US Pacific (PT)" },
-  { value: "UTC", label: "UTC" },
-];
+const timezones = Intl.supportedValuesOf("timeZone")
+  .map((timezone) => ({
+    value: timezone,
+    label: timezone.replaceAll("_", " "),
+  }));
+
+if (!timezones.some((zone) => zone.value === "UTC")) {
+  timezones.unshift({
+    value: "UTC",
+    label: "UTC",
+  });
+}
 
 
 type ScheduleValidationResult =

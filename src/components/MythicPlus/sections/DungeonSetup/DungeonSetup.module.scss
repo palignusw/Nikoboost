@@ -530,3 +530,189 @@
     transition: none;
   }
 }
+
+// ========================================
+// NIKOBOOST — DUNGEON MOBILE REFINEMENT
+// ========================================
+
+@media (max-width: 700px) {
+  .dungeonAllocator {
+    gap: 14px;
+  }
+
+  // Allocation status
+
+  .allocationStatus {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    padding: 14px;
+  }
+
+  .allocationStatus > div {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+
+  .allocationStatus > div > strong {
+    font-family: var(--font-rajdhani), sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .allocationStatus > div > span {
+    font-size: 9px;
+    line-height: 1.4;
+  }
+
+  // Dungeon cards
+
+  .dungeonAllocation,
+  .activeDungeonAllocation {
+    min-height: 76px;
+    gap: 10px;
+
+    border-radius: 12px;
+  }
+
+  .activeDungeonAllocation {
+    border-color: rgba(142, 165, 255, 0.65);
+
+    background: linear-gradient(
+      135deg,
+      rgba(95, 124, 255, 0.16),
+      rgba(95, 124, 255, 0.035)
+    );
+
+    box-shadow: 0 0 18px rgba(95, 124, 255, 0.08);
+  }
+
+  .dungeonName span {
+    font-family: var(--font-rajdhani), sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .dungeonName small {
+    font-family: var(--font-sora), sans-serif;
+    font-size: 10px;
+  }
+
+  // Run counters
+
+  .dungeonCounter {
+    grid-template-columns: 40px 28px 40px;
+    border-radius: 9px;
+  }
+
+  .dungeonCounter button,
+  .dungeonCounter strong {
+    height: 44px;
+  }
+
+  .dungeonCounter strong {
+    font-family: var(--font-rajdhani), sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+  }
+}
+
+@media (max-width: 360px) {
+  .dungeonAllocation,
+  .activeDungeonAllocation {
+    padding: 9px;
+    gap: 7px;
+  }
+
+  .dungeonThumbnail {
+    width: 38px;
+    height: 38px;
+  }
+
+  .dungeonVisualInfo {
+    gap: 7px;
+  }
+
+  .dungeonCounter {
+    grid-template-columns: 36px 24px 36px;
+  }
+
+  .dungeonCounter button,
+  .dungeonCounter strong {
+    height: 40px;
+  }
+
+  .dungeonName span {
+    font-size: 13px;
+  }
+}
+@media (max-width: 700px) {
+  .allocationStatus {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .allocationStatus > div {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 5px;
+  }
+
+  .allocationStatus > div:first-child {
+    flex-direction: column-reverse;
+  }
+
+  .allocationStatus > div > strong {
+    font-family: var(--font-rajdhani), sans-serif;
+    font-size: 25px;
+    line-height: 1;
+  }
+
+  .allocationStatus > div > span {
+    font-size: 9px;
+    line-height: 1.4;
+  }
+}
+@media (max-width: 700px) {
+  .allocationStatus {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+    gap: 16px;
+  }
+
+  .allocationStatus > div {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 6px;
+  }
+
+  .allocationStatus > div:first-child {
+    flex-direction: column-reverse;
+  }
+
+  .allocationStatus > div > strong {
+    margin: 0;
+    font-family: var(--font-rajdhani), sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .allocationStatus > div > span {
+    margin: 0;
+    line-height: 1.4;
+  }
+}

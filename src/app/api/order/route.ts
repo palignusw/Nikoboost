@@ -191,21 +191,39 @@ async function readJson(request: Request): Promise<unknown> {
 }
 
 
-const ALLOWED_TIMEZONES = new Set([
-  "Europe/Berlin",
-  "Europe/London",
-  "Europe/Istanbul",
-  "Asia/Tbilisi",
-  "America/New_York",
-  "America/Chicago",
-  "America/Denver",
-  "America/Los_Angeles",
-  "UTC",
-]);
+function isValidTimezone(timezone: string): boolean {
+  if (!timezone || timezone.length > 100) {
+    return false;
+  }
+
+  try {
+    new Intl.DateTimeFormat("en-US", {
+      timeZone: timezone,
+    });
+
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 type ScheduleResult =
-  | { valid: true }
+  | { valid: true; tbilisiTime?: string }
   | { valid: false; error: string };
+function formatTimeForTbilisi(
+  timestamp: number
+): string {
+  return new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Asia/Tbilisi",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).format(new Date(timestamp));
+}
+
 
 function validatePreferredTime(
   preferredTime: string
@@ -222,7 +240,7 @@ function validatePreferredTime(
   if (flexibleMatch) {
     const timezone = flexibleMatch[1];
 
-    if (!ALLOWED_TIMEZONES.has(timezone)) {
+    if (!isValidTimezone(timezone)) {
       return {
         valid: false,
         error: "Invalid time zone.",
@@ -247,7 +265,7 @@ function validatePreferredTime(
     timezone,
   ] = exactMatch;
 
-  if (!ALLOWED_TIMEZONES.has(timezone)) {
+  if (!isValidTimezone(timezone)) {
     return {
       valid: false,
       error: "Invalid time zone.",
@@ -400,7 +418,10 @@ function validatePreferredTime(
     };
   }
 
-  return { valid: true };
+  return {
+    valid: true,
+    tbilisiTime: formatTimeForTbilisi(timestamp),
+  };
 }
 
 
@@ -517,16 +538,20 @@ export async function POST(request: Request) {
         400
       );
     }
-    
-const scheduleValidation =
-  validatePreferredTime(preferredTime);
 
-if (!scheduleValidation.valid) {
-  return jsonError(
-    scheduleValidation.error,
-    400
-  );
-}
+    const scheduleValidation =
+      validatePreferredTime(preferredTime);
+
+    if (!scheduleValidation.valid) {
+
+      return jsonError(
+        scheduleValidation.error,
+        400
+      );
+    }
+    const tbilisiTime =
+      scheduleValidation.tbilisiTime ??
+      "Flexible — arrange with customer";
 
 
     // ORDER VALIDATION
@@ -685,8 +710,8 @@ if (!scheduleValidation.valid) {
 
     const specificExtra = Math.round(
       singleRun *
-        allocatedSpecificRuns *
-        SPECIFIC_DUNGEON_SURCHARGE
+      allocatedSpecificRuns *
+      SPECIFIC_DUNGEON_SURCHARGE
     );
 
     const traderExtra = Math.round(
@@ -787,8 +812,8 @@ if (!scheduleValidation.valid) {
     const orderId = `NB-${Date.now()
       .toString(36)
       .toUpperCase()}-${randomUUID()
-      .slice(0, 4)
-      .toUpperCase()}`;
+        .slice(0, 4)
+        .toUpperCase()}`;
 
     // DISCORD MESSAGE
 
@@ -825,10 +850,9 @@ if (!scheduleValidation.valid) {
                     `Class: **${playerClass}**`,
                     `Role: **${roleLabel}**`,
                     `Armor: **${armorType}**`,
-                    `Traders: **${
-                      traders === 0
-                        ? "None"
-                        : `+${traders}`
+                    `Traders: **${traders === 0
+                      ? "None"
+                      : `+${traders}`
                     }**`,
                   ].join("\n"),
                   inline: true,
@@ -859,17 +883,20 @@ if (!scheduleValidation.valid) {
                 },
                 {
                   name: "🕒 Preferred time",
-                  value: preferredTime,
+                  value: [
+                    `🌍 Customer: ${preferredTime}`,
+                    `🇬🇪 Tbilisi: **${tbilisiTime}**`,
+                  ].join("\n"),
                   inline: false,
                 },
                 ...(comment
                   ? [
-                      {
-                        name: "📝 Comment",
-                        value: comment,
-                        inline: false,
-                      },
-                    ]
+                    {
+                      name: "📝 Comment",
+                      value: comment,
+                      inline: false,
+                    },
+                  ]
                   : []),
               ],
               footer: {

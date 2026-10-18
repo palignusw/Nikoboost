@@ -561,3 +561,111 @@
     font-size: 12px;
   }
 }
+
+// ========================================
+// NIKOBOOST — CHARACTER MOBILE REFINEMENT
+// ========================================
+
+@media (max-width: 700px) {
+  .characterSetup {
+    gap: 20px;
+  }
+
+  .classSelection,
+  .roleSelection {
+    gap: 12px;
+  }
+
+  .classIconGrid {
+    gap: 8px;
+  }
+
+  .classIconButton {
+    position: relative;
+    overflow: hidden;
+
+    border-radius: 11px;
+
+    &:active {
+      transform: scale(0.97);
+    }
+  }
+
+  .classIconSelected {
+    border-color: var(--wow-class-color);
+
+    background: linear-gradient(
+      145deg,
+      rgba(95, 124, 255, 0.13),
+      #151b28
+    );
+
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.035),
+      0 0 18px rgba(95, 124, 255, 0.12);
+  }
+
+  .className {
+    font-family: var(--font-rajdhani), sans-serif;
+    font-weight: 700;
+  }
+
+  .selectedClassInfo {
+    gap: 10px;
+  }
+
+  .roleSelection {
+    background: linear-gradient(
+      145deg,
+      #171e2b,
+      #121721
+    );
+
+    border-color: rgba(142, 165, 255, 0.16);
+  }
+
+  .roleCard {
+    border-radius: 11px;
+  }
+
+  .roleCardActive {
+    border-color: #829aff;
+
+    box-shadow:
+      0 0 18px rgba(95, 124, 255, 0.12);
+  }
+}
+
+@media (max-width: 480px) {
+  .classIconGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .classIconButton {
+    min-height: 94px;
+    padding: 10px 4px;
+    gap: 7px;
+  }
+
+  .classIconImage {
+    width: 46px;
+    height: 46px;
+  }
+
+  .className {
+    font-size: 12px;
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+  }
+
+  .roleButtonGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .roleCard {
+    min-height: 66px;
+    padding: 10px;
+  }
+}

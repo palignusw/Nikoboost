@@ -688,3 +688,128 @@
     transition: none;
   }
 }
+
+// ========================================
+// NIKOBOOST — REVIEW MOBILE REFINEMENT
+// ========================================
+
+.reviewStep {
+  font-family: var(--font-sora), sans-serif;
+}
+
+.reviewHeader h3,
+.overviewHeading h4,
+.sectionHeader h4,
+.totalTop h4 {
+  font-family: var(--font-rajdhani), sans-serif;
+  font-weight: 700;
+}
+
+.reviewItemContent > strong,
+.dungeonRowInfo > div strong {
+  font-family: var(--font-rajdhani), sans-serif;
+  font-weight: 700;
+}
+
+@media (max-width: 700px) {
+  .reviewStep {
+    gap: 18px;
+  }
+
+  .reviewHeader h3 {
+    font-size: 29px;
+    line-height: 1.1;
+  }
+
+  .overviewTop {
+    padding: 18px 16px;
+  }
+
+  .overviewStats > div {
+    padding: 13px 10px;
+  }
+
+  .reviewSection {
+    gap: 11px;
+  }
+
+  .reviewGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .reviewItem {
+    min-height: 78px;
+    padding: 11px;
+    gap: 9px;
+    align-items: flex-start;
+  }
+
+  .reviewItemIcon {
+    width: 28px;
+    height: 28px;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+
+  .reviewItemContent {
+    gap: 5px;
+  }
+
+  .reviewItemContent > span {
+    font-size: 8px;
+    line-height: 1.4;
+  }
+
+  .reviewItemContent > strong {
+    font-size: 15px;
+    line-height: 1.2;
+  }
+
+  .dungeonRow {
+    min-height: 60px;
+    padding: 11px 12px;
+    gap: 10px;
+  }
+
+  .dungeonRowInfo {
+    gap: 9px;
+  }
+
+  .dungeonIcon {
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
+  }
+
+  .dungeonRowInfo > div strong {
+    font-size: 15px;
+  }
+
+  .reviewTotal {
+    padding: 18px;
+  }
+
+  .totalAmount strong {
+    font-size: clamp(32px, 9vw, 42px);
+  }
+}
+
+@media (max-width: 360px) {
+  .reviewItem {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .reviewItemContent > strong {
+    font-size: 14px;
+  }
+
+  .overviewStats > div {
+    padding: 12px 8px;
+  }
+
+  .sectionHeader h4 {
+    font-size: 16px;
+  }
+}
