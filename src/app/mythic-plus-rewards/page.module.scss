@@ -1826,3 +1826,127 @@
     }
   }
 }
+/* Weekly planning workflow */
+.toolNav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 28px 0 16px;
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: 20px;
+    padding: 13px 18px;
+    border: 1px solid rgba(145, 166, 205, .22);
+    border-radius: 8px;
+    color: #c5d0e8;
+    font-size: 12px;
+    text-decoration: none;
+    background: rgba(20, 29, 47, .8);
+    &:first-child { color: #eff3ff; border-color: #697fee; background: #3d4fb0; }
+    &:hover { border-color: #a6b7ff; color: white; }
+  }
+}
+.dataNotice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 28px;
+  padding: 15px 18px;
+  border: 1px solid rgba(145, 166, 205, .15);
+  border-radius: 8px;
+  background: rgba(22, 31, 49, .6);
+  p { flex: 1; margin: 0; font-size: 11px; line-height: 1.7; color: #aab8d1; }
+  strong { color: #e2e9ff; }
+  a { flex-shrink: 0; font-size: 11px; color: #b3c4ff; text-decoration: none; }
+}
+.planStatus {
+  min-height: 18px;
+  margin: 0 0 12px;
+  font-size: 12px;
+  color: #a7d9c5;
+  &:empty { min-height: 0; margin: 0; }
+}
+.goalBuilder {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  margin-bottom: 20px;
+  border: 1px solid rgba(129, 149, 255, .42);
+  border-radius: 14px;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 95% 0%, rgba(89, 105, 222, .23), transparent 60%), #111927;
+}
+.goalControls {
+  padding: 30px;
+  h3 { margin: 12px 0; color: #f2f5ff; font-size: 29px; }
+  p { margin: 0; max-width: 430px; color: #aab8d1; font-size: 12px; line-height: 1.8; }
+}
+.goalFields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin: 24px 0 15px;
+  label { display: grid; gap: 9px; min-width: 0; }
+  span { font-size: 11px; color: #bac8e3; }
+  select {
+    width: 100%; min-height: 46px; padding: 9px 12px;
+    border: 1px solid #3e4c71; border-radius: 7px;
+    background: #121b2d; color: #eef2ff; font: inherit; font-size: 12px;
+  }
+}
+.goalFootnote { display: block; font-size: 10px; color: #95a6c3; line-height: 1.8; }
+.goalResult {
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 30px; border-left: 1px solid rgba(129, 149, 255, .2);
+  >strong { display: block; margin: 12px 0 0; color: #e1e7ff; font-family: var(--font-rajdhani), sans-serif; font-size: 56px; line-height: 1; }
+  p { margin: 10px 0 20px; color: #bac8e3; font-size: 12px; line-height: 1.6; }
+  button { margin-top: 16px; padding: 13px; border: 1px solid #8197fa; border-radius: 7px; background: #4d60c4; color: white; font-size: 16px; }
+  button:disabled { border-color: #354b50; background: #1b3438; color: #a7d9c5; cursor: default; }
+  small { margin-top: 10px; color: #9cacc9; font-size: 10px; line-height: 1.6; text-align: center; }
+}
+.goalProgress { display: flex; justify-content: space-between; gap: 12px; font-size: 11px; color: #a9b8d2; b { color: #dbe5ff; white-space: nowrap; } }
+.plannerToolbar {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  margin: 18px 0; font-size: 11px; color: #9cacc9;
+  >div { display: flex; gap: 8px; }
+  button { padding: 9px 12px; color: #c6d3f6; background: #162138; border: 1px solid #344669; border-radius: 6px; font-size: 13px; }
+  button:disabled { opacity: .45; cursor: default; }
+}
+.shareField {
+  display: grid; gap: 8px; margin: 0 0 20px; font-size: 11px; color: #b7c7e9;
+  input { width: 100%; min-width: 0; padding: 12px; border: 1px solid #485e8d; border-radius: 6px; background: #111a2c; color: #dce6ff; font-size: 12px; }
+}
+.sharedBanner {
+  display: flex; align-items: center; gap: 14px; padding: 20px; margin-bottom: 20px;
+  border: 1px solid #6f82dc; border-radius: 10px; background: #1a2542;
+  >div { flex: 1; min-width: 0; }
+  strong { color: #e0e7ff; font-size: 14px; }
+  p { color: #b2c0df; font-size: 12px; line-height: 1.8; overflow-wrap: anywhere; }
+  button { padding: 12px; border: 1px solid #5d72b9; border-radius: 6px; background: #344891; color: #fff; }
+}
+.sourcesCard {
+  padding: 28px; margin-top: 45px; background: #111b2a;
+  border: 1px solid rgba(145, 166, 205, .2); border-radius: 10px;
+  h2 { margin: 10px 0 18px; font-size: 27px; color: #e3eaff; }
+  p { color: #a4b4d0; font-size: 12px; line-height: 1.9; }
+  >div:last-child { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 18px; }
+  a { color: #b4c7ff; font-size: 12px; }
+}
+.toolFooter { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; margin-top: 28px; a { color: #b8c9fa; font-size: 12px; text-decoration: none; } }
+.tableCaption { padding: 16px; color: #b9c8e4; font-size: 12px; text-align: left; line-height: 1.7; }
+.page section[id] { scroll-margin-top: 100px; }
+.page :is(a, select, input):focus-visible { outline: 2px solid #aabaff; outline-offset: 4px; }
+@media (max-width: 700px) {
+  .goalBuilder { grid-template-columns: 1fr; }
+  .goalControls, .goalResult { padding: 23px; }
+  .goalResult { border-left: 0; border-top: 1px solid rgba(129, 149, 255, .2); }
+  .goalResult >strong { font-size: 48px; }
+  .dataNotice { align-items: flex-start; flex-wrap: wrap; }
+  .dataNotice a { margin-left: 20px; }
+  .sharedBanner { flex-wrap: wrap; >div { flex-basis: 100%; } }
+  .plannerToolbar { flex-wrap: wrap; }
+  .goalFields { gap: 10px; }
+  .goalFields select { padding: 9px 6px; font-size: 11px; }
+  .toolNav a { flex: 1 1 42%; justify-content: space-between; padding: 12px; font-size: 11px; }
+  .sourcesCard { padding: 22px; }
+}

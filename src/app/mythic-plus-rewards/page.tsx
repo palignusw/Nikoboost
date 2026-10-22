@@ -5,12 +5,16 @@ import {
   mythicRewards as rewards,
   vaultThresholds as VAULT_THRESHOLDS,
   getMythicReward,
+  wowSeason,
   type CrestType,
   type MythicReward as Reward,
 } from "@/data/wowSeason";
 
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import styles from "./page.module.scss";
+import Link from "next/link";
+import WeeklyGoal from "./components/WeeklyGoal";
+import { decodePlan, encodePlan } from "@/lib/rewardsPlanner";
 
 
 
@@ -189,14 +193,19 @@ export default function RewardsExplorer() {
   const [runs, setRuns] = useState<number[]>([]);
   const [plannerLoaded, setPlannerLoaded] = useState(false);
   const [showTable, setShowTable] = useState(false);
+  const [undoRuns, setUndoRuns] = useState<number[] | null>(null);
+  const [sharedRuns, setSharedRuns] = useState<number[] | null>(null);
+  const [notice, setNotice] = useState("");
+  const [shareLink, setShareLink] = useState("");
+  const [customYield, setCustomYield] = useState("");
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   const [crestType, setCrestType] = useState<CrestType>("Myth");
   const [crestGoal, setCrestGoal] = useState("120");
   const [currentCrests, setCurrentCrests] = useState("0");
 
-  const goalValue = Number(crestGoal) || 0;
-  const currentValue = Number(currentCrests) || 0;
+  const goalValue = Math.min(100000, Math.max(0, Number(crestGoal) || 0));
+  const currentValue = Math.min(100000, Math.max(0, Number(currentCrests) || 0));
   const [calculatorLevel, setCalculatorLevel] = useState(12);
 
   // Keep the server and first client render identical; restore browser storage
@@ -208,6 +217,12 @@ export default function RewardsExplorer() {
   );
   if (hydrated && !plannerLoaded) {
     setRuns(readSavedRuns());
+    const query = new URLSearchParams(window.location.search);
+    if (query.has("plan")) {
+      const imported = decodePlan(query.get("plan"));
+      setSharedRuns(imported);
+      if (imported === null) setNotice("This shared link is invalid. Your saved plan is unchanged.");
+    }
     setPlannerLoaded(true);
   }
 
@@ -264,15 +279,16 @@ export default function RewardsExplorer() {
       (reward) => reward.level === calculatorLevel
     ) ?? calculatorOptions[0];
 
+  const perRun = customYield === "" ? calculatorReward.crestAmount : Math.min(1000, Math.max(1, Number(customYield) || 1));
   const remainingCrests = Math.max(0, goalValue - currentValue);
 
   const runsNeeded =
     remainingCrests === 0
       ? 0
-      : Math.ceil(remainingCrests / calculatorReward.crestAmount);
+      : Math.ceil(remainingCrests / perRun);
 
   const estimatedTotal =
-    runsNeeded * calculatorReward.crestAmount;
+    runsNeeded * perRun;
 
   const bestFarmingReward = calculatorOptions.reduce(
     (best, current) =>
@@ -305,16 +321,39 @@ export default function RewardsExplorer() {
     comparison.crestDifference === null ||
     comparison.crestDifference > 0;
 
+  function updateRuns(next: number[]) {
+    setUndoRuns(runs);
+    setRuns(next);
+    setNotice(`Plan updated: ${next.length} ${next.length === 1 ? "run" : "runs"}. Saved in this browser.`);
+    setShareLink("");
+  }
+
   function addRun(key: number) {
-    setRuns((previous) =>
-      previous.length >= 200 ? previous : [...previous, key]
-    );
+    if (runs.length < 200) updateRuns([...runs, key]);
   }
 
   function removeRun(index: number) {
-    setRuns((previous) =>
-      previous.filter((_, currentIndex) => currentIndex !== index)
-    );
+    updateRuns(runs.filter((_, currentIndex) => currentIndex !== index));
+  }
+
+  function dismissSharedPlan() {
+    setSharedRuns(null);
+    const url = new URL(window.location.href);
+    url.searchParams.delete("plan");
+    window.history.replaceState(window.history.state, "", url);
+  }
+
+  async function sharePlan() {
+    const url = new URL(window.location.pathname, window.location.origin);
+    url.searchParams.set("plan", encodePlan(runs));
+    url.hash = "weekly-planner";
+    setShareLink(url.toString());
+    try {
+      await navigator.clipboard.writeText(url.toString());
+      setNotice("Plan link copied. It includes only key levels, no personal details.");
+    } catch {
+      setNotice("Copy the plan link below to share it.");
+    }
   }
 
   function changeCrestType(type: CrestType) {
@@ -328,6 +367,7 @@ export default function RewardsExplorer() {
         : currentBest
     );
 
+    setCustomYield("");
     setCrestType(type);
     setCalculatorLevel(best.level);
   }
@@ -349,7 +389,7 @@ export default function RewardsExplorer() {
           <div className={styles.heroCopy}>
             <div className={styles.kicker}>
               <span className={styles.statusDot} />
-              MIDNIGHT SEASON 2
+              {wowSeason.name.toUpperCase()}
             </div>
 
             <h1>
@@ -367,7 +407,7 @@ export default function RewardsExplorer() {
             <div className={styles.heroMetaItem}>
               <span>MAX DUNGEON LOOT</span>
               <strong>
-                311 <small>iLvl</small>
+                {Math.max(...rewards.map((row) => row.dungeon))} <small>iLvl</small>
               </strong>
             </div>
 
@@ -376,15 +416,39 @@ export default function RewardsExplorer() {
             <div className={styles.heroMetaItem}>
               <span>MAX VAULT REWARD</span>
               <strong>
-                318 <small>iLvl</small>
+                {Math.max(...rewards.map((row) => row.vault))} <small>iLvl</small>
               </strong>
             </div>
           </div>
         </header>
 
+        <nav className={styles.toolNav} aria-label="Rewards tools">
+          <a href="#weekly-planner">Plan my week <span>↗</span></a>
+          <a href="#reward-explorer">Explore rewards</a>
+          <a href="#crest-calculator">Calculate Crests</a>
+          <a href="#reward-reference" onClick={() => setShowTable(true)}>Loot table</a>
+        </nav>
+
+        <div className={styles.dataNotice}>
+          <span className={styles.statusDot} aria-hidden="true" />
+          <p><strong>{wowSeason.name}</strong> · Manual planning tool. Crest quantities are provisional; use your in-game per-run amount in the calculator.</p>
+          <a href="#reward-sources">Data &amp; sources ↓</a>
+        </div>
+
+        {sharedRuns !== null && (
+          <section className={styles.sharedBanner} aria-label="Shared plan preview">
+            <div><strong>A shared plan is ready to preview</strong><p>{sharedRuns.length} runs: {encodePlan(sharedRuns) || "empty plan"}. Importing replaces your saved runs; you can undo it.</p></div>
+            <button type="button" onClick={() => { updateRuns(sharedRuns); dismissSharedPlan(); }}>Import shared plan</button>
+            <button type="button" onClick={dismissSharedPlan}>Dismiss</button>
+          </section>
+        )}
+
+        <p className={styles.planStatus} role="status">{notice}</p>
+
         {/* REWARD EXPLORER */}
 
         <section
+          id="reward-explorer"
           className={styles.workspace}
           aria-labelledby="explorer-heading"
         >
@@ -512,6 +576,198 @@ export default function RewardsExplorer() {
                   Add to Vault Planner
                 </button>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* GREAT VAULT PLANNER */}
+
+        <section
+          id="weekly-planner"
+          className={styles.plannerSection}
+          aria-labelledby="planner-heading"
+        >
+          <div className={styles.sectionHeading}>
+            <div>
+              <span className={styles.overline}>
+                WEEKLY PROGRESSION
+              </span>
+
+              <h2 id="planner-heading">
+                Great Vault Planner
+              </h2>
+
+              <p>
+                Simulate your weekly Vault rewards.
+                Planned runs are saved in this browser.
+              </p>
+            </div>
+
+            <div className={styles.runCounter}>
+              <strong>{runs.length}</strong>
+              <span>PLANNED RUNS</span>
+            </div>
+          </div>
+
+          <WeeklyGoal runs={runs} onChange={updateRuns} />
+          <div className={styles.plannerToolbar}>
+            <span>Saved locally · {runs.length} / 200 runs</span>
+            <div>
+              <button type="button" disabled={undoRuns === null} onClick={() => {
+                if (undoRuns !== null) { const previous = undoRuns; setUndoRuns(null); setRuns(previous); setShareLink(""); setNotice("Last change undone."); }
+              }}>Undo last change</button>
+              <button type="button" onClick={sharePlan}>Share plan ↗</button>
+            </div>
+          </div>
+          {shareLink && <label className={styles.shareField}>Your plan link<input aria-label="Your plan link" readOnly value={shareLink} onFocus={(event) => event.target.select()} /></label>}
+          <div className={styles.planner}>
+            <div className={styles.plannerTop}>
+              <div>
+                <span className={styles.smallLabel}>
+                  DUNGEON PROGRESS
+                </span>
+                <strong>
+                  {Math.min(runs.length, 8)} / 8
+                </strong>
+              </div>
+
+              <button
+                type="button"
+                className={styles.resetButton}
+                disabled={runs.length === 0}
+                onClick={() => updateRuns([])}
+              >
+                Reset planner
+              </button>
+            </div>
+
+            <div
+              className={styles.progressTrack}
+              role="progressbar"
+              aria-label="Great Vault dungeon progress"
+              aria-valuenow={Math.min(runs.length, 8)}
+              aria-valuemin={0}
+              aria-valuemax={8}
+            >
+              <div
+                className={styles.progressFill}
+                style={{
+                  width: `${Math.min(
+                    (runs.length / 8) * 100,
+                    100
+                  )}%`,
+                }}
+              />
+            </div>
+
+            <div className={styles.vaultGrid}>
+              {VAULT_THRESHOLDS.map((required, index) => {
+                const reward = vault[index];
+                const unlocked = reward !== null;
+
+                return (
+                  <div
+                    key={required}
+                    className={`${styles.vaultSlot} ${unlocked ? styles.vaultSlotActive : ""
+                      }`}
+                  >
+                    <div className={styles.slotHeader}>
+                      <span>VAULT SLOT 0{index + 1}</span>
+                      <span className={styles.slotState}>
+                        {unlocked
+                          ? "● PLANNED"
+                          : "○ LOCKED"}
+                      </span>
+                    </div>
+
+                    <div className={styles.slotBody}>
+                      {reward ? (
+                        <>
+                          <strong>{reward.vault}</strong>
+                          <span>
+                            iLvl · {reward.vaultTrack}
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <strong
+                            className={styles.lockedValue}
+                          >
+                            —
+                          </strong>
+                          <span>
+                            {required - runs.length} more{" "}
+                            {required - runs.length === 1
+                              ? "run"
+                              : "runs"}
+                          </span>
+                        </>
+                      )}
+                    </div>
+
+                    <div className={styles.slotFooter}>
+                      {reward
+                        ? `Based on your ${index === 0 ? "highest" : index === 1 ? "4th-highest" : "8th-highest"} key: +${reward.level}`
+                        : `Requires ${required} planned runs`}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className={styles.runManager}>
+              <div className={styles.runManagerTitle}>
+                <strong>Your weekly runs</strong>
+                <span>
+                  {runs.length
+                    ? "Select a run to remove it"
+                    : "Use the explorer above to add runs"}
+                </span>
+              </div>
+
+              <div className={styles.runChips}>
+                {runs.length === 0 ? (
+                  <span className={styles.emptyRuns}>
+                    No runs added yet
+                  </span>
+                ) : (
+                  runs.map((run, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      className={styles.runChip}
+                      onClick={() => removeRun(index)}
+                      aria-label={`Remove key +${run} run`}
+                    >
+                      +{run}
+                      <span>×</span>
+                    </button>
+                  ))
+                )}
+              </div>
+
+              <div className={styles.plannedCrests}>
+                <div className={styles.plannedCrestsHeader}>
+                  <strong>Estimated Crests from planned runs</strong>
+                  <span>By reward tier</span>
+                </div>
+
+                <div className={styles.plannedCrestsGrid}>
+                  {crestTypes.map((type) => (
+                    <div key={type}>
+                      <span>{type}</span>
+                      <strong>{crestTotals[type]}</strong>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <p className={styles.plannerNote}>
+                This is a simulation, not live character
+                progress. Crest totals are estimates based
+                on the listed per-run values. Reset your
+                plan after the weekly reset.
+              </p>
             </div>
           </div>
         </section>
@@ -764,189 +1020,10 @@ export default function RewardsExplorer() {
           </div>
         </section>
 
-        {/* GREAT VAULT PLANNER */}
-
-        <section
-          className={styles.plannerSection}
-          aria-labelledby="planner-heading"
-        >
-          <div className={styles.sectionHeading}>
-            <div>
-              <span className={styles.overline}>
-                WEEKLY PROGRESSION
-              </span>
-
-              <h2 id="planner-heading">
-                Great Vault Planner
-              </h2>
-
-              <p>
-                Simulate your weekly Vault rewards.
-                Planned runs are saved in this browser.
-              </p>
-            </div>
-
-            <div className={styles.runCounter}>
-              <strong>{runs.length}</strong>
-              <span>PLANNED RUNS</span>
-            </div>
-          </div>
-
-          <div className={styles.planner}>
-            <div className={styles.plannerTop}>
-              <div>
-                <span className={styles.smallLabel}>
-                  DUNGEON PROGRESS
-                </span>
-                <strong>
-                  {Math.min(runs.length, 8)} / 8
-                </strong>
-              </div>
-
-              <button
-                type="button"
-                className={styles.resetButton}
-                disabled={runs.length === 0}
-                onClick={() => setRuns([])}
-              >
-                Reset planner
-              </button>
-            </div>
-
-            <div
-              className={styles.progressTrack}
-              role="progressbar"
-              aria-label="Great Vault dungeon progress"
-              aria-valuenow={Math.min(runs.length, 8)}
-              aria-valuemin={0}
-              aria-valuemax={8}
-            >
-              <div
-                className={styles.progressFill}
-                style={{
-                  width: `${Math.min(
-                    (runs.length / 8) * 100,
-                    100
-                  )}%`,
-                }}
-              />
-            </div>
-
-            <div className={styles.vaultGrid}>
-              {VAULT_THRESHOLDS.map((required, index) => {
-                const reward = vault[index];
-                const unlocked = reward !== null;
-
-                return (
-                  <div
-                    key={required}
-                    className={`${styles.vaultSlot} ${unlocked ? styles.vaultSlotActive : ""
-                      }`}
-                  >
-                    <div className={styles.slotHeader}>
-                      <span>VAULT SLOT 0{index + 1}</span>
-                      <span className={styles.slotState}>
-                        {unlocked
-                          ? "● PLANNED"
-                          : "○ LOCKED"}
-                      </span>
-                    </div>
-
-                    <div className={styles.slotBody}>
-                      {reward ? (
-                        <>
-                          <strong>{reward.vault}</strong>
-                          <span>
-                            iLvl · {reward.vaultTrack}
-                          </span>
-                        </>
-                      ) : (
-                        <>
-                          <strong
-                            className={styles.lockedValue}
-                          >
-                            —
-                          </strong>
-                          <span>
-                            {required - runs.length} more{" "}
-                            {required - runs.length === 1
-                              ? "run"
-                              : "runs"}
-                          </span>
-                        </>
-                      )}
-                    </div>
-
-                    <div className={styles.slotFooter}>
-                      {reward
-                        ? `Based on +${reward.level}`
-                        : `Requires ${required} planned runs`}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className={styles.runManager}>
-              <div className={styles.runManagerTitle}>
-                <strong>Your weekly runs</strong>
-                <span>
-                  {runs.length
-                    ? "Select a run to remove it"
-                    : "Use the explorer above to add runs"}
-                </span>
-              </div>
-
-              <div className={styles.runChips}>
-                {runs.length === 0 ? (
-                  <span className={styles.emptyRuns}>
-                    No runs added yet
-                  </span>
-                ) : (
-                  runs.map((run, index) => (
-                    <button
-                      key={index}
-                      type="button"
-                      className={styles.runChip}
-                      onClick={() => removeRun(index)}
-                      aria-label={`Remove key +${run} run`}
-                    >
-                      +{run}
-                      <span>×</span>
-                    </button>
-                  ))
-                )}
-              </div>
-
-              <div className={styles.plannedCrests}>
-                <div className={styles.plannedCrestsHeader}>
-                  <strong>Estimated Crests from planned runs</strong>
-                  <span>By reward tier</span>
-                </div>
-
-                <div className={styles.plannedCrestsGrid}>
-                  {crestTypes.map((type) => (
-                    <div key={type}>
-                      <span>{type}</span>
-                      <strong>{crestTotals[type]}</strong>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <p className={styles.plannerNote}>
-                This is a simulation, not live character
-                progress. Crest totals are estimates based
-                on the listed per-run values. Reset your
-                plan after the weekly reset.
-              </p>
-            </div>
-          </div>
-        </section>
-
         {/* CREST FARMING CALCULATOR */}
 
         <section
+          id="crest-calculator"
           className={styles.crestCalculatorSection}
           aria-labelledby="crest-calculator-heading"
         >
@@ -1060,7 +1137,7 @@ export default function RewardsExplorer() {
                         : ""
                     }
                     onClick={() =>
-                      setCalculatorLevel(reward.level)
+                      { setCalculatorLevel(reward.level); setCustomYield(""); }
                     }
                   >
                     +{reward.level}
@@ -1068,6 +1145,12 @@ export default function RewardsExplorer() {
                 ))}
               </div>
 
+              <label className={styles.calculatorField}>
+                <span>CRESTS PER RUN · OPTIONAL OVERRIDE</span>
+                <input type="number" min="1" max="1000" inputMode="numeric" placeholder={String(calculatorReward.crestAmount)} value={customYield}
+                  onChange={(event) => { if (event.target.value === "" || /^\d+$/.test(event.target.value)) setCustomYield(event.target.value); }}
+                  onBlur={() => { if (customYield !== "") setCustomYield(String(perRun)); }} />
+              </label>
               <p className={styles.calculatorHint}>
                 +{bestFarmingReward.level} is the lowest
                 listed key awarding the maximum{" "}
@@ -1093,7 +1176,7 @@ export default function RewardsExplorer() {
                 <div>
                   <span>Crests per run</span>
                   <strong>
-                    {calculatorReward.crestAmount}
+                    {perRun}{customYield !== "" ? " (custom)" : " (estimate)"}
                   </strong>
                 </div>
 
@@ -1118,6 +1201,8 @@ export default function RewardsExplorer() {
               <div className={styles.calculatorRecommendation}>
                 {runsNeeded === 0 ? (
                   "You already have enough Crests for this goal."
+                ) : customYield !== "" ? (
+                  "Using your custom per-run yield. Cross-key recommendations are disabled because actual yields may differ."
                 ) : extraRuns > 0 ? (
                   <>
                     <strong>
@@ -1147,9 +1232,14 @@ export default function RewardsExplorer() {
                 )}
               </div>
 
+              <button type="button" className={styles.recommendationButton}
+                disabled={runsNeeded === 0 || runs.length + runsNeeded > 200}
+                onClick={() => { updateRuns([...runs, ...Array<number>(runsNeeded).fill(calculatorReward.level)]); document.getElementById("weekly-planner")?.scrollIntoView({ behavior: "smooth" }); }}>
+                {runs.length + runsNeeded > 200 ? "Farm exceeds 200-run planner limit" : "Add farm to weekly plan →"}
+              </button>
               <p className={styles.calculatorDisclaimer}>
                 Estimates use the displayed Crest reward
-                table. Actual rewards may depend on
+                table. Custom yield applies to this calculator only; weekly planner totals use the reference table. Actual rewards may depend on
                 completion conditions and game updates.
               </p>
             </div>
@@ -1158,11 +1248,12 @@ export default function RewardsExplorer() {
 
         {/* FULL LOOT TABLE */}
 
-        <section className={styles.referenceSection}>
+        <section id="reward-reference" className={styles.referenceSection}>
           <button
             type="button"
             className={styles.tableToggle}
             aria-expanded={showTable}
+            aria-controls="full-rewards-table"
             onClick={() => setShowTable((current) => !current)}
           >
             <div>
@@ -1181,8 +1272,9 @@ export default function RewardsExplorer() {
           </button>
 
           {showTable && (
-            <div className={styles.tableScroll}>
+            <div id="full-rewards-table" className={styles.tableScroll}>
               <table className={styles.table}>
+                <caption className={styles.tableCaption}>{wowSeason.name} · Listed dungeon and Vault rewards. Crest amounts are provisional estimates.</caption>
                 <thead>
                   <tr>
                     <th>KEY</th>
@@ -1318,6 +1410,12 @@ export default function RewardsExplorer() {
           </div>
         </section>
 
+        <section id="reward-sources" className={styles.sourcesCard} aria-labelledby="sources-heading">
+          <div><span className={styles.overline}>ABOUT THESE NUMBERS</span><h2 id="sources-heading">Know what you’re planning with.</h2></div>
+          <p>Gear previews use the site’s {wowSeason.name} reference table. Crest quantities have not been independently verified and are estimates, not guaranteed rewards. Enter the amount shown in your game for a more useful farm estimate. Weekly caps, other Crest sources and failed runs are not included.</p>
+          <div><a href="https://worldofwarcraft.blizzard.com/news/24294369/midnight-season-2-is-now-live" target="_blank" rel="noopener noreferrer">Blizzard season overview ↗</a><a href="https://worldofwarcraft.blizzard.com/news/24304162/1215-content-update-notes" target="_blank" rel="noopener noreferrer">Blizzard 12.1.5 update notes ↗</a></div>
+        </section>
+        <div className={styles.toolFooter}><Link href="/">← Back to NikoBoost</Link><Link href="/#mythic">Explore Mythic+ runs →</Link></div>
         <p className={styles.disclaimer}>
           Seasonal reward values can change with game
           updates. Crest calculations are estimates

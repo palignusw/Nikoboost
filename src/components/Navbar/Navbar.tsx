@@ -7,9 +7,10 @@ import Link from "next/link";
 import styles from "./Navbar.module.scss";
 
 const links = [
-  { href: "#mythic", label: "Mythic+" },
-  { href: "#how", label: "How it works" },
-  { href: "#faq", label: "FAQ" },
+  { href: "/#mythic", label: "Mythic+" },
+  { href: "/#how", label: "How it works" },
+  { href: "/#faq", label: "FAQ" },
+  { href: "/mythic-plus-rewards", label: "Rewards & Tools" },
 ];
 
 export default function Navbar() {
@@ -49,7 +50,7 @@ export default function Navbar() {
 
         <div className={styles.actions}>
           <Link
-            href="#mythic"
+            href="/#mythic"
             className={styles.book}
             onClick={closeMenu}
           >
@@ -94,7 +95,7 @@ export default function Navbar() {
         ))}
 
         <Link
-          href="#mythic"
+          href="/#mythic"
           className={styles.mobileBook}
           onClick={closeMenu}
         >
