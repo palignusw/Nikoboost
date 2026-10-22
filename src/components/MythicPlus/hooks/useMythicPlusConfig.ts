@@ -298,6 +298,7 @@ export function useMythicPlusConfig() {
   }, [
     keyLevel,
     runs,
+    runGoal,
     participation,
     role,
     allocatedSpecificRuns,
