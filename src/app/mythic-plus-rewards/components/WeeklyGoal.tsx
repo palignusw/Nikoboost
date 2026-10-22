@@ -3,52 +3,119 @@
 import { useState } from "react";
 import { mythicRewards } from "@/data/wowSeason";
 import { getWeeklyGoal, MAX_PLANNER_RUNS } from "@/lib/rewardsPlanner";
+import RewardSelect from "./RewardSelect";
 import styles from "../page.module.scss";
 
-const targets = [...new Set(mythicRewards.map((reward) => reward.vault))];
+const targets = [...new Set(mythicRewards.map((reward) => reward.vault))].map(
+  (value) => {
+    const row = mythicRewards.find((reward) => reward.vault === value)!;
+    return {
+      value,
+      label: `${value} iLvl`,
+      detail: `${row.vaultTrack} · from +${row.level}`,
+    };
+  },
+);
 
-type Props = { runs: number[]; onChange: (runs: number[]) => void };
+type Props = {
+  runs: number[];
+  completed: number[];
+  onAdd: (runs: number[]) => void;
+};
 
-export default function WeeklyGoal({ runs, onChange }: Props) {
-  const [target, setTarget] = useState(targets[targets.length - 1]);
+export default function WeeklyGoal({ runs, completed, onAdd }: Props) {
+  const [target, setTarget] = useState(targets[targets.length - 1].value);
   const [slots, setSlots] = useState(2);
   const goal = getWeeklyGoal(runs, target, slots);
+  const current = getWeeklyGoal(completed, target, slots);
   const full = runs.length + goal.missing > MAX_PLANNER_RUNS;
 
   return (
-    <div className={styles.goalBuilder} data-testid="weekly-goal">
+    <section
+      className={styles.goalBuilder}
+      data-testid="weekly-goal"
+      aria-labelledby="goal-heading"
+    >
       <div className={styles.goalControls}>
-        <span className={styles.overline}>START WITH YOUR GOAL</span>
-        <h3>What do you want next reset?</h3>
-        <p>Choose your reward. We’ll work out the fewest additional runs at the lowest qualifying key.</p>
-        <div className={styles.goalFields}>
-          <label>
-            <span>Vault item level</span>
-            <select value={target} onChange={(event) => setTarget(Number(event.target.value))}>
-              {targets.map((value) => <option key={value} value={value}>{value} iLvl</option>)}
-            </select>
-          </label>
-          <label>
-            <span>Dungeon choices</span>
-            <select value={slots} onChange={(event) => setSlots(Number(event.target.value))}>
-              <option value={1}>1 choice · 1 run</option>
-              <option value={2}>2 choices · 4 runs</option>
-              <option value={3}>3 choices · 8 runs</option>
-            </select>
-          </label>
+        <span className={styles.overline}>02 / CHOOSE YOUR WEEKLY GOAL</span>
+        <h3 id="goal-heading">What reward are you aiming for?</h3>
+        <RewardSelect
+          label="Vault item level"
+          value={target}
+          options={targets}
+          onChange={setTarget}
+        />
+        <span className={styles.fieldLabel}>How many dungeon choices?</span>
+        <div
+          className={styles.choiceCards}
+          role="group"
+          aria-label="Dungeon choices"
+        >
+          {[1, 2, 3].map((count, index) => (
+            <button
+              key={count}
+              type="button"
+              aria-pressed={slots === count}
+              onClick={() => setSlots(count)}
+            >
+              <span>
+                {count} {count === 1 ? "choice" : "choices"}
+              </span>
+              <small>
+                {[1, 4, 8][index]} qualifying{" "}
+                {[1, 4, 8][index] === 1 ? "run" : "runs"}
+              </small>
+            </button>
+          ))}
         </div>
-        <span className={styles.goalFootnote}>More choices, one reward to claim. Lower keys already in your plan are kept.</span>
+        <p className={styles.goalFootnote}>
+          You pick <strong>one item</strong> from your unlocked choices after
+          reset. More choices means more chances to find an upgrade.
+        </p>
       </div>
       <div className={styles.goalResult}>
-        <span className={styles.smallLabel}>{goal.missing === 0 ? "GOAL REACHED IN YOUR PLAN" : "YOUR SHORTEST ROUTE"}</span>
-        <strong data-testid="goal-runs">{goal.missing === 0 ? "Ready" : `${goal.missing} × +${goal.key}`}</strong>
-        <p>{goal.missing === 0 ? `${slots} ${slots === 1 ? "choice" : "choices"} at ${target} iLvl or higher.` : `${goal.missing} more ${goal.missing === 1 ? "run" : "runs"} at +${goal.key} or higher.`}</p>
-        <div className={styles.goalProgress}><span>Qualifying runs in your plan</span><b>{Math.min(goal.qualifying, goal.required)} / {goal.required}</b></div>
-        <button type="button" disabled={goal.missing === 0 || full} onClick={() => onChange([...runs, ...Array<number>(goal.missing).fill(goal.key)])}>
-          {goal.missing === 0 ? "Goal included in plan ✓" : full ? "Planner limit reached" : "Add missing runs →"}
+        <span className={styles.smallLabel}>
+          {current.missing === 0
+            ? "ALREADY EARNED THIS WEEK"
+            : goal.missing === 0
+              ? "COVERED BY YOUR PLAN"
+              : "ADD THIS TO REACH YOUR GOAL"}
+        </span>
+        <strong data-testid="goal-runs">
+          {goal.missing === 0 ? "Ready" : `${goal.missing} × +${goal.key}`}
+        </strong>
+        <p>
+          {current.missing === 0
+            ? "Your completed runs already meet this goal."
+            : goal.missing === 0
+              ? "Finish the planned keys below to reach this reward tier."
+              : `${goal.missing} more ${goal.missing === 1 ? "run" : "runs"} at +${goal.key} or higher. Your existing keys are already counted.`}
+        </p>
+        <div className={styles.goalProgress}>
+          <span>Completed at this reward tier</span>
+          <b>
+            {Math.min(current.qualifying, goal.required)} / {goal.required}
+          </b>
+        </div>
+        <div className={styles.goalProgress}>
+          <span>Including planned keys</span>
+          <b>
+            {Math.min(goal.qualifying, goal.required)} / {goal.required}
+          </b>
+        </div>
+        <button
+          type="button"
+          disabled={goal.missing === 0 || full}
+          onClick={() => onAdd(Array<number>(goal.missing).fill(goal.key))}
+        >
+          {goal.missing === 0
+            ? "Goal covered ✓"
+            : full
+              ? "Planner limit reached"
+              : "Add missing runs to plan →"}
         </button>
-        <small>This adds planned runs. Nothing is booked or completed.</small>
+        <small>Planning is free. This does not place an order.</small>
       </div>
-    </div>
+    </section>
   );
 }

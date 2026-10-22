@@ -1,20 +1,38 @@
-import { getMythicReward, mythicRewards, vaultThresholds } from "@/data/wowSeason";
+import {
+  getMythicReward,
+  mythicRewards,
+  vaultThresholds,
+} from "@/data/wowSeason";
 
 export const MAX_PLANNER_RUNS = 200;
 
 export function isPlannerKey(value: unknown): value is number {
-  return typeof value === "number" && Number.isInteger(value) && !!getMythicReward(value);
+  return (
+    typeof value === "number" &&
+    Number.isInteger(value) &&
+    !!getMythicReward(value)
+  );
 }
 
-export function getWeeklyGoal(runs: number[], targetVault: number, slots: number) {
+export function getWeeklyGoal(
+  runs: number[],
+  targetVault: number,
+  slots: number,
+) {
   const reward = mythicRewards.find((row) => row.vault >= targetVault);
-  if (!reward || ![1, 2, 3].includes(slots)) throw new Error("Invalid weekly goal");
+  if (!reward || ![1, 2, 3].includes(slots))
+    throw new Error("Invalid weekly goal");
   const required = vaultThresholds[slots - 1];
   const qualifying = runs.filter((key) => {
     const row = getMythicReward(key);
     return row && row.vault >= targetVault;
   }).length;
-  return { key: reward.level, required, qualifying, missing: Math.max(0, required - qualifying) };
+  return {
+    key: reward.level,
+    required,
+    qualifying,
+    missing: Math.max(0, required - qualifying),
+  };
 }
 
 // Compact links contain only key levels, never player or customer details.
@@ -23,7 +41,10 @@ export function encodePlan(runs: number[]): string {
   for (const key of runs.filter(isPlannerKey).slice(0, MAX_PLANNER_RUNS)) {
     counts.set(key, (counts.get(key) ?? 0) + 1);
   }
-  return [...counts].sort(([a], [b]) => b - a).map(([key, count]) => `${key}x${count}`).join(",");
+  return [...counts]
+    .sort(([a], [b]) => b - a)
+    .map(([key, count]) => `${key}x${count}`)
+    .join(",");
 }
 
 export function decodePlan(value: string | null): number[] | null {
@@ -35,8 +56,40 @@ export function decodePlan(value: string | null): number[] | null {
     if (!match) return null;
     const key = Number(match[1]);
     const count = Number(match[2]);
-    if (!isPlannerKey(key) || runs.length + count > MAX_PLANNER_RUNS) return null;
+    if (!isPlannerKey(key) || runs.length + count > MAX_PLANNER_RUNS)
+      return null;
     runs.push(...Array<number>(count).fill(key));
   }
   return runs;
+}
+
+export type PlannerWeek = { completed: number[]; planned: number[] };
+export const WEEK_STORAGE_KEY = "nikoboost:mythic-plus:week:v2";
+
+export function restoreWeek(value: unknown): PlannerWeek | null {
+  if (
+    !value ||
+    typeof value !== "object" ||
+    !("completed" in value) ||
+    !("planned" in value) ||
+    !Array.isArray(value.completed) ||
+    !Array.isArray(value.planned)
+  )
+    return null;
+  const completed = value.completed
+    .filter(isPlannerKey)
+    .slice(0, MAX_PLANNER_RUNS);
+  return {
+    completed,
+    planned: value.planned
+      .filter(isPlannerKey)
+      .slice(0, MAX_PLANNER_RUNS - completed.length),
+  };
+}
+
+export function vaultFor(runs: number[]) {
+  const sorted = runs.filter(isPlannerKey).sort((a, b) => b - a);
+  return vaultThresholds.map(
+    (required) => getMythicReward(sorted[required - 1]) ?? null,
+  );
 }
