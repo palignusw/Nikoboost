@@ -63,13 +63,6 @@ export default function TimePicker({
     };
   }, [open]);
 
-  useEffect(() => {
-    if (!open) {
-      setHour(value.split(":")[0] || "20");
-      setMinute(value.split(":")[1] || "00");
-    }
-  }, [value, open]);
-
   function selectTime() {
     onChange(`${hour}:${minute}`);
     setOpen(false);
@@ -79,6 +72,10 @@ export default function TimePicker({
   function openPicker() {
     if (disabled) return;
 
+    if (!open) {
+      setHour(value.split(":")[0] || "20");
+      setMinute(value.split(":")[1] || "00");
+    }
     setOpen((current) => !current);
   }
 

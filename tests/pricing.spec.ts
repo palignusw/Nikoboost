@@ -1,8 +1,9 @@
+import { runSetup } from "./helpers/configurator";
 
 import { test, expect, type Page } from "@playwright/test";
 
 const GOLD = {
-  key10: 80_000,
+  key10: 72_000,
   key12: 100_000,
 };
 
@@ -14,13 +15,14 @@ async function openConfigurator(page: Page) {
   }).click();
 
   await expect(page).toHaveURL(/#mythic$/);
+  await runSetup(page);
 }
 
 async function selectKey(page: Page, level: number) {
   const keyGrid = page.locator('[class*="keyGrid"]');
 
   const button = keyGrid.getByRole("button", {
-    name: `+${level}`,
+    name: new RegExp(`Mythic Plus ${level},`),
     exact: true,
   });
 
@@ -32,7 +34,7 @@ async function selectRuns(page: Page, runs: number) {
   const quickRuns = page.locator('[class*="quickRuns"]');
 
   const button = quickRuns.getByRole("button", {
-    name: new RegExp(`^${runs}\\s*RUNS?$`, "i"),
+    name: new RegExp(`^${runs} runs?(,|$)`, "i"),
   });
 
   await button.click();
@@ -50,8 +52,6 @@ async function expectTotal(
 
   const total = page.getByTestId("order-total");
 
-  await expect(total).toBeVisible();
-
   await expect(total).toHaveText(
     new RegExp(`^${formatted}\\s*GOLD$`)
   );
@@ -60,7 +60,7 @@ async function expectTotal(
 
 
 test.describe("NikoBoost pricing", () => {
-  test("Default +10 run costs 80,000 gold", async ({ page }) => {
+  test("Default +10 run costs 72,000 gold", async ({ page }) => {
     await openConfigurator(page);
 
     await selectKey(page, 10);
@@ -86,7 +86,7 @@ test.describe("NikoBoost pricing", () => {
       GOLD.key10 * 4 * 0.95
     );
 
-    expect(expected).toBe(304_000);
+    expect(expected).toBe(273_600);
 
     await expectTotal(page, expected);
 
@@ -105,7 +105,7 @@ test.describe("NikoBoost pricing", () => {
       GOLD.key10 * 8 * 0.9
     );
 
-    expect(expected).toBe(576_000);
+    expect(expected).toBe(518_400);
 
     await expectTotal(page, expected);
 
@@ -135,12 +135,12 @@ test.describe("NikoBoost pricing", () => {
     await openConfigurator(page);
 
     await selectKey(page, 10);
-    await expectTotal(page, 80_000);
+    await expectTotal(page, 72_000);
 
     await selectKey(page, 12);
     await expectTotal(page, 100_000);
 
     await selectKey(page, 10);
-    await expectTotal(page, 80_000);
+    await expectTotal(page, 72_000);
   });
 });

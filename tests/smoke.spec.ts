@@ -31,7 +31,7 @@ test.describe("NikoBoost smoke tests", () => {
     await page.goto("/");
 
     const result = await page.evaluate(async () => {
-      const response = await fetch("/Images/classes/rogue.jpg");
+      const response = await fetch("/images/classes/rogue.jpg");
 
       return {
         status: response.status,

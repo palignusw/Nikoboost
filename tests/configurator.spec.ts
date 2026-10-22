@@ -1,3 +1,4 @@
+import { runSetup } from "./helpers/configurator";
 
 import { test, expect, type Page } from "@playwright/test";
 
@@ -15,9 +16,10 @@ async function openConfigurator(page: Page) {
 
 async function openCharacterStep(page: Page) {
   await openConfigurator(page);
+  await runSetup(page);
 
   await page.getByRole("button", {
-    name: /Continue/i,
+    name: "Continue", exact: true,
   }).click();
 
   await expect(
@@ -35,12 +37,12 @@ test("Key level can be changed", async ({ page }) => {
   const keyGrid = page.locator('[class*="keyGrid"]');
 
   const key10 = keyGrid.getByRole("button", {
-    name: "+10",
+    name: /Mythic Plus 10,/,
     exact: true,
   });
 
   const key12 = keyGrid.getByRole("button", {
-    name: "+12",
+    name: /Mythic Plus 12,/,
     exact: true,
   });
 
@@ -116,7 +118,7 @@ test("Key level can be changed", async ({ page }) => {
     ).toHaveCount(0);
 
     await expect(
-      page.getByText("Armor: Leather", { exact: true })
+      page.getByText("Leather Armor", { exact: true })
     ).toBeVisible();
   });
 
@@ -142,7 +144,7 @@ test("Key level can be changed", async ({ page }) => {
     ).toBeVisible();
 
     await expect(
-      page.getByText("Armor: Plate", { exact: true })
+      page.getByText("Plate Armor", { exact: true })
     ).toBeVisible();
   });
 
@@ -154,7 +156,7 @@ test("Key level can be changed", async ({ page }) => {
     }).click();
 
     await expect(
-      page.getByText("Armor: Cloth", { exact: true })
+      page.getByText("Cloth Armor", { exact: true })
     ).toBeVisible();
 
     const roles = page.locator('[class*="roleButtonGrid"]');
