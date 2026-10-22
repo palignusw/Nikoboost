@@ -10,7 +10,7 @@ const siteUrl =
   "https://www.nikoboost.online";
 
 
-  const sora = Sora({
+const sora = Sora({
   subsets: ["latin"],
   variable: "--font-sora",
   display: "swap",
@@ -26,7 +26,7 @@ const rajdhani = Rajdhani({
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
 
-  
+
 
   title: {
     default: "NikoBoost | WoW Mythic+ Boosting for Gold",
@@ -81,7 +81,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" data-scroll-behavior="smooth">
       <body className={`${sora.variable} ${rajdhani.variable}`} >
         {children}
 

@@ -1,4 +1,3 @@
-
 /* NikoBoost — Mythic+ Rewards */
 
 .page {
@@ -21,13 +20,28 @@
   color: var(--text);
   font-family: var(--font-sora), Arial, sans-serif;
 
-  *, *::before, *::after { box-sizing: border-box; }
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
 
-  h1, h2, h3, h4, h5, h6, button {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  button {
     font-family: var(--font-rajdhani), Arial, sans-serif;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-weight: 700;
     line-height: 1.1;
   }
@@ -63,7 +77,8 @@
 
 /* Shared typography */
 
-.overline, .smallLabel {
+.overline,
+.smallLabel {
   color: var(--light);
   font-size: 10px;
   font-weight: 700;
@@ -91,7 +106,9 @@
   }
 }
 
-.workspace, .planner, .referenceSection {
+.workspace,
+.planner,
+.referenceSection {
   background: linear-gradient(145deg, #111722, #0d121b);
   border: 1px solid var(--line);
   border-radius: 16px;
@@ -110,10 +127,14 @@
   font-weight: 700;
   letter-spacing: 1px;
 
-  strong { color: var(--light); }
+  strong {
+    color: var(--light);
+  }
 }
 
-.breadcrumbDivider { color: #3e4b61; }
+.breadcrumbDivider {
+  color: #3e4b61;
+}
 
 .hero {
   display: flex;
@@ -132,7 +153,9 @@
     font-weight: 700;
     letter-spacing: -1.5px;
 
-    span { color: var(--light); }
+    span {
+      color: var(--light);
+    }
   }
 
   p {
@@ -179,7 +202,7 @@
   flex-direction: column;
   gap: 8px;
 
-  > span {
+  >span {
     color: var(--muted);
     font-size: 9px;
     font-weight: 700;
@@ -205,7 +228,9 @@
 
 /* Reward explorer */
 
-.workspace { overflow: hidden; }
+.workspace {
+  overflow: hidden;
+}
 
 .workspaceHeader {
   display: flex;
@@ -239,14 +264,15 @@
   border-right: 1px solid var(--line);
 }
 
-.keySectionTop, .previewTop {
+.keySectionTop,
+.previewTop {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 12px;
   margin-bottom: 20px;
 
-  > span:first-child {
+  >span:first-child {
     color: var(--muted);
     font-size: 10px;
     font-weight: 700;
@@ -254,7 +280,7 @@
   }
 }
 
-.keySectionTop > strong {
+.keySectionTop>strong {
   color: var(--light);
   font: 700 26px var(--font-rajdhani), Arial, sans-serif;
 }
@@ -281,7 +307,8 @@
   }
 }
 
-.keyActive, .keyActive:hover {
+.keyActive,
+.keyActive:hover {
   background: linear-gradient(135deg, #526fe4, #334a9d);
   border-color: #8097ff;
   color: white;
@@ -327,7 +354,10 @@
   font-weight: 700;
 }
 
-.previewRows { display: grid; gap: 11px; }
+.previewRows {
+  display: grid;
+  gap: 11px;
+}
 
 .previewRow {
   display: flex;
@@ -352,7 +382,7 @@
   gap: 12px;
   min-width: 0;
 
-  > div {
+  >div {
     display: flex;
     flex-direction: column;
     gap: 5px;
@@ -370,7 +400,8 @@
   }
 }
 
-.rewardIcon, .vaultIcon {
+.rewardIcon,
+.vaultIcon {
   display: grid;
   place-items: center;
   flex: 0 0 40px;
@@ -407,7 +438,9 @@
   }
 }
 
-.vaultReward .rewardValue strong { color: var(--gold); }
+.vaultReward .rewardValue strong {
+  color: var(--gold);
+}
 
 .previewBottom {
   display: flex;
@@ -415,7 +448,7 @@
   gap: 18px;
   margin-top: 20px;
 
-  > div {
+  >div {
     display: flex;
     justify-content: space-between;
     gap: 12px;
@@ -448,7 +481,9 @@
   font-size: 16px;
   transition: .2s;
 
-  span { font-size: 20px; }
+  span {
+    font-size: 20px;
+  }
 
   &:hover {
     background: #6884f3;
@@ -458,7 +493,9 @@
 
 /* Great Vault planner */
 
-.plannerSection, .guideSection, .faqSection {
+.plannerSection,
+.guideSection,
+.faqSection {
   margin-top: 65px;
 }
 
@@ -479,7 +516,9 @@
   }
 }
 
-.planner { padding: 27px; }
+.planner {
+  padding: 27px;
+}
 
 .plannerTop {
   display: flex;
@@ -487,7 +526,7 @@
   align-items: center;
   gap: 15px;
 
-  > div {
+  >div {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -504,8 +543,14 @@
   color: #92a3c0;
   font-size: 15px;
 
-  &:hover:not(:disabled) { color: white; }
-  &:disabled { opacity: .35; cursor: default; }
+  &:hover:not(:disabled) {
+    color: white;
+  }
+
+  &:disabled {
+    opacity: .35;
+    cursor: default;
+  }
 }
 
 .progressTrack {
@@ -550,7 +595,7 @@
   flex-wrap: wrap;
   gap: 8px;
 
-  > span:first-child {
+  >span:first-child {
     color: #a5b3c8;
     font-size: 10px;
     font-weight: 700;
@@ -564,7 +609,9 @@
   font-weight: 700;
 }
 
-.vaultSlotActive .slotState { color: var(--green); }
+.vaultSlotActive .slotState {
+  color: var(--green);
+}
 
 .slotBody {
   display: flex;
@@ -582,7 +629,9 @@
   }
 }
 
-.lockedValue { color: #526078; }
+.lockedValue {
+  color: #526078;
+}
 
 .slotFooter {
   margin-top: auto;
@@ -604,8 +653,14 @@
   align-items: center;
   gap: 15px;
 
-  strong { font-size: 13px; }
-  span { color: var(--muted); font-size: 11px; }
+  strong {
+    font-size: 13px;
+  }
+
+  span {
+    color: var(--muted);
+    font-size: 11px;
+  }
 }
 
 .runChips {
@@ -626,8 +681,14 @@
   color: #dce6ff;
   font-size: 15px;
 
-  span { color: #a0b1d4; font-size: 18px; }
-  &:hover { border-color: var(--light); }
+  span {
+    color: #a0b1d4;
+    font-size: 18px;
+  }
+
+  &:hover {
+    border-color: var(--light);
+  }
 }
 
 .emptyRuns {
@@ -654,9 +715,20 @@
   color: inherit;
   text-align: left;
 
-  h2 { margin: 8px 0; font-size: 22px; }
-  p { margin: 0; color: var(--muted); font-size: 12px; }
-  &:hover { background: rgba(95, 124, 255, .04); }
+  h2 {
+    margin: 8px 0;
+    font-size: 22px;
+  }
+
+  p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  &:hover {
+    background: rgba(95, 124, 255, .04);
+  }
 }
 
 .toggleSymbol {
@@ -696,10 +768,14 @@
     font-size: 12px;
   }
 
-  tbody tr:hover { background: rgba(95, 124, 255, .06); }
+  tbody tr:hover {
+    background: rgba(95, 124, 255, .06);
+  }
 }
 
-.selectedRow { background: rgba(95, 124, 255, .1); }
+.selectedRow {
+  background: rgba(95, 124, 255, .1);
+}
 
 /* Guide */
 
@@ -737,45 +813,107 @@
 
 /* FAQ */
 
+
+/* FAQ — polished accordion */
+
 .faqList {
-  overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
 }
 
 .faqItem {
-  background: var(--panel);
+  overflow: hidden;
+  border: 1px solid rgba(145, 166, 205, 0.13);
+  border-radius: 11px;
+  background: #10151e;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
 
-  + .faqItem { border-top: 1px solid var(--line); }
+  +.faqItem {
+    border-top: 1px solid rgba(145, 166, 205, 0.13);
+  }
+
+  &:hover {
+    border-color: rgba(125, 151, 255, 0.3);
+  }
+
+  &[data-open="true"] {
+    border-color: rgba(125, 151, 255, 0.38);
+    background: linear-gradient(120deg,
+        #141d2d,
+        #10151e 80%);
+  }
 
   button {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    gap: 18px;
+    justify-content: space-between;
+    gap: 20px;
     width: 100%;
-    padding: 20px 24px;
+    padding: 21px 24px;
+    border: 0;
     background: transparent;
-    color: #e4eaf5;
+    color: #edf2fc;
     text-align: left;
-    font-size: 17px;
+    font-family: var(--font-rajdhani), Arial, sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
 
-    > span:last-child {
-      color: var(--light);
-      font-size: 22px;
+    >span:last-child {
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      background: rgba(95, 124, 255, 0.09);
+      color: #9eafff;
+      font-size: 21px;
+      transition: background 0.2s ease;
     }
 
-    &:hover { background: rgba(95, 124, 255, .04); }
+    &:hover {
+      background: rgba(95, 124, 255, 0.035);
+    }
+  }
+
+  &[data-open="true"] button {
+    color: #a9baff;
+    padding-bottom: 12px;
   }
 
   p {
-    max-width: 800px;
-    margin: -3px 24px 21px;
-    color: var(--muted);
+    margin: 0 24px 23px;
+    padding: 4px 0 4px 15px;
+    border-left: 2px solid #647eff;
+    color: #aab8cf;
+    font-family: var(--font-sora), Arial, sans-serif;
     font-size: 12px;
-    line-height: 1.8;
+    line-height: 1.9;
+    max-width: 850px;
   }
 }
+
+@media (max-width: 600px) {
+  .faqItem {
+    button {
+      padding: 17px;
+      font-size: 17px;
+    }
+
+    p {
+      margin: 0 17px 19px;
+      font-size: 12px;
+    }
+  }
+}
+
 
 .disclaimer {
   margin: 45px 0 0;
@@ -799,43 +937,92 @@
     padding-top: 95px;
   }
 
-  .hero { margin-bottom: 30px; }
-  .explorerGrid { grid-template-columns: 1fr; }
+  .hero {
+    margin-bottom: 30px;
+  }
+
+  .explorerGrid {
+    grid-template-columns: 1fr;
+  }
 
   .keySection {
     border-right: 0;
     border-bottom: 1px solid var(--line);
   }
 
-  .vaultGrid, .guideGrid { grid-template-columns: 1fr; }
-  .vaultSlot { min-height: 130px; }
+  .vaultGrid,
+  .guideGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .vaultSlot {
+    min-height: 130px;
+  }
 }
 
 @media (max-width: 480px) {
-  .container { padding-top: 85px; }
-  .breadcrumb { margin-bottom: 26px; font-size: 9px; }
-  .heroCopy h1 { font-size: 42px; }
-  .heroMeta { gap: 20px; }
-  .heroMetaItem strong { font-size: 26px; }
+  .container {
+    padding-top: 85px;
+  }
 
-  .workspaceHeader, .keySection, .previewSection, .planner {
+  .breadcrumb {
+    margin-bottom: 26px;
+    font-size: 9px;
+  }
+
+  .heroCopy h1 {
+    font-size: 42px;
+  }
+
+  .heroMeta {
+    gap: 20px;
+  }
+
+  .heroMetaItem strong {
+    font-size: 26px;
+  }
+
+  .workspaceHeader,
+  .keySection,
+  .previewSection,
+  .planner {
     padding: 18px;
   }
 
-  .workspaceHint { display: none; }
-  .keyGrid { gap: 7px; }
-  .keyButton { height: 46px; font-size: 15px; }
-  .previewRow { padding: 13px; }
-  .rewardIdentity { gap: 9px; }
+  .workspaceHint {
+    display: none;
+  }
 
-  .rewardIcon, .vaultIcon {
+  .keyGrid {
+    gap: 7px;
+  }
+
+  .keyButton {
+    height: 46px;
+    font-size: 15px;
+  }
+
+  .previewRow {
+    padding: 13px;
+  }
+
+  .rewardIdentity {
+    gap: 9px;
+  }
+
+  .rewardIcon,
+  .vaultIcon {
     flex-basis: 34px;
     height: 34px;
   }
 
-  .rewardValue strong { font-size: 29px; }
+  .rewardValue strong {
+    font-size: 29px;
+  }
 
-  .plannerSection, .guideSection, .faqSection {
+  .plannerSection,
+  .guideSection,
+  .faqSection {
     margin-top: 48px;
   }
 
@@ -845,12 +1032,797 @@
     gap: 5px;
   }
 
-  .tableToggle { padding: 20px; }
+  .tableToggle {
+    padding: 20px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .page * {
     transition: none !important;
     animation: none !important;
+  }
+}
+
+
+/* ==========================================
+   REWARD INSIGHTS
+========================================== */
+
+.insightsSection {
+  margin-top: 56px;
+}
+
+.insightsHeading {
+  margin-bottom: 23px;
+
+  h2 {
+    margin: 10px 0;
+    font-family: var(--font-rajdhani), Arial, sans-serif;
+    font-size: clamp(28px, 3vw, 36px);
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+
+  p {
+    margin: 0;
+    color: #8996ab;
+    font-size: 12px;
+    line-height: 1.7;
+  }
+}
+
+.insightsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.insightCard {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 26px;
+  border: 1px solid rgba(145, 166, 205, 0.14);
+  border-radius: 15px;
+  background: linear-gradient(145deg, #121925, #0d121b);
+
+  h3 {
+    margin: 19px 0 6px;
+    color: #f2f5fc;
+    font-family: var(--font-rajdhani), Arial, sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+  }
+}
+
+.recommendationCard {
+  border-color: rgba(109, 139, 255, 0.27);
+  background:
+    radial-gradient(ellipse at 100% 0%,
+      rgba(75, 104, 210, 0.13),
+      transparent 65%),
+    linear-gradient(145deg, #141b2a, #0d121b);
+}
+
+.insightTop {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.insightIcon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(130, 160, 255, 0.18);
+  border-radius: 9px;
+  background: rgba(95, 124, 255, 0.11);
+  color: #a2b4ff;
+  font-size: 18px;
+}
+
+.insightEyebrow,
+.conclusionLabel,
+.recommendationLabel {
+  color: #9eafff;
+  font-family: var(--font-sora), Arial, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.insightDescription {
+  margin: 0;
+  color: #8996ab;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.comparisonRows {
+  display: grid;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.comparisonRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid rgba(145, 166, 205, 0.12);
+  border-radius: 10px;
+  background: #151d2a;
+
+  >div {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  >div>span {
+    color: #8b99af;
+    font-size: 11px;
+  }
+
+  strong {
+    color: #edf2fc;
+    font-family: var(--font-rajdhani), Arial, sans-serif;
+    font-size: 22px;
+  }
+}
+
+.positiveDifference,
+.neutralDifference {
+  flex-shrink: 0;
+  padding: 6px 9px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.positiveDifference {
+  color: #8cdeb0;
+  background: rgba(86, 185, 126, 0.1);
+}
+
+.neutralDifference {
+  color: #8d9ab0;
+  background: rgba(145, 166, 205, 0.08);
+}
+
+.insightConclusion {
+  margin-top: auto;
+  padding-top: 23px;
+
+  p {
+    margin: 9px 0 0;
+    color: #b9c8e0;
+    font-size: 12px;
+    line-height: 1.8;
+  }
+}
+
+.recommendationResult {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 24px 0;
+
+  >strong {
+    color: #a2b4ff;
+    font-family: var(--font-rajdhani), Arial, sans-serif;
+    font-size: 58px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  p {
+    margin: 0;
+    color: #b7c5dc;
+    font-size: 12px;
+    line-height: 1.8;
+  }
+
+  small {
+    color: #8395b2;
+    font-size: 11px;
+    line-height: 1.6;
+  }
+}
+
+.recommendationButton {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  margin-top: auto;
+  padding: 12px 16px;
+  border: 1px solid #7791ff;
+  border-radius: 9px;
+  background: #526fe4;
+  color: white;
+  font-family: var(--font-rajdhani), Arial, sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: #6884f3;
+  }
+
+  span {
+    font-size: 21px;
+  }
+}
+
+@media (max-width: 760px) {
+  .insightsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .insightCard {
+    padding: 20px;
+  }
+
+  .insightsSection {
+    margin-top: 44px;
+  }
+}
+
+.plannerNote {
+  margin: 18px 0 0;
+  padding: 14px 16px;
+  border: 1px solid rgba(145, 166, 205, 0.12);
+  border-radius: 9px;
+  background: rgba(95, 124, 255, 0.045);
+  color: #9aa9c1;
+  font-size: 11px;
+  line-height: 1.8;
+}
+
+
+/* ==========================================
+   SMART INSIGHTS — FINAL POLISH
+========================================== */
+
+.insightSummary {
+  margin-top: 22px;
+  padding: 17px 18px;
+  border: 1px solid rgba(116, 144, 255, 0.2);
+  border-radius: 11px;
+  background: rgba(95, 124, 255, 0.065);
+
+  >strong {
+    display: block;
+    color: #c5d1ff;
+    font-family: var(--font-rajdhani), Arial, sans-serif;
+    font-size: 21px;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 7px 0 0;
+    color: #a5b4cc;
+    font-size: 12px;
+    line-height: 1.75;
+  }
+}
+
+.recommendationStats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 11px;
+  width: 100%;
+  margin-top: 13px;
+
+  >div {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 15px;
+    border: 1px solid rgba(145, 166, 205, 0.12);
+    border-radius: 10px;
+    background: rgba(8, 13, 23, 0.35);
+
+    >span {
+      color: #8294b4;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.7px;
+    }
+
+    >strong {
+      color: #e3eaff;
+      font-family: var(--font-rajdhani), Arial, sans-serif;
+      font-size: 27px;
+      line-height: 1;
+    }
+  }
+}
+
+.insightDetail {
+  margin-top: 14px;
+  padding: 13px 15px;
+  border-left: 2px solid #718aff;
+  border-radius: 0 8px 8px 0;
+  background: rgba(95, 124, 255, 0.045);
+  color: #a3b4d0;
+  font-size: 11px;
+  line-height: 1.85;
+}
+
+.recommendationCard .recommendationResult {
+  flex: 1;
+  margin-bottom: 22px;
+}
+
+.recommendationCard .recommendationButton {
+  flex-shrink: 0;
+}
+
+@media (max-width: 480px) {
+  .insightSummary {
+    padding: 15px;
+  }
+
+  .recommendationStats {
+    gap: 8px;
+
+    >div {
+      padding: 12px;
+
+      >span {
+        font-size: 9px;
+      }
+    }
+  }
+}
+
+
+/* ==========================================
+   CREST REWARD PREVIEW
+========================================== */
+
+.crestPreviewRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 88px;
+  padding: 17px;
+  border: 1px solid rgba(156, 119, 224, 0.24);
+  border-radius: 11px;
+  background: linear-gradient(115deg,
+      rgba(111, 74, 172, 0.12),
+      #141a24);
+
+  .rewardValue strong {
+    color: #c9a7ff;
+  }
+}
+
+.crestPreviewIcon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(161, 116, 229, 0.12);
+  color: #c9a7ff;
+  font-size: 24px;
+}
+
+.gearCapHint {
+  margin-top: 10px !important;
+  color: #a7b9d8 !important;
+}
+
+/* ==========================================
+   PLANNED CREST TOTALS
+========================================== */
+
+.plannedCrests {
+  margin-top: 22px;
+  padding: 20px;
+  border: 1px solid rgba(145, 166, 205, 0.13);
+  border-radius: 12px;
+  background: #101722;
+}
+
+.plannedCrestsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 17px;
+
+  strong {
+    color: #e8efff;
+    font-size: 12px;
+  }
+
+  span {
+    color: #8996ab;
+    font-size: 10px;
+  }
+}
+
+.plannedCrestsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 11px;
+
+  >div {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+    border: 1px solid rgba(145, 166, 205, 0.12);
+    border-radius: 9px;
+    background: #151e2c;
+
+    span {
+      color: #9daec9;
+      font-size: 11px;
+    }
+
+    strong {
+      color: #edf2ff;
+      font-family: var(--font-rajdhani), Arial, sans-serif;
+      font-size: 27px;
+      line-height: 1;
+    }
+  }
+}
+
+/* ==========================================
+   CREST FARMING CALCULATOR
+========================================== */
+
+.crestCalculatorSection {
+  margin-top: 65px;
+}
+
+.crestCalculator {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  overflow: hidden;
+  border: 1px solid rgba(145, 166, 205, 0.15);
+  border-radius: 16px;
+  background: linear-gradient(145deg, #111722, #0d121b);
+}
+
+.calculatorControls {
+  min-width: 0;
+  padding: 28px;
+  border-right: 1px solid rgba(145, 166, 205, 0.13);
+}
+
+.crestTierTabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+  margin: 16px 0 25px;
+
+  button {
+    min-height: 44px;
+    padding: 10px;
+    border: 1px solid rgba(145, 166, 205, 0.15);
+    border-radius: 9px;
+    background: #171f2d;
+    color: #a9b9d2;
+    font-size: 15px;
+    transition: 0.2s ease;
+
+    &:hover {
+      border-color: rgba(145, 166, 255, 0.4);
+      color: white;
+    }
+  }
+
+  .crestTierActive {
+    border-color: #8b9fff;
+    background: linear-gradient(135deg, #526fe4, #394c9e);
+    color: white;
+  }
+}
+
+.calculatorFields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 27px;
+}
+
+.calculatorField {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  >span {
+    color: #93a4c1;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+  }
+
+  input {
+    appearance: textfield;
+    -moz-appearance: textfield;
+
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    width: 100%;
+    min-width: 0;
+    height: 48px;
+    padding: 0 14px;
+    border: 1px solid rgba(145, 166, 205, 0.18);
+    border-radius: 9px;
+    outline: none;
+    background: #151e2c;
+    color: #f2f5fc;
+    font-family: var(--font-rajdhani),
+    Arial,
+    sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+
+    &:focus {
+      border-color: #8298ff;
+      box-shadow: 0 0 0 3px rgba(95, 124, 255, 0.12);
+    }
+  }
+}
+
+.calculatorKeyHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+
+  strong {
+    color: #a2b4ff;
+    font-family: var(--font-rajdhani), Arial, sans-serif;
+    font-size: 24px;
+  }
+}
+
+.calculatorKeyGrid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+
+  button {
+    min-height: 44px;
+    border: 1px solid rgba(145, 166, 205, 0.15);
+    border-radius: 8px;
+    background: #171f2d;
+    color: #b5c3d9;
+    font-size: 16px;
+
+    &:hover {
+      border-color: #8298ff;
+    }
+  }
+
+  .calculatorKeyActive {
+    border-color: #8298ff;
+    background: #526fe4;
+    color: white;
+  }
+}
+
+.calculatorHint {
+  margin: 18px 0 0;
+  color: #91a3bf;
+  font-size: 11px;
+  line-height: 1.8;
+}
+
+.calculatorResult {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 28px;
+  background:
+    radial-gradient(ellipse at 100% 0%,
+      rgba(96, 110, 225, 0.12),
+      transparent 65%),
+    #111725;
+}
+
+.calculatorResultMain {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 7px;
+  margin: 28px 0;
+
+  >span {
+    color: #9fb0cf;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  >strong {
+    color: #b3c0ff;
+    font-family: var(--font-rajdhani), Arial, sans-serif;
+    font-size: clamp(66px, 7vw, 94px);
+    font-weight: 700;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  >small {
+    color: #95a5c0;
+    font-size: 12px;
+  }
+}
+
+.calculatorResultRows {
+  display: grid;
+  gap: 0;
+  border: 1px solid rgba(145, 166, 205, 0.12);
+  border-radius: 11px;
+  overflow: hidden;
+
+  >div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 17px;
+    background: rgba(17, 25, 39, 0.65);
+
+    +div {
+      border-top: 1px solid rgba(145, 166, 205, 0.12);
+    }
+
+    span {
+      color: #9daec7;
+      font-size: 11px;
+    }
+
+    strong {
+      color: #f2f5fc;
+      font-family: var(--font-rajdhani), Arial, sans-serif;
+      font-size: 22px;
+    }
+  }
+}
+
+.calculatorRecommendation {
+  margin-top: 22px;
+  padding: 15px;
+  border: 1px solid rgba(116, 144, 255, 0.22);
+  border-radius: 9px;
+  background: rgba(95, 124, 255, 0.08);
+  color: #c1d0ff;
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.calculatorDisclaimer {
+  margin: 14px 0 0;
+  color: #8190aa;
+  font-size: 10px;
+  line-height: 1.8;
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 760px) {
+  .crestCalculator {
+    grid-template-columns: 1fr;
+  }
+
+  .calculatorControls {
+    border-right: 0;
+    border-bottom: 1px solid rgba(145, 166, 205, 0.13);
+  }
+
+  .crestCalculatorSection {
+    margin-top: 48px;
+  }
+}
+
+@media (max-width: 480px) {
+
+  .calculatorControls,
+  .calculatorResult {
+    padding: 19px;
+  }
+
+  .calculatorFields {
+    gap: 9px;
+  }
+
+  .crestTierTabs {
+    gap: 6px;
+
+    button {
+      padding: 8px 4px;
+      font-size: 13px;
+    }
+  }
+
+  .calculatorKeyGrid {
+    gap: 6px;
+
+    button {
+      min-height: 41px;
+      font-size: 14px;
+    }
+  }
+
+  .plannedCrests {
+    padding: 14px;
+  }
+
+  .plannedCrestsGrid {
+    gap: 7px;
+
+    >div {
+      padding: 11px;
+
+      span {
+        font-size: 10px;
+      }
+
+      strong {
+        font-size: 24px;
+      }
+    }
+  }
+
+  .crestPreviewRow {
+    padding: 13px;
+  }
+
+  .crestPreviewIcon {
+    flex-basis: 34px;
+    width: 34px;
+    height: 34px;
+  }
+}
+
+.calculatorRecommendation {
+  strong {
+    display: block;
+    margin-bottom: 6px;
+    color: #d4ddff;
+  }
+
+  p {
+    margin: 0;
+    line-height: 1.7;
+  }
+
+  button {
+    margin-top: 12px;
+    padding: 9px 13px;
+    border: 1px solid rgba(145, 166, 255, 0.35);
+    border-radius: 7px;
+    background: rgba(95, 124, 255, 0.16);
+    color: #c9d5ff;
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(95, 124, 255, 0.28);
+    }
   }
 }

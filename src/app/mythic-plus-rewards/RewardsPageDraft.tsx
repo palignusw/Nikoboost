@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import RewardsExplorer from "./RewardsExplorer";
+import RewardsExplorer from "./page";
 
 export const metadata: Metadata = {
   title: "Mythic+ Rewards & Great Vault Guide | NikoBoost",

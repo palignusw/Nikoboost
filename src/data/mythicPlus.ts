@@ -1,4 +1,8 @@
 export type Region = "EU" | "NA";
+import { dungeons } from "./wowSeason";
+
+export { dungeons };
+export type { DungeonName } from "./wowSeason";
 
 export type Participation =
   | "play"
@@ -45,19 +49,6 @@ export const basePrices: Record<number, number> = {
 };
 
 
-export const dungeons = [
-  "Altar of Fangs",
-  "Murder Row",
-  "Den of Nalorakk",
-  "The Blinding Vale",
-  "Voidscar Arena",
-  "Kings' Rest",
-  "Temple of Sethraliss",
-  "Ruby Life Pools",
-] as const;
-
-export type DungeonName =
-  (typeof dungeons)[number];
 
 export const classArmor: Record<
   string,
