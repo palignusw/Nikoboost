@@ -1,4 +1,5 @@
 
+
 export type OrderReceipt = {
   orderId: string;
   createdAt: string;
@@ -13,6 +14,7 @@ export type OrderReceipt = {
   };
 
   service: {
+    runGoal: "standard" | "crest";
     keyLevel: number;
     runs: number;
     mode: string;
@@ -22,6 +24,10 @@ export type OrderReceipt = {
     armor: string;
     traders: number;
     dungeons: string[];
+
+    crestType?: string;
+    crestsPerRun?: number | null;
+    estimatedCrests?: number | null;
   };
 
   schedule: {
@@ -29,6 +35,7 @@ export type OrderReceipt = {
     tbilisiTime: string;
   };
 };
+
 
 type FontName = "NotoSans" | "NotoSansGeorgian";
 
@@ -309,10 +316,10 @@ export async function downloadOrderPdf(
         const charWidth =
           last && last.font === font
             ? measureRun(
-                last.text + char,
-                font,
-                fontSize
-              ) - last.width
+              last.text + char,
+              font,
+              fontSize
+            ) - last.width
             : measureRun(char, font, fontSize);
 
         if (
@@ -515,7 +522,7 @@ export async function downloadOrderPdf(
         // on a fresh page.
         if (
           remainingHeight <=
-            BOTTOM - 38 - headerHeight - headerGap &&
+          BOTTOM - 38 - headerHeight - headerGap &&
           y + remainingHeight > BOTTOM
         ) {
           startPage();
@@ -524,7 +531,7 @@ export async function downloadOrderPdf(
 
         let availableLines = Math.floor(
           (BOTTOM - y - rowPadding) /
-            lineHeight
+          lineHeight
         );
 
         if (availableLines < 1) {
@@ -533,7 +540,7 @@ export async function downloadOrderPdf(
 
           availableLines = Math.floor(
             (BOTTOM - y - rowPadding) /
-              lineHeight
+            lineHeight
           );
         }
 
@@ -682,6 +689,8 @@ export async function downloadOrderPdf(
   // ----------------------------------
   // DOCUMENT CONTENT
   // ----------------------------------
+  const isCrestFarming =
+    receipt.service.runGoal === "crest";
 
   startPage(true);
 
@@ -709,6 +718,7 @@ export async function downloadOrderPdf(
 
   y += 8;
 
+
   section("Order Information", [
     ["Order ID", receipt.orderId],
     [
@@ -724,7 +734,9 @@ export async function downloadOrderPdf(
     ],
     [
       "Service",
-      `Mythic+ +${receipt.service.keyLevel}`,
+      isCrestFarming
+        ? `Crest Farming — Mythic+ +${receipt.service.keyLevel}`
+        : `Mythic+ +${receipt.service.keyLevel}`,
     ],
     ["Runs", String(receipt.service.runs)],
     ["Region", receipt.service.region],
@@ -733,29 +745,65 @@ export async function downloadOrderPdf(
 
   priceBlock();
 
-  section("Character & Loot", [
-    ["BattleTag", receipt.customer.battleTag],
-    ["Discord", receipt.customer.discord],
-    ["Character", receipt.customer.character],
-    ["Realm", receipt.customer.realm],
-    ["Class", receipt.service.playerClass],
-    ["Role", receipt.service.role],
-    ["Armor", receipt.service.armor],
-    [
-      "Loot Traders",
-      receipt.service.traders === 0
-        ? "None"
-        : `+${receipt.service.traders}`,
-    ],
-  ]);
+  if (isCrestFarming) {
+    section("Crest Farming Details", [
+      ["Key Level", `+${receipt.service.keyLevel}`],
+      ["Total Runs", String(receipt.service.runs)],
+      ["Dungeon Preference", "Any dungeon"],
+      [
+        "Crest Type",
+        receipt.service.crestType || "Unavailable",
+      ],
+      [
+        "Estimated Crests Per Run",
+        receipt.service.crestsPerRun == null
+          ? "Unavailable"
+          : String(receipt.service.crestsPerRun),
+      ],
+      [
+        "Estimated Total Crests",
+        receipt.service.estimatedCrests == null
+          ? "Unavailable"
+          : String(receipt.service.estimatedCrests),
+      ],
+      [
+        "Reward Notice",
+        "Crest rewards are estimates and depend on completion conditions.",
+      ],
+    ]);
 
-  section("Dungeon Selection", [
-    [
-      "Dungeons",
-      receipt.service.dungeons.join(", ") ||
+    section("Customer Details", [
+      ["BattleTag", receipt.customer.battleTag],
+      ["Discord", receipt.customer.discord],
+      ["Character", receipt.customer.character],
+      ["Realm", receipt.customer.realm],
+    ]);
+  } else {
+    section("Character & Loot", [
+      ["BattleTag", receipt.customer.battleTag],
+      ["Discord", receipt.customer.discord],
+      ["Character", receipt.customer.character],
+      ["Realm", receipt.customer.realm],
+      ["Class", receipt.service.playerClass],
+      ["Role", receipt.service.role],
+      ["Armor", receipt.service.armor],
+      [
+        "Loot Traders",
+        receipt.service.traders === 0
+          ? "None"
+          : `+${receipt.service.traders}`,
+      ],
+    ]);
+
+    section("Dungeon Selection", [
+      [
+        "Dungeons",
+        receipt.service.dungeons.join(", ") ||
         "Any dungeon",
-    ],
-  ]);
+      ],
+    ]);
+  }
+
 
   section("Preferred Schedule", [
     [

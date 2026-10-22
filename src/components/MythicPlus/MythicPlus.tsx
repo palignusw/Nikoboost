@@ -79,6 +79,11 @@ export default function MythicPlus() {
 
   function getMissingFields(step: Step): MissingField[] {
     const missing: MissingField[] = [];
+    const isCrestFarming = config.runGoal === "crest";
+
+    if (isCrestFarming && (step === 2 || step === 3)) {
+      return [];
+    }
 
     if (step === 1) {
       if (!config.confirmed.keyLevel) {
@@ -102,6 +107,14 @@ export default function MythicPlus() {
           id: "participation",
           message: "Choose I Play or AFK / Minimal",
           section: "Participation",
+        });
+      }
+
+      if (isCrestFarming && !config.confirmed.region) {
+        missing.push({
+          id: "region",
+          message: "Choose EU or NA region",
+          section: "Region",
         });
       }
     }
@@ -417,7 +430,11 @@ export default function MythicPlus() {
 
     if (!lockTransition()) return;
 
-    const next = (currentStep + 1) as Step;
+    // Crest Farming: пропускаем Character и Dungeons & Loot
+    const next: Step =
+      config.runGoal === "crest" && currentStep === 1
+        ? 4
+        : ((currentStep + 1) as Step);
 
     setMaxUnlockedStep((previous) =>
       Math.max(previous, next) as Step
@@ -428,13 +445,24 @@ export default function MythicPlus() {
 
   function previousStep() {
     if (currentStep <= 1) return;
-
     if (!lockTransition()) return;
 
-    goToStep((currentStep - 1) as Step);
+    const previous: Step =
+      config.runGoal === "crest" && currentStep === 4
+        ? 1
+        : ((currentStep - 1) as Step);
+
+    goToStep(previous);
   }
 
   function selectStep(step: number) {
+    if (
+      config.runGoal === "crest" &&
+      step !== 1 &&
+      step !== 4
+    ) {
+      return;
+    }
     if (step < 1 || step > 4) return;
 
     const selectedStep = step as Step;
@@ -565,11 +593,14 @@ export default function MythicPlus() {
     },
     {
       label: "Dungeon",
-      value: !config.confirmed.dungeon
-        ? NOT_SELECTED
-        : config.specificDungeon
-          ? `${config.allocatedSpecificRuns}/${config.runs} specific`
-          : "Any",
+      value:
+        config.runGoal === "crest"
+          ? "Any dungeon"
+          : !config.confirmed.dungeon
+            ? NOT_SELECTED
+            : config.specificDungeon
+              ? `${config.allocatedSpecificRuns}/${config.runs} specific`
+              : "Any",
     },
     {
       label: "Traders",
@@ -579,13 +610,24 @@ export default function MythicPlus() {
           : "None"
         : NOT_SELECTED,
     },
+
     {
       label: "Region",
       value: config.confirmed.region
         ? config.region
         : NOT_SELECTED,
     },
-  ];
+  ].filter((row) => {
+    if (config.runGoal !== "crest") {
+      return true;
+    }
+
+    return ![
+      "Class",
+      "Role",
+      "Traders",
+    ].includes(row.label);
+  });
 
   // ========================================
   // RENDER
@@ -622,6 +664,7 @@ export default function MythicPlus() {
           <Stepper
             currentStep={currentStep}
             setCurrentStep={selectStep}
+            runGoal={config.runGoal}
           />
         </div>
 

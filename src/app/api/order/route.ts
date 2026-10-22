@@ -1,6 +1,7 @@
 
 import { createHash, randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
+import { getMythicReward } from "@/data/wowSeason";
 
 import {
   AFK_SURCHARGE,
@@ -433,21 +434,21 @@ function formatRole(role: Role) {
   return role.charAt(0).toUpperCase() + role.slice(1);
 }
 
+
 export async function POST(request: Request) {
   try {
     const webhook = process.env.DISCORD_WEBHOOK_URL;
 
     if (!webhook) {
       console.error("Discord webhook is not configured");
-
       return jsonError(
         "Order service is temporarily unavailable.",
         503
       );
     }
 
-    // Optional production origin validation.
-    // Set SITE_URL to your actual public website URL.
+    // ORIGIN VALIDATION
+
     const siteUrl = process.env.SITE_URL;
     const origin = request.headers.get("origin");
 
@@ -466,6 +467,8 @@ export async function POST(request: Request) {
       }
     }
 
+    // RATE LIMIT
+
     const ip = getClientIp(request);
 
     if (!checkRateLimit(ip)) {
@@ -474,6 +477,8 @@ export async function POST(request: Request) {
         429
       );
     }
+
+    // REQUEST BODY
 
     let body: unknown;
 
@@ -501,8 +506,8 @@ export async function POST(request: Request) {
       return jsonError("Invalid order data.", 400);
     }
 
-    // Honeypot: silently reject automated submissions.
-    // This deliberately does not confirm a real order.
+    // HONEYPOT
+
     if (cleanText(customer.website, 100)) {
       return jsonError("Unable to submit this request.", 400);
     }
@@ -513,10 +518,12 @@ export async function POST(request: Request) {
     const discord = cleanText(customer.discord, 80);
     const character = cleanText(customer.character, 80);
     const realm = cleanText(customer.realm, 80);
+
     const preferredTime = cleanText(
       customer.preferredTime,
       150
     );
+
     const comment = cleanText(customer.comment, 700);
 
     if (
@@ -532,9 +539,7 @@ export async function POST(request: Request) {
       );
     }
 
-    if (
-      !/^[^\s#]{2,50}#[0-9]{3,12}$/.test(battleTag)
-    ) {
+    if (!/^[^\s#]{2,50}#[0-9]{3,12}$/.test(battleTag)) {
       return jsonError(
         "Invalid BattleTag. Example: Player#1234.",
         400
@@ -545,48 +550,46 @@ export async function POST(request: Request) {
       validatePreferredTime(preferredTime);
 
     if (!scheduleValidation.valid) {
-
-      return jsonError(
-        scheduleValidation.error,
-        400
-      );
+      return jsonError(scheduleValidation.error, 400);
     }
+
     const tbilisiTime =
       scheduleValidation.tbilisiTime ??
       "Flexible — arrange with customer";
 
+    // SERVICE VALIDATION
 
-    // ORDER VALIDATION
+    const runGoal = order.runGoal;
+
+    if (runGoal !== "standard" && runGoal !== "crest") {
+      return jsonError("Invalid service type.", 400);
+    }
+
+    const isCrestFarming = runGoal === "crest";
 
     const keyLevel = order.keyLevel;
     const runs = order.runs;
-    const traders = order.traders;
 
-    if (!isInteger(keyLevel, 2, 20)) {
-      return jsonError("Invalid key level.", 400);
+    if (
+      !isInteger(
+        keyLevel,
+        2,
+        isCrestFarming ? 12 : 20
+      )
+    ) {
+      return jsonError(
+        isCrestFarming
+          ? "Crest Farming supports keys +2 to +12."
+          : "Invalid key level.",
+        400
+      );
     }
 
     if (!isInteger(runs, 1, 50)) {
       return jsonError("Invalid run count.", 400);
     }
 
-    const playerClass = cleanText(
-      order.playerClass,
-      50
-    );
-
-    if (
-      !hasOwn(classArmor, playerClass) ||
-      !hasOwn(classRoles, playerClass)
-    ) {
-      return jsonError("Invalid character class.", 400);
-    }
-
-    const armorType = classArmor[playerClass];
-    const allowedRoles = classRoles[playerClass];
-
     const participation = order.participation;
-    const role = order.role;
     const region = order.region;
 
     if (
@@ -596,95 +599,122 @@ export async function POST(request: Request) {
       return jsonError("Invalid participation mode.", 400);
     }
 
-    if (
-      role !== "dps" &&
-      role !== "tank" &&
-      role !== "healer"
-    ) {
-      return jsonError("Invalid role.", 400);
-    }
-
     if (region !== "EU" && region !== "NA") {
       return jsonError("Invalid region.", 400);
     }
 
-    if (
-      participation === "play" &&
-      !allowedRoles.includes(role)
-    ) {
-      return jsonError(
-        "Selected role is not available for this class.",
-        400
-      );
-    }
+    // STANDARD RUN CONFIGURATION
+    // Crest Farming does not require these options.
 
-    if (
-      !isInteger(
-        traders,
-        0,
-        getMaxTraders(armorType)
-      )
-    ) {
-      return jsonError("Invalid loot trader count.", 400);
-    }
+    let playerClass = "";
+    let armorType = "";
+    let role: Role = "dps";
+    let traders = 0;
+    let specificDungeon = false;
+    let allocatedSpecificRuns = 0;
 
-    if (typeof order.specificDungeon !== "boolean") {
-      return jsonError(
-        "Invalid dungeon selection mode.",
-        400
-      );
-    }
-
-    const specificDungeon = order.specificDungeon;
-    const rawCounts = order.dungeonCounts;
-
-    if (!isObject(rawCounts)) {
-      return jsonError(
-        "Invalid dungeon configuration.",
-        400
-      );
-    }
-
-    const validDungeons = new Set<string>(dungeons);
     const dungeonCounts: Record<string, number> = {};
 
     for (const dungeon of dungeons) {
       dungeonCounts[dungeon] = 0;
     }
 
-    for (const [dungeon, amount] of Object.entries(
-      rawCounts
-    )) {
-      if (!validDungeons.has(dungeon)) {
-        return jsonError("Unknown dungeon.", 400);
+    if (!isCrestFarming) {
+      playerClass = cleanText(order.playerClass, 50);
+
+      if (
+        !hasOwn(classArmor, playerClass) ||
+        !hasOwn(classRoles, playerClass)
+      ) {
+        return jsonError("Invalid character class.", 400);
       }
 
-      if (!isInteger(amount, 0, runs)) {
-        return jsonError("Invalid dungeon count.", 400);
+      armorType = classArmor[playerClass];
+
+      const allowedRoles = classRoles[playerClass];
+      const requestedRole = order.role;
+
+      if (
+        requestedRole !== "dps" &&
+        requestedRole !== "tank" &&
+        requestedRole !== "healer"
+      ) {
+        return jsonError("Invalid role.", 400);
       }
 
-      dungeonCounts[dungeon] = amount;
-    }
+      role = requestedRole;
 
-    const allocatedSpecificRuns = Object.values(
-      dungeonCounts
-    ).reduce((sum, count) => sum + count, 0);
+      if (
+        participation === "play" &&
+        !allowedRoles.includes(role)
+      ) {
+        return jsonError(
+          "Selected role is not available for this class.",
+          400
+        );
+      }
 
-    if (allocatedSpecificRuns > runs) {
-      return jsonError(
-        "Assigned runs exceed purchased runs.",
-        400
-      );
-    }
+      if (
+        !isInteger(
+          order.traders,
+          0,
+          getMaxTraders(classArmor[playerClass])
+        )
+      ) {
+        return jsonError("Invalid loot trader count.", 400);
+      }
 
-    if (
-      !specificDungeon &&
-      allocatedSpecificRuns > 0
-    ) {
-      return jsonError(
-        "Invalid dungeon configuration.",
-        400
-      );
+      traders = order.traders;
+
+      if (typeof order.specificDungeon !== "boolean") {
+        return jsonError(
+          "Invalid dungeon selection mode.",
+          400
+        );
+      }
+
+      specificDungeon = order.specificDungeon;
+
+      if (!isObject(order.dungeonCounts)) {
+        return jsonError(
+          "Invalid dungeon configuration.",
+          400
+        );
+      }
+
+      const validDungeons = new Set<string>(dungeons);
+
+      for (const [dungeon, amount] of Object.entries(
+        order.dungeonCounts
+      )) {
+        if (!validDungeons.has(dungeon)) {
+          return jsonError("Unknown dungeon.", 400);
+        }
+
+        if (!isInteger(amount, 0, runs)) {
+          return jsonError("Invalid dungeon count.", 400);
+        }
+
+        dungeonCounts[dungeon] = amount;
+      }
+
+      allocatedSpecificRuns = Object.values(
+        dungeonCounts
+      ).reduce((sum, count) => sum + count, 0);
+
+      if (allocatedSpecificRuns > runs) {
+        return jsonError(
+          "Assigned runs exceed purchased runs.",
+          400
+        );
+      }
+
+      if (!specificDungeon && allocatedSpecificRuns > 0) {
+        return jsonError(
+          "Invalid dungeon configuration.",
+          400
+        );
+      }
     }
 
     // SERVER-SIDE PRICE CALCULATION
@@ -706,19 +736,21 @@ export async function POST(request: Request) {
       participation === "afk" ? "dps" : role;
 
     const roleExtra =
-      participation === "play"
+      !isCrestFarming && participation === "play"
         ? Math.round(base * roleSurcharges[safeRole])
         : 0;
 
-    const specificExtra = Math.round(
-      singleRun *
-      allocatedSpecificRuns *
-      SPECIFIC_DUNGEON_SURCHARGE
-    );
+    const specificExtra = !isCrestFarming
+      ? Math.round(
+        singleRun *
+        allocatedSpecificRuns *
+        SPECIFIC_DUNGEON_SURCHARGE
+      )
+      : 0;
 
-    const traderExtra = Math.round(
-      base * traderSurcharges[traders]
-    );
+    const traderExtra = !isCrestFarming
+      ? Math.round(base * traderSurcharges[traders])
+      : 0;
 
     const beforeDiscount =
       base +
@@ -735,14 +767,12 @@ export async function POST(request: Request) {
 
     // DUNGEON SUMMARY
 
-    const remainingRuns =
-      runs - allocatedSpecificRuns;
+    const remainingRuns = runs - allocatedSpecificRuns;
 
     const dungeonLines = dungeons
       .filter((name) => dungeonCounts[name] > 0)
       .map(
-        (name) =>
-          `• ${name} ×${dungeonCounts[name]}`
+        (name) => `• ${name} ×${dungeonCounts[name]}`
       );
 
     if (remainingRuns > 0) {
@@ -761,6 +791,25 @@ export async function POST(request: Request) {
         ? formatRole(safeRole)
         : "—";
 
+    // CREST FARMING REWARDS
+    // Values come from the current seasonal data table.
+
+    const reward = isCrestFarming
+      ? getMythicReward(keyLevel)
+      : null;
+
+    const estimatedCrests = reward
+      ? reward.crestAmount * runs
+      : null;
+
+    const crestType = reward
+      ? `${reward.crest} Mistcrests`
+      : "Unavailable";
+
+    const crestSummary = reward
+      ? `Estimated ${estimatedCrests} ${crestType} (${reward.crestAmount} per run)`
+      : "Crest reward estimate unavailable";
+
     // DUPLICATE PROTECTION
 
     cleanDuplicateCache();
@@ -775,6 +824,7 @@ export async function POST(request: Request) {
           realm,
           preferredTime,
           comment,
+          runGoal,
           keyLevel,
           runs,
           traders,
@@ -812,11 +862,14 @@ export async function POST(request: Request) {
       expiresAt: Date.now() + 30_000,
     });
 
+    // ORDER RECEIPT
+
     const orderId = `NB-${Date.now()
       .toString(36)
       .toUpperCase()}-${randomUUID()
         .slice(0, 4)
         .toUpperCase()}`;
+
     const receipt: OrderReceipt = {
       orderId,
       createdAt: new Date().toISOString(),
@@ -830,17 +883,41 @@ export async function POST(request: Request) {
         comment,
       },
 
+
       service: {
+        runGoal,
         keyLevel,
         runs,
         mode: modeLabel,
         region,
-        playerClass,
-        role: roleLabel,
-        armor: armorType,
-        traders,
-        dungeons: dungeonLines,
+
+        playerClass: isCrestFarming
+          ? "Not required"
+          : playerClass,
+
+        role: isCrestFarming
+          ? "Not required"
+          : roleLabel,
+
+        armor: isCrestFarming
+          ? "Not required"
+          : armorType,
+
+        traders: isCrestFarming ? 0 : traders,
+
+        dungeons: isCrestFarming
+          ? [`Any dungeon ×${runs}`]
+          : dungeonLines,
+
+        ...(isCrestFarming
+          ? {
+            crestType,
+            crestsPerRun: reward?.crestAmount ?? null,
+            estimatedCrests,
+          }
+          : {}),
       },
+
 
       schedule: {
         preferredTime,
@@ -850,6 +927,97 @@ export async function POST(request: Request) {
 
     // DISCORD MESSAGE
 
+    const discordFields = [
+      {
+        name: isCrestFarming
+          ? "✦ Crest Farming"
+          : "⚔️ Order",
+        value: [
+          `**${isCrestFarming
+            ? "Crest Farming"
+            : "Mythic+"
+          } +${keyLevel}**`,
+          `Runs: **${runs}**`,
+          `Mode: **${modeLabel}**`,
+          `Region: **${region}**`,
+        ].join("\n"),
+        inline: true,
+      },
+
+      ...(isCrestFarming
+        ? [
+          {
+            name: "✦ Estimated Crest Rewards",
+            value: [
+              `Type: **${crestType}**`,
+              `Per run: **${reward?.crestAmount ?? "Unknown"}**`,
+              `Total: **${estimatedCrests ?? "Unknown"}**`,
+              "Dungeon: **Any dungeon**",
+              "Rewards are estimates.",
+            ].join("\n"),
+            inline: true,
+          },
+        ]
+        : [
+          {
+            name: "🛡 Character",
+            value: [
+              `Class: **${playerClass}**`,
+              `Role: **${roleLabel}**`,
+              `Armor: **${armorType}**`,
+              `Traders: **${traders === 0 ? "None" : `+${traders}`
+              }**`,
+            ].join("\n"),
+            inline: true,
+          },
+          {
+            name: "🗺 Dungeons",
+            value:
+              dungeonLines.join("\n") ||
+              "Any dungeon",
+            inline: false,
+          },
+        ]),
+
+      {
+        name: "💰 Price",
+        value: `**${total.toLocaleString("en-US")} GOLD**`,
+        inline: false,
+      },
+
+      {
+        name: "👤 Customer",
+        value: [
+          `BattleTag: **${battleTag}**`,
+          `Discord: **${discord}**`,
+          `Character: **${character}**`,
+          `Realm: **${realm}**`,
+        ].join("\n"),
+        inline: false,
+      },
+
+      {
+        name: "🕒 Preferred time",
+        value: [
+          `🌍 Customer: ${preferredTime}`,
+          `🇬🇪 Tbilisi: **${tbilisiTime}**`,
+        ].join("\n"),
+        inline: false,
+      },
+
+      ...(comment
+        ? [
+          {
+            name: "📝 Comment",
+            value: comment,
+            inline: false,
+          },
+        ]
+        : []),
+    ];
+
+    // SEND TO DISCORD
+
     try {
       const response = await fetch(webhook, {
         method: "POST",
@@ -857,84 +1025,28 @@ export async function POST(request: Request) {
           "Content-Type": "application/json",
         },
         signal: AbortSignal.timeout(DISCORD_TIMEOUT),
+
         body: JSON.stringify({
           username: "NikoBoost Orders",
+
           allowed_mentions: {
             parse: [],
           },
+
           embeds: [
             {
-              title: `🟢 New order ${orderId}`,
+              title: `🟢 New ${isCrestFarming
+                ? "Crest Farming"
+                : "Mythic+"
+                } order ${orderId}`,
+
               color: 0x5f7cff,
-              fields: [
-                {
-                  name: "⚔️ Order",
-                  value: [
-                    `**Mythic+ +${keyLevel}**`,
-                    `Runs: **${runs}**`,
-                    `Mode: **${modeLabel}**`,
-                    `Region: **${region}**`,
-                  ].join("\n"),
-                  inline: true,
-                },
-                {
-                  name: "🛡 Character",
-                  value: [
-                    `Class: **${playerClass}**`,
-                    `Role: **${roleLabel}**`,
-                    `Armor: **${armorType}**`,
-                    `Traders: **${traders === 0
-                      ? "None"
-                      : `+${traders}`
-                    }**`,
-                  ].join("\n"),
-                  inline: true,
-                },
-                {
-                  name: "🗺 Dungeons",
-                  value:
-                    dungeonLines.join("\n") ||
-                    "Any dungeon",
-                  inline: false,
-                },
-                {
-                  name: "💰 Price",
-                  value: `**${total.toLocaleString(
-                    "en-US"
-                  )} GOLD**`,
-                  inline: false,
-                },
-                {
-                  name: "👤 Customer",
-                  value: [
-                    `BattleTag: **${battleTag}**`,
-                    `Discord: **${discord}**`,
-                    `Character: **${character}**`,
-                    `Realm: **${realm}**`,
-                  ].join("\n"),
-                  inline: false,
-                },
-                {
-                  name: "🕒 Preferred time",
-                  value: [
-                    `🌍 Customer: ${preferredTime}`,
-                    `🇬🇪 Tbilisi: **${tbilisiTime}**`,
-                  ].join("\n"),
-                  inline: false,
-                },
-                ...(comment
-                  ? [
-                    {
-                      name: "📝 Comment",
-                      value: comment,
-                      inline: false,
-                    },
-                  ]
-                  : []),
-              ],
+              fields: discordFields,
+
               footer: {
                 text: "NikoBoost • Website order",
               },
+
               timestamp: new Date().toISOString(),
             },
           ],
@@ -972,8 +1084,7 @@ export async function POST(request: Request) {
     } catch (error) {
       console.error("Discord delivery error:", error);
 
-      // Keep this request temporarily blocked.
-      // A timeout may happen AFTER Discord received it.
+      // Timeout may happen after Discord receives the order.
       duplicates.set(fingerprint, {
         state: "pending",
         expiresAt: Date.now() + DUPLICATE_WINDOW,

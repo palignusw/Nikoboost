@@ -11,6 +11,8 @@ import {
   SummaryRow,
 } from "../../components/ConfiguratorUI";
 
+import { getMythicReward } from "@/data/wowSeason";
+
 import styles from "./OrderSummary.module.scss";
 
 type Props = {
@@ -29,6 +31,8 @@ export default function OrderSummary({
   canReserve,
   onReserve,
 }: Props) {
+  const isCrestFarming = config.runGoal === "crest";
+
   const {
     base,
     afkExtra,
@@ -66,13 +70,20 @@ export default function OrderSummary({
   const roleSelected =
     confirmed.role || roleAutoSelected;
 
-  const configurationComplete =
-    config.canReserve;
+  const configurationComplete = config.canReserve;
+
   const showPrice =
-    confirmed.keyLevel &&
-    confirmed.runs;
+    confirmed.keyLevel && confirmed.runs;
 
+  const reward =
+    isCrestFarming && confirmed.keyLevel
+      ? getMythicReward(config.keyLevel)
+      : null;
 
+  const estimatedCrests =
+    reward && confirmed.runs
+      ? reward.crestAmount * config.runs
+      : null;
 
   return (
     <aside className={styles.summary}>
@@ -86,9 +97,13 @@ export default function OrderSummary({
       </span>
 
       <h3>
-        {confirmed.keyLevel
-          ? `Mythic +${config.keyLevel}`
-          : "Mythic+ Run"}
+        {isCrestFarming
+          ? confirmed.keyLevel
+            ? `Crest Farming +${config.keyLevel}`
+            : "Crest Farming"
+          : confirmed.keyLevel
+            ? `Mythic +${config.keyLevel}`
+            : "Mythic+ Run"}
       </h3>
 
       <div className={styles.orderInfo}>
@@ -121,58 +136,87 @@ export default function OrderSummary({
           }
         />
 
-        {(!confirmed.participation ||
-          participation === "play") && (
+        {isCrestFarming ? (
+          <>
             <SummaryRow
-              label="Role"
+              label="Crest type"
               value={
-                confirmed.participation &&
-                  roleSelected
-                  ? formatRole(config.role)
+                reward
+                  ? `${reward.crest} Mistcrests`
                   : NOT_SELECTED
               }
             />
-          )}
 
-        <SummaryRow
-          label="Dungeon"
-          value={
-            !confirmed.dungeon
-              ? NOT_SELECTED
-              : config.specificDungeon
-                ? `${config.allocatedSpecificRuns}/${config.runs} specific`
-                : "Any"
-          }
-        />
+            <SummaryRow
+              label="Estimated Crests"
+              value={
+                estimatedCrests !== null
+                  ? `${estimatedCrests}`
+                  : NOT_SELECTED
+              }
+            />
 
-        <SummaryRow
-          label="Class"
-          value={
-            confirmed.playerClass
-              ? config.playerClass
-              : NOT_SELECTED
-          }
-        />
+            <SummaryRow
+              label="Dungeon"
+              value="Any"
+            />
+          </>
+        ) : (
+          <>
+            {(!confirmed.participation ||
+              participation === "play") && (
+                <SummaryRow
+                  label="Role"
+                  value={
+                    confirmed.participation &&
+                      roleSelected
+                      ? formatRole(config.role)
+                      : NOT_SELECTED
+                  }
+                />
+              )}
 
-        <SummaryRow
-          label="Armor"
-          value={
-            confirmed.playerClass
-              ? config.armorType
-              : NOT_SELECTED
-          }
-        />
+            <SummaryRow
+              label="Dungeon"
+              value={
+                !confirmed.dungeon
+                  ? NOT_SELECTED
+                  : config.specificDungeon
+                    ? `${config.allocatedSpecificRuns}/${config.runs} specific`
+                    : "Any"
+              }
+            />
 
-        <SummaryRow
-          label="Traders"
-          value={
-            confirmed.traders
-              ? config.traders > 0
-                ? `+${config.traders}`
-                : "None"
-              : NOT_SELECTED
-          }
-        />
+            <SummaryRow
+              label="Class"
+              value={
+                confirmed.playerClass
+                  ? config.playerClass
+                  : NOT_SELECTED
+              }
+            />
+
+            <SummaryRow
+              label="Armor"
+              value={
+                confirmed.playerClass
+                  ? config.armorType
+                  : NOT_SELECTED
+              }
+            />
+
+            <SummaryRow
+              label="Traders"
+              value={
+                confirmed.traders
+                  ? config.traders > 0
+                    ? `+${config.traders}`
+                    : "None"
+                  : NOT_SELECTED
+              }
+            />
+          </>
+        )}
 
         <SummaryRow
           label="Region"
@@ -184,14 +228,11 @@ export default function OrderSummary({
         />
       </div>
 
-      {confirmed.dungeon &&
+      {!isCrestFarming &&
+        confirmed.dungeon &&
         config.specificDungeon &&
         config.selectedDungeons.length > 0 && (
-          <div
-            className={
-              styles.selectedDungeonSummary
-            }
-          >
+          <div className={styles.selectedDungeonSummary}>
             <span>SPECIFIC DUNGEONS</span>
 
             {config.selectedDungeons.map(
@@ -228,21 +269,21 @@ export default function OrderSummary({
             />
           )}
 
-          {roleExtra > 0 && (
+          {!isCrestFarming && roleExtra > 0 && (
             <SummaryRow
               label={`${formatRole(config.role)} role`}
               value={`+${formatGold(roleExtra)}`}
             />
           )}
 
-          {specificExtra > 0 && (
+          {!isCrestFarming && specificExtra > 0 && (
             <SummaryRow
               label="Specific dungeons"
               value={`+${formatGold(specificExtra)}`}
             />
           )}
 
-          {traderExtra > 0 && (
+          {!isCrestFarming && traderExtra > 0 && (
             <SummaryRow
               label="Loot traders"
               value={`+${formatGold(traderExtra)}`}

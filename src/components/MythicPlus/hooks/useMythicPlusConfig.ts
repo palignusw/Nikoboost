@@ -25,6 +25,8 @@ import {
   type Role,
 } from "@/data/mythicPlus";
 
+export type RunGoal = "standard" | "crest";
+
 const keyLevels = Array.from(
   { length: 19 },
   (_, index) => index + 2
@@ -62,6 +64,7 @@ export function useMythicPlusConfig() {
 
   const [keyLevel, setKeyLevelState] = useState(10);
   const [runs, setRuns] = useState(1);
+  const [runGoal, setRunGoal] = useState<RunGoal>("standard");
 
   const [participation, setParticipation] =
     useState<Participation>("play");
@@ -125,6 +128,19 @@ export function useMythicPlusConfig() {
         keyLevel: true,
       }));
     };
+
+  const resetKeyLevelForCrest = () => {
+    if (keyLevel <= 12) return;
+
+    // Возвращаем допустимое начальное значение
+    setKeyLevelState(12);
+
+    // Но не считаем его выбранным пользователем
+    setConfirmed((previous) => ({
+      ...previous,
+      keyLevel: false,
+    }));
+  };
 
   // ROLE
 
@@ -233,19 +249,23 @@ export function useMythicPlusConfig() {
         : 0;
 
     const roleExtra =
-      participation === "play"
+      runGoal === "standard" && participation === "play"
         ? Math.round(base * roleSurcharges[role])
         : 0;
 
-    const specificExtra = Math.round(
-      singleRun *
-        allocatedSpecificRuns *
-        SPECIFIC_DUNGEON_SURCHARGE
-    );
+    const specificExtra =
+      runGoal === "standard"
+        ? Math.round(
+          singleRun *
+          allocatedSpecificRuns *
+          SPECIFIC_DUNGEON_SURCHARGE
+        )
+        : 0;
 
-    const traderExtra = Math.round(
-      base * traderSurcharges[traders]
-    );
+    const traderExtra =
+      runGoal === "standard"
+        ? Math.round(base * traderSurcharges[traders])
+        : 0;
 
     const extras =
       afkExtra +
@@ -338,50 +358,50 @@ export function useMythicPlusConfig() {
 
   // CLASS CHANGE
 
-function handleClassChange(newClass: string) {
-  if (
-    !Object.prototype.hasOwnProperty.call(
-      classArmor,
-      newClass
-    )
-  ) {
-    return;
-  }
-
-  const changed = playerClass !== newClass;
-  const newRoles = classRoles[newClass];
-
-  const hasSingleRole = newRoles.length === 1;
-
-  setPlayerClass(newClass);
-
-  setRoleState((currentRole) => {
-    if (hasSingleRole) {
-      return newRoles[0];
+  function handleClassChange(newClass: string) {
+    if (
+      !Object.prototype.hasOwnProperty.call(
+        classArmor,
+        newClass
+      )
+    ) {
+      return;
     }
 
-    return newRoles.includes(currentRole)
-      ? currentRole
-      : newRoles[0];
-  });
+    const changed = playerClass !== newClass;
+    const newRoles = classRoles[newClass];
 
-  setConfirmed((previous) => ({
-    ...previous,
-    playerClass: true,
-    role: hasSingleRole
-      ? true
-      : changed
+    const hasSingleRole = newRoles.length === 1;
+
+    setPlayerClass(newClass);
+
+    setRoleState((currentRole) => {
+      if (hasSingleRole) {
+        return newRoles[0];
+      }
+
+      return newRoles.includes(currentRole)
+        ? currentRole
+        : newRoles[0];
+    });
+
+    setConfirmed((previous) => ({
+      ...previous,
+      playerClass: true,
+      role: hasSingleRole
+        ? true
+        : changed
+          ? false
+          : previous.role,
+      traders: changed
         ? false
-        : previous.role,
-    traders: changed
-      ? false
-      : previous.traders,
-  }));
+        : previous.traders,
+    }));
 
-  if (changed) {
-    setTradersState(0);
+    if (changed) {
+      setTradersState(0);
+    }
   }
-}
 
   // DUNGEON TYPE
 
@@ -457,27 +477,36 @@ function handleClassChange(newClass: string) {
 
   // STEP VALIDATION
 
+  // STEP VALIDATION
+
   const stepComplete = {
     1:
       confirmed.keyLevel &&
       confirmed.runs &&
-      confirmed.participation,
+      confirmed.participation &&
+      (runGoal === "standard" || confirmed.region),
 
     2:
-      confirmed.playerClass &&
+      runGoal === "crest" ||
       (
-        participation === "afk" ||
-        confirmed.role
+        confirmed.playerClass &&
+        (
+          participation === "afk" ||
+          confirmed.role
+        )
       ),
 
     3:
-      confirmed.dungeon &&
+      runGoal === "crest" ||
       (
-        !specificDungeon ||
-        allocatedSpecificRuns > 0
-      ) &&
-      confirmed.traders &&
-      confirmed.region,
+        confirmed.dungeon &&
+        (
+          !specificDungeon ||
+          allocatedSpecificRuns > 0
+        ) &&
+        confirmed.traders &&
+        confirmed.region
+      ),
   };
 
   const canReserve =
@@ -492,6 +521,7 @@ function handleClassChange(newClass: string) {
 
     keyLevel,
     setKeyLevel,
+    resetKeyLevelForCrest,
 
     runs,
     setRunCount,
@@ -519,6 +549,8 @@ function handleClassChange(newClass: string) {
     traders,
     setTraders,
 
+
+
     armorType,
     allowedRoles,
     maxTraders,
@@ -531,6 +563,8 @@ function handleClassChange(newClass: string) {
     confirmed,
     stepComplete,
     canReserve,
+    runGoal,
+    setRunGoal,
   };
 }
 

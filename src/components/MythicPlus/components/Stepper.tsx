@@ -3,26 +3,46 @@ import type { CSSProperties } from "react";
 
 import styles from "./Stepper.module.scss";
 
-const steps = [
+type StepItem = {
+  number: number;
+  label: string;
+};
+
+const standardSteps: StepItem[] = [
   { number: 1, label: "Run" },
   { number: 2, label: "Character" },
   { number: 3, label: "Dungeons & Loot" },
   { number: 4, label: "Review" },
 ];
 
+const crestSteps: StepItem[] = [
+  { number: 1, label: "Farming Setup" },
+  { number: 4, label: "Review" },
+];
+
 type Props = {
   currentStep: number;
   setCurrentStep: (step: number) => void;
+  runGoal?: "standard" | "crest";
 };
 
 export default function Stepper({
   currentStep,
   setCurrentStep,
+  runGoal = "standard",
 }: Props) {
-  const activeIndex = Math.max(
-    0,
-    Math.min(steps.length - 1, currentStep - 1)
+  const isCrestFarming = runGoal === "crest";
+
+  const steps = isCrestFarming
+    ? crestSteps
+    : standardSteps;
+
+  const foundIndex = steps.findIndex(
+    (step) => step.number === currentStep
   );
+
+  const activeIndex =
+    foundIndex >= 0 ? foundIndex : 0;
 
   const indicatorStyle = {
     "--step-index": activeIndex,
@@ -31,12 +51,16 @@ export default function Stepper({
   } as CSSProperties;
 
   const progressStyle = {
-    width: `${((activeIndex + 1) / steps.length) * 100}%`,
+    width: `${
+      ((activeIndex + 1) / steps.length) * 100
+    }%`,
   };
 
   return (
     <nav
-      className={styles.stepper}
+      className={`${styles.stepper} ${
+        isCrestFarming ? styles.crestStepper : ""
+      }`}
       aria-label="Mythic+ configuration steps"
     >
       <span
@@ -45,16 +69,20 @@ export default function Stepper({
         aria-hidden="true"
       />
 
-      {steps.map((step) => {
+      {steps.map((step, index) => {
         const active = step.number === currentStep;
-        const completed = step.number < currentStep;
+        const completed = index < activeIndex;
 
         return (
           <button
             key={step.number}
             type="button"
             aria-current={active ? "step" : undefined}
-            aria-label={`Step ${step.number} of ${steps.length}: ${step.label}${completed ? ", completed" : ""}`}
+            aria-label={`Step ${index + 1} of ${
+              steps.length
+            }: ${step.label}${
+              completed ? ", completed" : ""
+            }`}
             onClick={() => setCurrentStep(step.number)}
             className={[
               styles.step,
@@ -80,7 +108,7 @@ export default function Stepper({
                   <path d="m5 12 4 4L19 6" />
                 </svg>
               ) : (
-                step.number
+                index + 1
               )}
             </span>
 

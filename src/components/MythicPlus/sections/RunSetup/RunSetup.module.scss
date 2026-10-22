@@ -658,3 +658,352 @@
     transition: none;
   }
 }
+
+/* ==========================================
+   RUN GOAL SELECTOR
+========================================== */
+
+.goalSection {
+  margin-bottom: 8px;
+}
+
+.goalHeading {
+  margin-bottom: 18px;
+
+  >span {
+    color: #8ea5ff;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+  }
+
+  p {
+    margin: 8px 0 0;
+    color: #8e9db7;
+    font-size: 12px;
+  }
+}
+
+.goalGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.goalCard {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  min-width: 0;
+  padding: 19px;
+  border: 1px solid rgba(145, 166, 205, 0.17);
+  border-radius: 12px;
+  background: linear-gradient(135deg, #141b28, #10151f);
+  color: #edf2ff;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+
+  &:hover {
+    border-color: rgba(120, 145, 255, 0.48);
+    transform: translateY(-2px);
+  }
+}
+
+.goalCardActive {
+  border-color: #7890ff;
+  background: linear-gradient(135deg,
+      rgba(76, 102, 207, 0.22),
+      rgba(31, 43, 75, 0.55));
+  box-shadow: inset 0 0 0 1px rgba(120, 144, 255, 0.12);
+}
+
+.goalIcon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(129, 151, 255, 0.17);
+  border-radius: 11px;
+  background: rgba(94, 119, 235, 0.1);
+  color: #b1c1ff;
+  font-size: 23px;
+}
+
+.goalContent {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+
+  strong {
+    font-family: var(--font-rajdhani), Arial, sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  small {
+    color: #9caac2;
+    font-size: 11px;
+    line-height: 1.6;
+  }
+}
+
+.goalRadio {
+  flex-shrink: 0;
+  width: 17px;
+  height: 17px;
+  border: 1px solid #63708d;
+  border-radius: 50%;
+}
+
+.goalCardActive .goalRadio {
+  border: 5px solid #839aff;
+  background: #edf2ff;
+}
+
+@media (max-width: 600px) {
+  .goalGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .goalCard {
+    padding: 15px;
+  }
+}
+
+
+/* ==========================================
+   CREST FARMING SETUP
+========================================== */
+
+.crestSetup {
+  margin-top: 18px;
+  padding: 23px;
+  border: 1px solid rgba(137, 119, 255, 0.25);
+  border-radius: 13px;
+  background:
+    radial-gradient(ellipse at top right,
+      rgba(105, 84, 208, 0.12),
+      transparent 65%),
+    #111825;
+}
+
+.crestSetupHeader {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin-bottom: 22px;
+
+  strong {
+    color: #eef1ff;
+    font-family: var(--font-rajdhani), Arial, sans-serif;
+    font-size: 21px;
+  }
+
+  p {
+    margin: 5px 0 0;
+    color: #94a4c1;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+}
+
+.crestSetupIcon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 42px;
+  height: 42px;
+  border: 1px solid rgba(155, 131, 255, 0.25);
+  border-radius: 10px;
+  background: rgba(128, 99, 231, 0.12);
+  color: #c4b2ff;
+  font-size: 24px;
+}
+
+.crestSetupFields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    min-width: 0;
+
+    >span {
+      color: #9faed0;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+    }
+  }
+
+  input {
+    width: 100%;
+    height: 47px;
+    padding: 0 14px;
+    border: 1px solid rgba(145, 166, 205, 0.2);
+    border-radius: 8px;
+    outline: none;
+    background: #171f2e;
+    color: #f2f5ff;
+    font-family: var(--font-rajdhani), Arial, sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+
+    &:focus {
+      border-color: #8397ff;
+      box-shadow: 0 0 0 3px rgba(115, 133, 255, 0.12);
+    }
+  }
+}
+
+.crestSetupStats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 19px;
+
+  >div {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    padding: 15px;
+    border: 1px solid rgba(145, 166, 205, 0.13);
+    border-radius: 9px;
+    background: #171f2d;
+
+    span {
+      color: #93a5c5;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    strong {
+      color: #e5eaff;
+      font-family: var(--font-rajdhani), Arial, sans-serif;
+      font-size: 27px;
+      line-height: 1;
+    }
+  }
+}
+
+.crestSetupDescription {
+  margin: 15px 0;
+  color: #99a9c6;
+  font-size: 11px;
+  line-height: 1.8;
+}
+
+.crestSetupWarning {
+  margin: 16px 0 0;
+  padding: 12px;
+  border: 1px solid rgba(240, 180, 90, 0.25);
+  border-radius: 8px;
+  background: rgba(240, 180, 90, 0.07);
+  color: #e5c38b;
+  font-size: 12px;
+}
+
+.crestApplyButton {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 47px;
+  margin-top: 16px;
+  padding: 12px 17px;
+  border: 1px solid #738cff;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #5576ee, #405bc6);
+  color: #fff;
+  font-family: var(--font-rajdhani), Arial, sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 0.2s ease;
+
+  &:hover:not(:disabled) {
+    filter: brightness(1.12);
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}
+
+@media (max-width: 600px) {
+  .crestSetup {
+    padding: 16px;
+  }
+
+  .crestSetupStats {
+    gap: 6px;
+
+    >div {
+      padding: 11px 8px;
+
+      span {
+        font-size: 9px;
+      }
+
+      strong {
+        font-size: 23px;
+      }
+    }
+  }
+}
+
+.crestRegion {
+  margin-bottom: 22px;
+}
+
+.crestRegionLabel {
+  display: block;
+  margin-bottom: 10px;
+  color: #9faed0;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+}
+
+.crestRegionOptions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.crestRegionButton,
+.crestRegionActive {
+  min-height: 46px;
+  padding: 10px 14px;
+  border: 1px solid rgba(145, 166, 205, 0.2);
+  border-radius: 8px;
+  background: #171f2e;
+  color: #aab9d4;
+  font-family: var(--font-rajdhani), Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.crestRegionButton:hover {
+  border-color: #7890ff;
+}
+
+.crestRegionActive {
+  border-color: #7890ff;
+  background: rgba(85, 118, 238, 0.22);
+  color: #fff;
+}

@@ -8,7 +8,7 @@ import {
   useState,
 } from "react";
 
-
+import { getMythicReward } from "@/data/wowSeason";
 import { dungeons } from "@/data/mythicPlus";
 import DatePicker from "../../DatePicker/DatePicker"
 import TimePicker from "../../TimePicker/TimePicker";
@@ -407,17 +407,25 @@ export default function ReservationModal({
             ...form,
             preferredTime,
           },
+
           order: {
+            runGoal: config.runGoal,
             keyLevel: config.keyLevel,
             runs: config.runs,
             participation: config.participation,
-            role: config.role,
-            playerClass: config.playerClass,
-            traders: config.traders,
             region: config.region,
-            specificDungeon: config.specificDungeon,
-            dungeonCounts: config.dungeonCounts,
+
+            ...(config.runGoal === "standard"
+              ? {
+                role: config.role,
+                playerClass: config.playerClass,
+                traders: config.traders,
+                specificDungeon: config.specificDungeon,
+                dungeonCounts: config.dungeonCounts,
+              }
+              : {}),
           },
+
         }),
       });
 
@@ -512,6 +520,19 @@ export default function ReservationModal({
   const remainingRuns = config.specificDungeon
     ? config.remainingRuns
     : config.runs;
+
+
+  const isCrestFarming = config.runGoal === "crest";
+
+  const crestReward =
+    isCrestFarming && config.confirmed.keyLevel
+      ? getMythicReward(config.keyLevel)
+      : null;
+
+  const estimatedCrests = crestReward
+    ? crestReward.crestAmount * config.runs
+    : null;
+
 
   return (
     <div
@@ -631,41 +652,53 @@ export default function ReservationModal({
               </p>
             </div>
 
+
             <div className={styles.orderPreview}>
               <div className={styles.previewTop}>
                 <div>
-                  <span>YOUR ORDER</span>
+                  <span>
+                    {isCrestFarming
+                      ? "CREST FARMING"
+                      : "YOUR ORDER"}
+                  </span>
+
                   <strong>
                     Mythic+ +{config.keyLevel}
-                    <small> × {config.runs} runs</small>
+                    <small>
+                      {" "}× {config.runs}{" "}
+                      {config.runs === 1 ? "run" : "runs"}
+                    </small>
                   </strong>
                 </div>
 
                 <div className={styles.previewPrice}>
                   <span>ESTIMATED TOTAL</span>
+
                   <strong>
-                    {config.calculation.total.toLocaleString(
-                      "en-US"
-                    )}
+                    {config.calculation.total.toLocaleString("en-US")}
                     <small> GOLD</small>
                   </strong>
                 </div>
               </div>
 
               <div className={styles.previewDetails}>
-                <div>
-                  <span>Class</span>
-                  <strong>{config.playerClass}</strong>
-                </div>
+                {!isCrestFarming && (
+                  <>
+                    <div>
+                      <span>Class</span>
+                      <strong>{config.playerClass}</strong>
+                    </div>
 
-                <div>
-                  <span>Role</span>
-                  <strong>
-                    {config.participation === "play"
-                      ? formatRole(config.role)
-                      : "—"}
-                  </strong>
-                </div>
+                    <div>
+                      <span>Role</span>
+                      <strong>
+                        {config.participation === "play"
+                          ? formatRole(config.role)
+                          : "—"}
+                      </strong>
+                    </div>
+                  </>
+                )}
 
                 <div>
                   <span>Mode</span>
@@ -677,46 +710,79 @@ export default function ReservationModal({
                   <strong>{config.region}</strong>
                 </div>
 
-                <div>
-                  <span>Loot Traders</span>
-                  <strong>
-                    {config.traders === 0
-                      ? "None"
-                      : `+${config.traders}`}
-                  </strong>
-                </div>
+                {isCrestFarming ? (
+                  <>
+                    <div>
+                      <span>Crest Type</span>
+                      <strong>
+                        {crestReward
+                          ? `${crestReward.crest} Mistcrests`
+                          : "Unavailable"}
+                      </strong>
+                    </div>
 
-                <div>
-                  <span>Armor</span>
-                  <strong>{config.armorType}</strong>
-                </div>
+                    <div>
+                      <span>Estimated Crests</span>
+                      <strong>
+                        {estimatedCrests ?? "Unavailable"}
+                      </strong>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div>
+                      <span>Loot Traders</span>
+                      <strong>
+                        {config.traders === 0
+                          ? "None"
+                          : `+${config.traders}`}
+                      </strong>
+                    </div>
+
+                    <div>
+                      <span>Armor</span>
+                      <strong>{config.armorType}</strong>
+                    </div>
+                  </>
+                )}
               </div>
 
               <div className={styles.previewDungeons}>
                 <span>DUNGEONS</span>
 
-                {selectedDungeons.map((name) => (
-                  <div key={name}>
-                    <strong>{name}</strong>
-                    <span>
-                      ×{config.dungeonCounts[name]}
-                    </span>
-                  </div>
-                ))}
-
-                {remainingRuns > 0 && (
+                {isCrestFarming ? (
                   <div>
                     <strong>Any Dungeon</strong>
-                    <span>×{remainingRuns}</span>
+                    <span>×{config.runs}</span>
                   </div>
+                ) : (
+                  <>
+                    {selectedDungeons.map((name) => (
+                      <div key={name}>
+                        <strong>{name}</strong>
+                        <span>
+                          ×{config.dungeonCounts[name]}
+                        </span>
+                      </div>
+                    ))}
+
+                    {remainingRuns > 0 && (
+                      <div>
+                        <strong>Any Dungeon</strong>
+                        <span>×{remainingRuns}</span>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
 
               <p className={styles.priceNote}>
-                Final price and availability are
-                confirmed before the run.
+                {isCrestFarming
+                  ? "Crest rewards are estimates. Final price and availability are confirmed before the run."
+                  : "Final price and availability are confirmed before the run."}
               </p>
             </div>
+
 
             <form onSubmit={handleSubmit}>
               <div className={styles.formHeading}>
