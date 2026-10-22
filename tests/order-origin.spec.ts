@@ -30,6 +30,14 @@ test.describe("order origin validation", () => {
     ).toBe(true);
   });
 
+
+  test("accepts the exact Vercel preview hostname, not other preview hosts", () => {
+    const host = "nikoboost-git-audit-order-api-hardening-palignusws-projects.vercel.app";
+    expect(isAllowedOrderOrigin(`https://${host}`, undefined, true, "preview", host)).toBe(true);
+    expect(isAllowedOrderOrigin("https://another.vercel.app", undefined, true, "preview", host)).toBe(false);
+    expect(isAllowedOrderOrigin(`https://${host}`, undefined, true, "production", host)).toBe(false);
+  });
+
   test("fails closed on invalid SITE_URL", () => {
     expect(() => isAllowedOrderOrigin("https://www.nikoboost.online", "not-a-url", true)).toThrow();
     expect(() => isAllowedOrderOrigin("https://www.nikoboost.online", "javascript:alert(1)", true)).toThrow();
