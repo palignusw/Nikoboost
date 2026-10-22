@@ -18,6 +18,8 @@ test("switching Standard Run and Crest Farming recalculates the price", async ({
   await page.getByRole("button", { name: /Healer, 15% extra/ }).click();
   await expect(total).toContainText("314,640");
 
+  // Step transitions are briefly locked to prevent double navigation.
+  await page.waitForTimeout(700);
   await page.getByRole("button", { name: /Back/ }).first().click();
   await crest.click();
   await expect(total).toContainText("273,600");
