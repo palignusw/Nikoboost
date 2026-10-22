@@ -8,6 +8,7 @@ import styles from "./Navbar.module.scss";
 
 const links = [
   { href: "/#mythic", label: "Mythic+" },
+  { href: "/delves", label: "Delves" },
   { href: "/#how", label: "How it works" },
   { href: "/#faq", label: "FAQ" },
   { href: "/mythic-plus-rewards", label: "Rewards & Tools" },

@@ -1,3 +1,4 @@
+import { submitDelveOrder } from "@/lib/delveOrder";
 
 import { createHash, randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
@@ -568,6 +569,10 @@ export async function POST(request: Request) {
     const tbilisiTime =
       scheduleValidation.tbilisiTime ??
       "Flexible — arrange with customer";
+
+    if (order.service === "delves") {
+      return submitDelveOrder(order, { battleTag, discord, character, realm, preferredTime, comment }, ip, webhook, tbilisiTime);
+    }
 
     // SERVICE VALIDATION
 
