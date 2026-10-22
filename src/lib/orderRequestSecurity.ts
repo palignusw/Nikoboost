@@ -12,7 +12,9 @@ const LIVE_ORIGINS = [
 export function isAllowedOrderOrigin(
   origin: string | null,
   siteUrl: string | undefined,
-  isProduction: boolean
+  isProduction: boolean,
+  vercelEnv?: string,
+  vercelUrl?: string
 ): boolean {
   if (!origin) return false;
 
@@ -21,6 +23,17 @@ export function isAllowedOrderOrigin(
   if (!isProduction) {
     allowed.add("http://localhost:3000");
     allowed.add("http://127.0.0.1:3000");
+  }
+
+  // Vercel preview deployments run with NODE_ENV=production but have
+  // their own unique hostname. Trust only the hostname provided by Vercel.
+  if (vercelEnv === "preview" && vercelUrl) {
+    const previewHost = vercelUrl.trim();
+    if (
+      /^[a-z0-9-]+(?:\\.[a-z0-9-]+)*\\.vercel\\.app$/i.test(previewHost)
+    ) {
+      allowed.add(`https://${previewHost}`);
+    }
   }
 
   if (siteUrl) {
