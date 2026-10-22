@@ -20,11 +20,11 @@ export default function Navbar() {
   return (
     <header className={styles.header}>
       <div className={`container ${styles.inner}`}>
-        <Link
+
+        <a
           href="/"
           className={styles.logo}
-          onClick={closeMenu}
-          aria-label="NikoBoost home"
+          aria-label="NikoBoost home — reset configurator"
         >
           <Image
             src="/images/branding/nikoboost-logo-v2.png"
@@ -33,7 +33,8 @@ export default function Navbar() {
             height={72}
             priority
           />
-        </Link>
+        </a>
+
 
         <nav
           className={styles.nav}
@@ -58,9 +59,8 @@ export default function Navbar() {
 
           <button
             type="button"
-            className={`${styles.menuButton} ${
-              menuOpen ? styles.menuButtonOpen : ""
-            }`}
+            className={`${styles.menuButton} ${menuOpen ? styles.menuButtonOpen : ""
+              }`}
             aria-label={
               menuOpen ? "Close menu" : "Open menu"
             }
@@ -77,9 +77,8 @@ export default function Navbar() {
 
       <nav
         id="nikoboost-mobile-nav"
-        className={`${styles.mobileNav} ${
-          menuOpen ? styles.mobileNavOpen : ""
-        }`}
+        className={`${styles.mobileNav} ${menuOpen ? styles.mobileNavOpen : ""
+          }`}
         aria-label="Mobile navigation"
         inert={!menuOpen}
       >
