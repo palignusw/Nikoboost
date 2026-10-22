@@ -214,9 +214,9 @@ export default function RewardsExplorer() {
             Mythic+ <span>Rewards</span>
           </h1>
           <p>
-            Know what you’ve earned.
+            Plan your next Mythic+ run.
             <br />
-            <strong>Find the next run that matters.</strong>
+            <strong>See your Vault rewards before you queue.</strong>
           </p>
           <span className={styles.heroFootnote}>
             No login. No booking. Your week stays in this browser.
@@ -285,10 +285,11 @@ export default function RewardsExplorer() {
 
         <div id="tool-vault" hidden={view !== "vault"}>
           <div className={styles.workspaceIntro}>
-            <h2>Your week, at a glance.</h2>
+            <h2>Build your weekly Vault plan.</h2>
             <p>
-              Start by logging keys you’ve already finished. Then plan the runs
-              that improve your reward.
+              Add your completed keys, choose a reward goal, then see exactly
+              how many more runs you need. Planned runs count only after you
+              mark them completed.
             </p>
           </div>
           {example && (
