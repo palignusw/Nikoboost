@@ -456,7 +456,9 @@ export async function POST(request: Request) {
         !isAllowedOrderOrigin(
           request.headers.get("origin"),
           process.env.SITE_URL,
-          process.env.NODE_ENV === "production"
+          process.env.NODE_ENV === "production",
+          process.env.VERCEL_ENV,
+          process.env.VERCEL_URL
         )
       ) {
         return jsonError("Origin not allowed.", 403);
