@@ -30,7 +30,7 @@ export function isAllowedOrderOrigin(
   if (vercelEnv === "preview" && vercelUrl) {
     const previewHost = vercelUrl.trim();
     if (
-      /^[a-z0-9-]+(?:\\.[a-z0-9-]+)*\\.vercel\\.app$/i.test(previewHost)
+      /^[a-z0-9-]+(?:\.[a-z0-9-]+)*\.vercel\.app$/i.test(previewHost)
     ) {
       allowed.add(`https://${previewHost}`);
     }
