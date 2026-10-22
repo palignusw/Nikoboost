@@ -1,3 +1,5 @@
+import { mockReceipt } from "./helpers/receipt";
+import { openReservation } from "./helpers/configurator";
 
 import {
   test,
@@ -6,25 +8,6 @@ import {
 } from "@playwright/test";
 
 const API_PATTERN = "**/api/order";
-
-async function openReservation(page: Page) {
-  await page.goto("/");
-
-  await page
-    .locator("aside")
-    .getByRole("button", {
-      name: /Reserve run/i,
-    })
-    .click();
-
-  const modal = page.getByRole("dialog", {
-    name: "Reserve your run.",
-  });
-
-  await expect(modal).toBeVisible();
-
-  return modal;
-}
 
 async function fillCustomer(page: Page) {
   await page.getByPlaceholder("Player#1234")
@@ -40,19 +23,6 @@ async function fillCustomer(page: Page) {
     .fill("Tarren Mill");
 }
 
-function mockOrderAPI(page: Page) {
-  return page.route(API_PATTERN, async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({
-        ok: true,
-        orderId: "NB-SCHEDULE-TEST",
-        total: 80_000,
-      }),
-    });
-  });
-}
 
 async function browserToday(page: Page) {
   return page.evaluate(() => {
@@ -253,10 +223,12 @@ test.describe("NikoBoost scheduling", () => {
           ok: true,
           orderId: "NB-SCHEDULE-TEST",
           total: 80_000,
+          receipt: mockReceipt("NB-SCHEDULE-TEST", 80_000),
         }),
       });
     });
 
+    await page.clock.install({ time: new Date("2030-01-15T08:00:00Z") });
     await openReservation(page);
     await fillCustomer(page);
 

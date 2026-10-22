@@ -9,11 +9,13 @@ import {
   type MythicReward as Reward,
 } from "@/data/wowSeason";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import styles from "./page.module.scss";
 
 
 
+
+const subscribeHydration = () => () => {};
 
 const STORAGE_KEY = "nikoboost:mythic-plus:vault-planner:v1";
 
@@ -197,10 +199,17 @@ export default function RewardsExplorer() {
   const currentValue = Number(currentCrests) || 0;
   const [calculatorLevel, setCalculatorLevel] = useState(12);
 
-  useEffect(() => {
+  // Keep the server and first client render identical; restore browser storage
+  // once hydration completes, before the persistence effect can write defaults.
+  const hydrated = useSyncExternalStore(
+    subscribeHydration,
+    () => true,
+    () => false
+  );
+  if (hydrated && !plannerLoaded) {
     setRuns(readSavedRuns());
     setPlannerLoaded(true);
-  }, []);
+  }
 
   useEffect(() => {
     if (!plannerLoaded) return;

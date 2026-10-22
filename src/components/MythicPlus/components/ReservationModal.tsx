@@ -253,19 +253,16 @@ export default function ReservationModal({
 
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
-  const [timezone, setTimezone] = useState("Europe/Berlin");
-  useEffect(() => {
+  // The modal is initially closed, so browser-local state is safe to initialize here.
+  const [timezone, setTimezone] = useState(() => {
     try {
-      const detectedTimezone =
-        Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-      if (detectedTimezone) {
-        setTimezone(detectedTimezone);
-      }
+      return (
+        Intl.DateTimeFormat().resolvedOptions().timeZone || "Europe/Berlin"
+      );
     } catch {
-      // Keep the default timezone.
+      return "Europe/Berlin";
     }
-  }, []);
+  });
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -347,7 +344,10 @@ export default function ReservationModal({
     };
   }, [open, onClose, submitting, orderId]);
 
-  useEffect(() => {
+  // Reset response state before rendering a reopened dialog. Preserve form inputs.
+  const [wasOpen, setWasOpen] = useState(open);
+  if (open !== wasOpen) {
+    setWasOpen(open);
     if (open) {
       setError("");
       setOrderId("");
@@ -356,7 +356,7 @@ export default function ReservationModal({
       setReceipt(null);
       setDownloading(false);
     }
-  }, [open]);
+  }
 
   if (!open) return null;
 

@@ -18,6 +18,7 @@ type TestOrder = {
     website: string;
   };
   order: {
+    runGoal: string;
     keyLevel: number;
     runs: number;
     participation: string;
@@ -45,6 +46,7 @@ function createOrder(
     },
 
     order: {
+      runGoal: "standard",
       keyLevel: 10,
       runs: 1,
       participation: "play",
@@ -103,6 +105,7 @@ async function postInvalidOrder(
     data,
     headers: {
       "x-forwarded-for": ip,
+      origin: "http://127.0.0.1:3000",
     },
   });
 

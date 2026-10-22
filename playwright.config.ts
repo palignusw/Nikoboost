@@ -5,6 +5,7 @@ export default defineConfig({
   testDir: "./tests",
 
   timeout: 30_000,
+  workers: 2,
 
   use: {
     baseURL: "http://127.0.0.1:3000",
@@ -28,9 +29,10 @@ export default defineConfig({
   ],
 
   webServer: {
-    command: "npm run dev -- --hostname 127.0.0.1",
+    command: "npm run start -- --hostname 127.0.0.1",
+    env: { SITE_URL: "http://127.0.0.1:3000", DISCORD_WEBHOOK_URL: "http://127.0.0.1:9/disabled" },
     url: "http://127.0.0.1:3000",
-    reuseExistingServer: true,
+    reuseExistingServer: false,
     timeout: 120_000,
   },
 });

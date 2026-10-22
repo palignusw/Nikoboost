@@ -287,12 +287,6 @@ export default function MythicPlus() {
     config.confirmed.keyLevel &&
     config.confirmed.runs;
 
-  useEffect(() => {
-    if (!showMobilePrice) {
-      setPriceExpanded(false);
-    }
-  }, [showMobilePrice]);
-
   // ========================================
   // CLEANUP
   // ========================================

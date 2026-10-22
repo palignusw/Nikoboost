@@ -2,6 +2,7 @@
 import { createHash, randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { getMythicReward } from "@/data/wowSeason";
+import { isAllowedOrderOrigin } from "@/lib/orderRequestSecurity";
 
 import {
   AFK_SURCHARGE,
@@ -448,23 +449,34 @@ export async function POST(request: Request) {
     }
 
     // ORIGIN VALIDATION
-
-    const siteUrl = process.env.SITE_URL;
-    const origin = request.headers.get("origin");
-
-    if (siteUrl && origin) {
-      let expectedOrigin: string;
-
-      try {
-        expectedOrigin = new URL(siteUrl).origin;
-      } catch {
-        console.error("Invalid SITE_URL configuration");
-        return jsonError("Server configuration error.", 503);
-      }
-
-      if (origin !== expectedOrigin) {
+    // Browsers send Origin for JSON POST requests. Require an allowlisted
+    // origin even when SITE_URL is unset, instead of silently bypassing.
+    try {
+      if (
+        !isAllowedOrderOrigin(
+          request.headers.get("origin"),
+          process.env.SITE_URL,
+          process.env.NODE_ENV === "production",
+          process.env.VERCEL_ENV,
+          process.env.VERCEL_URL
+        )
+      ) {
         return jsonError("Origin not allowed.", 403);
       }
+    } catch {
+      console.error("Invalid SITE_URL configuration");
+      return jsonError("Server configuration error.", 503);
+    }
+
+    // Only accept JSON requests from the reservation form.
+    const contentType = request.headers
+      .get("content-type")
+      ?.split(";")[0]
+      ?.trim()
+      .toLowerCase();
+
+    if (contentType !== "application/json") {
+      return jsonError("Content-Type must be application/json.", 415);
     }
 
     // RATE LIMIT

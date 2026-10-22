@@ -1,3 +1,5 @@
+import { mockReceipt } from "./helpers/receipt";
+import { openReservation } from "./helpers/configurator";
 
 import {
   test,
@@ -7,26 +9,6 @@ import {
 
 const TEST_ORDER_ID = "NB-TEST-12345";
 const TEST_TOTAL = 80_000;
-
-async function openReservation(page: Page) {
-  await page.goto("/");
-
-  const reserve = page
-    .locator("aside")
-    .getByRole("button", {
-      name: /Reserve run/i,
-    });
-
-  await reserve.click();
-
-  const modal = page.getByRole("dialog", {
-    name: "Reserve your run.",
-  });
-
-  await expect(modal).toBeVisible();
-
-  return modal;
-}
 
 async function fillCustomerDetails(page: Page) {
   await page.getByPlaceholder("Player#1234").fill(
@@ -58,19 +40,6 @@ async function chooseFlexibleTime(page: Page) {
   ).toHaveAttribute("aria-pressed", "true");
 }
 
-function mockSuccess(page: Page) {
-  return page.route("**/api/order", async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({
-        ok: true,
-        orderId: TEST_ORDER_ID,
-        total: TEST_TOTAL,
-      }),
-    });
-  });
-}
 
 test.describe("NikoBoost reservation", () => {
   // Safety net: prevent real Discord submissions
@@ -128,6 +97,7 @@ test.describe("NikoBoost reservation", () => {
           ok: true,
           orderId: TEST_ORDER_ID,
           total: TEST_TOTAL,
+          receipt: mockReceipt(TEST_ORDER_ID, TEST_TOTAL),
         }),
       });
     });
@@ -166,6 +136,7 @@ test.describe("NikoBoost reservation", () => {
           ok: true,
           orderId: TEST_ORDER_ID,
           total: TEST_TOTAL,
+          receipt: mockReceipt(TEST_ORDER_ID, TEST_TOTAL),
         }),
       });
     });
@@ -187,7 +158,7 @@ await expect(
   test("Successful reservation returns correct order", async ({
     page,
   }) => {
-    let capturedPayload: any = null;
+    let capturedPayload: { customer: Record<string, string>; order: Record<string, unknown> } = { customer: {}, order: {} };
     let requestCount = 0;
 
     await page.route("**/api/order", async (route) => {
@@ -201,6 +172,7 @@ await expect(
           ok: true,
           orderId: TEST_ORDER_ID,
           total: TEST_TOTAL,
+          receipt: mockReceipt(TEST_ORDER_ID, TEST_TOTAL),
         }),
       });
     });
@@ -256,7 +228,7 @@ await expect(
     );
 
     await page.getByRole("button", {
-      name: "Done",
+      name: "Back to Homepage →",
     }).click();
 
     await expect(
@@ -317,6 +289,7 @@ await expect(
           ok: true,
           orderId: TEST_ORDER_ID,
           total: TEST_TOTAL,
+          receipt: mockReceipt(TEST_ORDER_ID, TEST_TOTAL),
         }),
       });
     });

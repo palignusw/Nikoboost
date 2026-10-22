@@ -1,3 +1,4 @@
+import { runSetup, nextStep } from "./helpers/configurator";
 
 import {
   test,
@@ -18,12 +19,6 @@ async function openConfigurator(page: Page) {
   await expect(page).toHaveURL(/#mythic$/);
 }
 
-async function nextStep(page: Page) {
-  await page.getByRole("button", {
-    name: /Continue/i,
-  }).click();
-}
-
 async function openDungeons(
   page: Page,
   options?: {
@@ -33,25 +28,13 @@ async function openDungeons(
 ) {
   await openConfigurator(page);
 
-  if (options?.runs && options.runs !== 1) {
-    await page
-      .locator('[class*="quickRuns"]')
-      .getByRole("button", {
-        name: new RegExp(
-          `^${options.runs}\\s*RUNS$`,
-          "i"
-        ),
-      })
-      .click();
-  }
+  await runSetup(page, options?.runs ?? 1);
 
   await nextStep(page);
 
-  if (options?.playerClass) {
-    await page.getByRole("button", {
-      name: `Select ${options.playerClass}`,
-    }).click();
-  }
+  await page.getByRole("button", {
+    name: `Select ${options?.playerClass ?? "Rogue"}`,
+  }).click();
 
   await nextStep(page);
 
@@ -107,8 +90,8 @@ function traderButton(page: Page, amount: number) {
 
   return traders.getByRole("button", {
     name: amount === 0
-      ? /None/i
-      : new RegExp(`^\\+${amount}\\b`),
+      ? /No loot traders/i
+      : new RegExp(`^${amount} loot traders`),
   });
 }
 
@@ -145,11 +128,8 @@ test.describe("NikoBoost advanced configurator", () => {
       })
     ).toBeDisabled();
 
-    // 4 runs +10 = 320,000
-    // Specific dungeons +10% = 32,000
-    // Package discount -5% = 17,600
-    // Total = 334,400
-    await expectTotal(page, 334_400);
+    // 288,000 base + 28,800 specific surcharge, less 5% = 300,960.
+    await expectTotal(page, 300_960);
   });
 
   test("Can distribute four runs between two dungeons", async ({
@@ -174,7 +154,7 @@ test.describe("NikoBoost advanced configurator", () => {
       page.getByText("✓ ALL RUNS ASSIGNED")
     ).toBeVisible();
 
-    await expectTotal(page, 334_400);
+    await expectTotal(page, 300_960);
   });
 
   test("Specific surcharge applies only to assigned runs", async ({
@@ -194,11 +174,8 @@ test.describe("NikoBoost advanced configurator", () => {
       "2"
     );
 
-    // 4 runs = 320,000
-    // 2 specific runs = +16,000
-    // 5% discount on 336,000 = 16,800
-    // Total = 319,200
-    await expectTotal(page, 319_200);
+    // 288,000 base + 14,400 for two assigned runs, less 5% = 287,280.
+    await expectTotal(page, 287_280);
   });
 
   test("Switching back to Any dungeon resets allocation", async ({
@@ -209,7 +186,7 @@ test.describe("NikoBoost advanced configurator", () => {
 
     await addDungeon(page, "Altar of Fangs", 2);
 
-    await expectTotal(page, 319_200);
+    await expectTotal(page, 287_280);
 
     await page.getByText("Any dungeon", {
       exact: true,
@@ -221,7 +198,7 @@ test.describe("NikoBoost advanced configurator", () => {
       })
     ).toHaveCount(0);
 
-    await expectTotal(page, 304_000);
+    await expectTotal(page, 273_600);
   });
 
   test("Rogue allows four loot traders", async ({
@@ -238,10 +215,10 @@ test.describe("NikoBoost advanced configurator", () => {
 
     await expect(four).toHaveClass(/activeTrader/);
 
-    // +10 run: 80,000
-    // Four traders: +45%
-    // Total: 116,000
-    await expectTotal(page, 116_000);
+    // +10 run: 72,000
+    // Four traders: +25%
+    // Total: 90,000
+    await expectTotal(page, 90_000);
   });
 
   test("Mage cannot select four loot traders", async ({
@@ -259,7 +236,7 @@ test.describe("NikoBoost advanced configurator", () => {
 
     await three.click();
 
-    await expectTotal(page, 108_000);
+    await expectTotal(page, 84_960);
   });
 
   test("Region selection switches from EU to NA", async ({
@@ -272,15 +249,14 @@ test.describe("NikoBoost advanced configurator", () => {
     );
 
     const eu = regionGrid.getByRole("button", {
-      name: "EU",
-      exact: true,
+      name: /EU/,
     });
 
     const na = regionGrid.getByRole("button", {
-      name: "NA",
-      exact: true,
+      name: /NA/,
     });
 
+    await eu.click();
     await expect(eu).toHaveClass(/activeOption/);
 
     await na.click();
@@ -289,6 +265,6 @@ test.describe("NikoBoost advanced configurator", () => {
     await expect(eu).not.toHaveClass(/activeOption/);
 
     // Currently both regions use the same basePrices.
-    await expectTotal(page, 80_000);
+    await expectTotal(page, 72_000);
   });
 });
