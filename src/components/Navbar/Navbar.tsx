@@ -21,7 +21,7 @@ export default function Navbar() {
     <header className={styles.header}>
       <div className={`container ${styles.inner}`}>
 
-        <a
+        <Link
           href="/"
           className={styles.logo}
           aria-label="NikoBoost home — reset configurator"
@@ -33,7 +33,7 @@ export default function Navbar() {
             height={72}
             priority
           />
-        </a>
+        </Link>
 
 
         <nav
