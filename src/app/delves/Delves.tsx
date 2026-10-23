@@ -497,12 +497,33 @@ export default function Delves() {
               );
             })}
           </div>
+          <div className={styles.routeIntro}>
+            <div>
+              <span className={styles.eyebrow}>YOUR ROUTE, YOUR CHOICE</span>
+              <h3>A reward goal? Keep the route flexible.</h3>
+              <p>
+                For weekly progress, you don’t need a particular destination.
+                Choose a named Delve for exploration or a specific objective.
+              </p>
+            </div>
+            <button
+              type="button"
+              aria-pressed={!quote && config.delveId === "any"}
+              onClick={() => patch({ kind: "runs", delveId: "any" })}
+            >
+              <span>Let us choose the route</span>
+              <strong>No location surcharge</strong>
+              <small>
+                {!quote && config.delveId === "any"
+                  ? "✓ Selected"
+                  : "Choose flexible route →"}
+              </small>
+            </button>
+          </div>
           <div className={styles.directoryHeading}>
-            <span className={styles.eyebrow}>THE FULL MIDNIGHT COLLECTION</span>
-            <h3>Find your destination.</h3>
+            <h3>Have a destination in mind?</h3>
             <p>
-              All twelve regular Delves. Choose a specific route or let us plan
-              one.
+              Browse all 12 Delves. A named route adds 5% before bundle savings.
             </p>
           </div>
           <div className={styles.filters}>
@@ -526,23 +547,23 @@ export default function Delves() {
           <div className={styles.locationGrid}>
             {filtered.map((d) => (
               <article key={d.id} className={styles.locationCard}>
-                <div className={styles.locationTop}>
-                  <span>{d.mark} / EXPEDITION</span>
-                  {"fresh" in d && <b>SEASON 2</b>}
-                </div>
-                <span className={styles.zone}>{d.zone}</span>
-                <h3>{d.name}</h3>
-                <p>{d.theme}</p>
                 <button
                   type="button"
-                  onClick={() => {
-                    patch({ kind: "runs", delveId: d.id });
-                    document
-                      .getElementById("delve-builder")
-                      ?.scrollIntoView({ behavior: "smooth" });
-                  }}
+                  aria-pressed={!quote && config.delveId === d.id}
+                  onClick={() => patch({ kind: "runs", delveId: d.id })}
                 >
-                  Configure this Delve <span>↗</span>
+                  <span className={styles.routeNumber}>{d.mark}</span>
+                  <span className={styles.routeLabel}>
+                    <span>
+                      {d.zone}
+                      {"fresh" in d ? " · Season 2" : ""}
+                    </span>
+                    <strong>{d.name}</strong>
+                    <small>{d.theme}</small>
+                  </span>
+                  <span className={styles.routeCheck} aria-hidden="true">
+                    {!quote && config.delveId === d.id ? "✓" : "+"}
+                  </span>
                 </button>
               </article>
             ))}
@@ -562,6 +583,37 @@ export default function Delves() {
               </button>
             </div>
           )}
+          <div className={styles.routeSelection}>
+            <div aria-live="polite">
+              <span>SELECTED ROUTE</span>
+              <strong>
+                {quote
+                  ? "Choose a regular Delve above"
+                  : delveName(config.delveId)}
+              </strong>
+              <p>
+                {!quote && config.delveId !== "any"
+                  ? `Location surcharge: ${gold(price.specific)} gold before bundle savings.`
+                  : "We confirm the route and availability with you before payment."}
+              </p>
+            </div>
+            <button
+              type="button"
+              className={styles.secondary}
+              onClick={() =>
+                document
+                  .getElementById("delve-builder")
+                  ?.scrollIntoView({ behavior: "smooth" })
+              }
+            >
+              Continue to tier & pricing ↗
+            </button>
+          </div>
+          <div className={styles.directoryHeading}>
+            <span className={styles.eyebrow}>BEYOND REGULAR DELVES</span>
+            <h3>Looking for a different challenge?</h3>
+            <p>These adventures need a separate scope and gold quote.</p>
+          </div>
           <div className={styles.specialGrid}>
             <article>
               <div className={styles.specialArt}>

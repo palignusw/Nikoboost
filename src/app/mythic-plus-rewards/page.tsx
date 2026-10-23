@@ -219,7 +219,7 @@ export default function RewardsExplorer() {
             <strong>See your Vault rewards before you queue.</strong>
           </p>
           <span className={styles.heroFootnote}>
-            No login. No booking. Your week stays in this browser.
+            No login required. Free to use. Your week stays in this browser.
           </span>
         </header>
 
@@ -292,6 +292,38 @@ export default function RewardsExplorer() {
               mark them completed.
             </p>
           </div>
+          <details className={styles.guideDisclosure}>
+            <summary>
+              First visit? See how the planner works{" "}
+              <span aria-hidden="true">+</span>
+            </summary>
+            <ol
+              className={styles.plannerSteps}
+              aria-label="How to use the weekly planner"
+            >
+              <li>
+                <span>1</span>
+                <div>
+                  <strong>Log what you’ve finished</strong>
+                  <small>Completed keys determine your current Vault.</small>
+                </div>
+              </li>
+              <li>
+                <span>2</span>
+                <div>
+                  <strong>Choose your next reward</strong>
+                  <small>Set an item level and the number of choices.</small>
+                </div>
+              </li>
+              <li>
+                <span>3</span>
+                <div>
+                  <strong>Run the missing keys</strong>
+                  <small>Mark planned runs completed as you finish them.</small>
+                </div>
+              </li>
+            </ol>
+          </details>
           {example && (
             <div className={styles.demoBanner} role="note">
               <div>
@@ -595,7 +627,10 @@ export default function RewardsExplorer() {
               </div>
             </div>
             <div className={styles.plannerToolbar}>
-              <span>{allRuns.length} / 200 runs · Saved in this browser</span>
+              <span>
+                {allRuns.length} / 200 runs ·{" "}
+                {example ? "Example only · not saved" : "Saved in this browser"}
+              </span>
               <div>
                 <button
                   type="button"
@@ -630,6 +665,11 @@ export default function RewardsExplorer() {
                 </button>
               </div>
             </div>
+            <p className={styles.storageNote}>
+              This is a manual planner, not a live character sync. After the
+              weekly reset, use Reset planner to start a new week. Undo restores
+              the last change.
+            </p>
             {shareLink && (
               <label className={styles.shareField}>
                 Your plan link

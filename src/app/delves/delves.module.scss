@@ -479,62 +479,6 @@
     padding-top: 25px;
   }
 }
-.locationGrid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-}
-.locationCard {
-  position: relative;
-  padding: 24px;
-  border: 1px solid $border;
-  border-radius: 16px;
-  background:
-    linear-gradient(145deg, rgba($brand, 0.035), transparent 70%), $bg-secondary;
-  transition: border-color 0.16s;
-  &:hover {
-    border-color: rgba($brand-light, 0.35);
-  }
-  h3 {
-    font-size: 27px;
-    margin: 10px 0;
-  }
-  p {
-    font-size: 12px;
-    margin: 0 0 24px;
-  }
-  button {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    text-align: left;
-    border-top: 1px solid $border;
-    padding: 15px 0 0;
-    color: $brand-light;
-    background: none;
-    font-size: 15px;
-  }
-}
-.locationTop {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 32px;
-  font-size: 9px;
-  letter-spacing: 0.1em;
-  color: $text-muted;
-  b {
-    color: $season-light;
-    font-size: 8px;
-    font-weight: 500;
-  }
-}
-.zone {
-  color: $text-secondary;
-  font-size: 10px;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-}
 .specialGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1103,18 +1047,6 @@
     margin: 0;
   }
 }
-.locationCard {
-  padding: 22px;
-  .locationTop {
-    margin-bottom: 18px;
-  }
-  h3 {
-    font-size: 25px;
-  }
-  p {
-    margin-bottom: 15px;
-  }
-}
 .specialGrid article {
   overflow: hidden;
 }
@@ -1189,5 +1121,154 @@
   .specialArt {
     margin: -25px -25px 24px;
     height: 210px;
+  }
+}
+
+// Route selection stays in place; pricing remains in the configurator.
+.routeIntro {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  align-items: center;
+  gap: 32px;
+  padding: 30px;
+  margin-bottom: 32px;
+  background: $bg-elevated;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  h3 {
+    margin: 10px 0;
+    font-size: clamp(26px, 3vw, 34px);
+  }
+  p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  > button {
+    display: grid;
+    gap: 10px;
+    text-align: left;
+    padding: 24px;
+    border: 1px solid $border;
+    border-radius: $radius-md;
+    background: $bg-main;
+    color: $text-primary;
+    > span {
+      font-size: 23px;
+    }
+    strong,
+    small {
+      font: 12px/1.6 var(--font-ui);
+    }
+    strong {
+      color: $text-secondary;
+      font-weight: 400;
+    }
+    small {
+      color: $brand-light;
+    }
+    &[aria-pressed="true"] {
+      border-color: $brand;
+      background: rgba($brand, 0.06);
+    }
+  }
+}
+.page .locationGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.page .locationCard {
+  padding: 0;
+  background: $bg-secondary;
+  border: 0;
+  > button {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    height: 100%;
+    padding: 18px;
+    border: 1px solid $border;
+    border-radius: $radius-md;
+    color: $text-primary;
+    &[aria-pressed="true"] {
+      border-color: $brand;
+      background: rgba($brand, 0.06);
+    }
+    &:hover {
+      border-color: $brand-light;
+    }
+  }
+}
+.routeNumber {
+  font-size: 14px;
+  color: $text-muted;
+  min-width: 22px;
+}
+.routeLabel {
+  flex: 1;
+  display: grid;
+  gap: 5px;
+  > span {
+    color: $text-secondary;
+    font: 11px/1.5 var(--font-ui);
+  }
+  strong {
+    font-size: 23px;
+    font-weight: 600;
+    line-height: 1.15;
+  }
+  small {
+    color: $text-secondary;
+    font: 12px/1.6 var(--font-ui);
+  }
+}
+.routeCheck {
+  color: $brand-light;
+  font-size: 22px;
+}
+.routeSelection {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 24px 0 32px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid $border;
+  > div {
+    display: grid;
+    gap: 8px;
+  }
+  span {
+    color: $text-secondary;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+  }
+  strong {
+    font: 600 24px/1.2 var(--font-display);
+  }
+  p {
+    margin: 0;
+    font-size: 12px;
+  }
+  button {
+    flex-shrink: 0;
+  }
+}
+@media (max-width: 700px) {
+  .routeIntro {
+    grid-template-columns: 1fr;
+    gap: 22px;
+    padding: 22px;
+  }
+  .page .locationGrid {
+    grid-template-columns: 1fr;
+  }
+  .routeSelection {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .routeSelection button {
+    width: 100%;
   }
 }

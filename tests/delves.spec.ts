@@ -188,6 +188,19 @@ test("Delve configurator reprices, filters all locations and keeps specialist en
   await page.getByRole("searchbox").fill("no such delve");
   await page.getByRole("button", { name: "Clear filters" }).click();
   await expect(page.locator("#locations article")).toHaveCount(14);
+  const namedRoute = page
+    .locator("#locations article button")
+    .filter({ hasText: "Twilight Crypts" });
+  await namedRoute.click();
+  await expect(namedRoute).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByTestId("delve-total")).toHaveText("831,600 gold");
+  const flexibleRoute = page.getByRole("button", {
+    name: /Let us choose the route/,
+  });
+  await flexibleRoute.click();
+  await expect(flexibleRoute).toHaveAttribute("aria-pressed", "true");
+  await expect(namedRoute).toHaveAttribute("aria-pressed", "false");
+  await expect(page.getByTestId("delve-total")).toHaveText("792,000 gold");
   await page
     .getByRole("button", { name: /Plan a Labyrinth adventure/ })
     .click();

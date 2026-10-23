@@ -194,8 +194,8 @@ export default function DelveReservation({
               {quote ? "Plan your adventure." : "Reserve your run."}
             </h2>
             <p id="delve-reservation-description">
-              Review your configuration and leave your details. No account
-              required.
+              Review your run, choose a time and tell us how to reach you. No
+              payment now.
             </p>
           </div>
           <div className={shared.orderPreview}>
