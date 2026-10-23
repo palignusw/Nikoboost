@@ -459,7 +459,8 @@ export async function POST(request: Request) {
           process.env.SITE_URL,
           process.env.NODE_ENV === "production",
           process.env.VERCEL_ENV,
-          process.env.VERCEL_URL
+          process.env.VERCEL_URL,
+          process.env.VERCEL_BRANCH_URL
         )
       ) {
         return jsonError("Origin not allowed.", 403);
