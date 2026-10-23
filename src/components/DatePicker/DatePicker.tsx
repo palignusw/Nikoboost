@@ -87,6 +87,7 @@ export default function DatePicker({
 
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
+        event.preventDefault();
         event.stopPropagation();
         setOpen(false);
         triggerRef.current?.focus();

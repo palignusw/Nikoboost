@@ -1,7 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useState } from "react";
+import Image from "next/image";
+import DelveReservation from "./DelveReservation";
+import { delveArt, featuredDelves } from "@/data/delveArt";
 import { classArmor } from "@/data/mythicPlus";
 import {
   DELVES_SEASON,
@@ -58,17 +61,6 @@ export default function Delves() {
   const [search, setSearch] = useState("");
   const [zone, setZone] = useState("All zones");
   const [open, setOpen] = useState(false);
-  const dialog = useRef<HTMLDialogElement>(null);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
-  const [receipt, setReceipt] = useState<{
-    orderId: string;
-    total: number | null;
-    quote: boolean;
-  } | null>(null);
-  const [exact, setExact] = useState(false);
-  const [schedule, setSchedule] = useState("");
-  const [keys, setKeys] = useState(4);
   const price = delvePrice(config);
   const reward = delveRewards[config.tier];
   const quote = config.kind !== "runs";
@@ -85,11 +77,9 @@ export default function Delves() {
         ? "Labyrinth of Kindo’jan"
         : `Tier ${config.tier} · ${config.runs} ${config.runs === 1 ? "run" : "runs"}`;
   const patch = (value: Partial<DelveConfig>) => {
-    setReceipt(null);
     setConfig((c) => ({ ...c, ...value }));
   };
   function chooseSpecial(kind: "nemesis" | "labyrinth") {
-    setReceipt(null);
     setConfig((c) => ({
       ...c,
       kind,
@@ -101,83 +91,8 @@ export default function Delves() {
       .getElementById("delve-builder")
       ?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
-  useEffect(() => {
-    const el = dialog.current;
-    if (!el || !open) return;
-    el.showModal();
-    const previous = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      el.close();
-      document.body.style.overflow = previous;
-    };
-  }, [open]);
   function book() {
-    setError("");
     setOpen(true);
-  }
-  async function submit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    if (busy || receipt) return;
-    const data = new FormData(e.currentTarget);
-    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
-    if (exact && (!schedule || new Date(schedule).getTime() <= Date.now())) {
-      setError("Choose a future date and time.");
-      return;
-    }
-    setBusy(true);
-    setError("");
-    try {
-      const response = await fetch("/api/order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        signal: AbortSignal.timeout(20_000),
-        body: JSON.stringify({
-          customer: {
-            battleTag: data.get("battleTag"),
-            discord: data.get("discord"),
-            character: data.get("character"),
-            realm: data.get("realm"),
-            website: data.get("website"),
-            comment: data.get("comment"),
-            preferredTime: exact
-              ? `${schedule.replace("T", " ")} (${timezone})`
-              : `Flexible — please contact me (${timezone})`,
-          },
-          order: {
-            ...config,
-            tierUnlocked: data.get("tierUnlocked") === "on",
-            cofferKeys: keys,
-          },
-        }),
-      });
-      const result = await response.json();
-      if (!response.ok || !result.ok)
-        throw new Error(result.error || "Could not submit your request.");
-      if (
-        typeof result.orderId !== "string" ||
-        (result.total !== null &&
-          (!Number.isInteger(result.total) || result.total < 0))
-      )
-        throw new Error(
-          "Unexpected confirmation. Contact support before retrying.",
-        );
-      setReceipt({
-        orderId: result.orderId,
-        total: result.total,
-        quote: result.quote,
-      });
-    } catch (err) {
-      setError(
-        err instanceof Error && err.name === "TimeoutError"
-          ? "Delivery was not confirmed. Check with support before retrying."
-          : err instanceof Error
-            ? err.message
-            : "Could not submit your request.",
-      );
-    } finally {
-      setBusy(false);
-    }
   }
   return (
     <main className={styles.page}>
@@ -193,9 +108,9 @@ export default function Delves() {
                 {DELVES_SEASON} · PATCH 12.1.5
               </span>
               <h1>
-                Small group.
+                Your next Delve.
                 <br />
-                <span>Great adventure.</span>
+                <span>Done your way.</span>
               </h1>
               <p>
                 Delves, on your terms. Pick your Tier, build a weekly bundle,
@@ -210,37 +125,24 @@ export default function Delves() {
                 <span>EU & NA</span>
               </div>
             </div>
-            <div
-              className={styles.expedition}
-              aria-label="Recommended Delve tier"
-            >
-              <span className={styles.eyebrow}>THE WEEKLY SWEET SPOT</span>
-              <div className={styles.tierSeal}>
-                <small>TIER</small>
-                <strong>08</strong>
-                <span>EXPLORER’S CHOICE</span>
-              </div>
-              <div className={styles.expeditionStats}>
-                <div>
-                  <strong>295</strong>
-                  <span>Bountiful Coffer</span>
-                </div>
-                <div>
-                  <strong>305</strong>
-                  <span>World Vault option</span>
-                </div>
-              </div>
-              <p>
-                Bring your own Coffer Keys. Unlock Vault choices with qualifying
-                completions.
-              </p>
-              <a
-                href="#delve-builder"
-                onClick={() => patch({ kind: "runs", tier: 8 })}
-              >
-                Plan a Tier 8 run <span>→</span>
-              </a>
-            </div>
+            <figure className={styles.heroVisual}>
+              <Image
+                src={delveArt["midnight-delves"].src}
+                alt={delveArt["midnight-delves"].alt}
+                fill
+                sizes="(max-width: 800px) 100vw, 55vw"
+                priority
+              />
+              <figcaption>
+                <span>MIDNIGHT DELVES</span>
+                <strong>
+                  Into the unknown.
+                  <br />
+                  With a little backup.
+                </strong>
+                <small>Official Blizzard screenshot</small>
+              </figcaption>
+            </figure>
           </div>
         </div>
       </header>
@@ -304,7 +206,6 @@ export default function Delves() {
                     type="button"
                     className={styles.textButton}
                     onClick={() => {
-                      setReceipt(null);
                       setConfig(initial);
                     }}
                   >
@@ -563,6 +464,47 @@ export default function Delves() {
               adventures. Bountiful status is checked in-game, not guessed here.
             </p>
           </div>
+          <div
+            className={styles.featuredGallery}
+            aria-label="Featured Delve destinations"
+          >
+            {featuredDelves.map((id) => {
+              const destination = delveLocations.find((d) => d.id === id)!;
+              return (
+                <figure key={id} className={styles.featuredCard}>
+                  <Image
+                    src={delveArt[id].src}
+                    alt={delveArt[id].alt}
+                    fill
+                    sizes="(max-width: 600px) 90vw, (max-width: 1000px) 45vw, 30vw"
+                  />
+                  <figcaption>
+                    <span>{destination.zone}</span>
+                    <h3>{destination.name}</h3>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        patch({ kind: "runs", delveId: id });
+                        document
+                          .getElementById("delve-builder")
+                          ?.scrollIntoView({ behavior: "smooth" });
+                      }}
+                    >
+                      Plan this expedition <span>↗</span>
+                    </button>
+                  </figcaption>
+                </figure>
+              );
+            })}
+          </div>
+          <div className={styles.directoryHeading}>
+            <span className={styles.eyebrow}>THE FULL MIDNIGHT COLLECTION</span>
+            <h3>Find your destination.</h3>
+            <p>
+              All twelve regular Delves. Choose a specific route or let us plan
+              one.
+            </p>
+          </div>
           <div className={styles.filters}>
             <label>
               Find a Delve
@@ -622,6 +564,14 @@ export default function Delves() {
           )}
           <div className={styles.specialGrid}>
             <article>
+              <div className={styles.specialArt}>
+                <Image
+                  src={delveArt["venomfall-deeps"].src}
+                  alt={delveArt["venomfall-deeps"].alt}
+                  fill
+                  sizes="(max-width: 600px) 100vw, 50vw"
+                />
+              </div>
               <span className={styles.eyebrow}>SEASON 2 NEMESIS</span>
               <h3>Venomfall Deeps</h3>
               <p>
@@ -638,6 +588,14 @@ export default function Delves() {
               </button>
             </article>
             <article>
+              <div className={styles.specialArt}>
+                <Image
+                  src={delveArt["labyrinth"].src}
+                  alt={delveArt["labyrinth"].alt}
+                  fill
+                  sizes="(max-width: 600px) 100vw, 50vw"
+                />
+              </div>
               <span className={styles.eyebrow}>NEW IN PATCH 12.1.5</span>
               <h3>Labyrinth of Kindo’jan</h3>
               <p>
@@ -778,6 +736,10 @@ export default function Delves() {
           </summary>
           <div className={styles.sources}>
             <p>
+              Delve screenshots © Blizzard Entertainment. Featured images
+              follow Blizzard’s location captions.
+            </p>
+            <p>
               Checked 23 October 2026 · Midnight Season 2 / 12.1.5. Prices are
               NikoBoost’s own gold tariffs, identical for EU and NA. They are
               not a claimed market average. Daily Bountiful status is confirmed
@@ -818,206 +780,9 @@ export default function Delves() {
           <Link href="/#mythic">Looking for Mythic+ instead? ↗</Link>
         </footer>
       </div>
-      <dialog
-        ref={dialog}
-        className={styles.dialog}
-        aria-labelledby="booking-heading"
-        onCancel={(e) => {
-          e.preventDefault();
-          if (!busy) setOpen(false);
-        }}
-      >
-        <div className={styles.modalHeading}>
-          <span className={styles.eyebrow}>NIKOBOOST · DELVES</span>
-          <button
-            type="button"
-            aria-label="Close reservation"
-            disabled={busy}
-            onClick={() => setOpen(false)}
-          >
-            ×
-          </button>
-        </div>
-        {receipt ? (
-          <div className={styles.success} role="status">
-            <span className={styles.successMark}>✓</span>
-            <h2 id="booking-heading">
-              {receipt.quote ? "Enquiry received." : "Expedition requested."}
-            </h2>
-            <p>We’ll contact you to confirm details and availability.</p>
-            <dl>
-              <div>
-                <dt>Reference</dt>
-                <dd>{receipt.orderId}</dd>
-              </div>
-              <div>
-                <dt>{receipt.quote ? "Pricing" : "Server-confirmed total"}</dt>
-                <dd>
-                  {receipt.total === null
-                    ? "Manual quote required"
-                    : `${gold(receipt.total)} gold`}
-                </dd>
-              </div>
-            </dl>
-            <p>No payment has been taken.</p>
-            <button
-              type="button"
-              className={styles.primary}
-              onClick={() => setOpen(false)}
-            >
-              Done
-            </button>
-            <button
-              type="button"
-              className={styles.textButton}
-              onClick={() => {
-                setReceipt(null);
-                setOpen(false);
-              }}
-            >
-              Start a new request
-            </button>
-          </div>
-        ) : (
-          <>
-            <h2 id="booking-heading">
-              {quote ? "Let’s plan your adventure." : "Reserve your Delve run."}
-            </h2>
-            <p className={styles.modalIntro}>
-              {title} · {config.region} ·{" "}
-              {quote ? "Manual gold quote" : `${gold(price.total)} gold`}
-            </p>
-            <form onSubmit={submit}>
-              <fieldset disabled={busy} className={styles.bookingFields}>
-                <div className={styles.twoFields}>
-                  {[
-                    ["battleTag", "BattleTag", "Player#1234"],
-                    ["discord", "Discord username", "Your Discord username"],
-                    ["character", "Character name", "Character"],
-                    ["realm", "Realm", "Realm name"],
-                  ].map(([name, label, placeholder]) => (
-                    <label key={name}>
-                      {label}
-                      <input
-                        name={name}
-                        placeholder={placeholder}
-                        required
-                        maxLength={80}
-                        minLength={name === "discord" ? 2 : 1}
-                        pattern={
-                          name === "battleTag"
-                            ? "[^\\s#]{2,50}#[0-9]{3,12}"
-                            : undefined
-                        }
-                        autoComplete="off"
-                      />
-                    </label>
-                  ))}
-                </div>
-                <label className={styles.honeypot} aria-hidden="true">
-                  Website
-                  <input name="website" tabIndex={-1} autoComplete="off" />
-                </label>
-                <span className={styles.fieldLabel}>
-                  When would you like to play?
-                </span>
-                <div className={styles.scheduleChoices}>
-                  <button
-                    type="button"
-                    aria-pressed={!exact}
-                    onClick={() => setExact(false)}
-                  >
-                    Arrange with me
-                  </button>
-                  <button
-                    type="button"
-                    aria-pressed={exact}
-                    onClick={() => setExact(true)}
-                  >
-                    Choose a time
-                  </button>
-                </div>
-                {exact && (
-                  <label>
-                    Preferred local date & time
-                    <input
-                      type="datetime-local"
-                      value={schedule}
-                      onChange={(e) => setSchedule(e.target.value)}
-                      required
-                    />
-                  </label>
-                )}
-                <p className={styles.note}>
-                  Times use your browser’s local time zone. Start time is
-                  confirmed with the team.
-                </p>
-                <label>
-                  {quote ? "Your exact objective" : "Notes (optional)"}
-                  <textarea
-                    name="comment"
-                    required={quote}
-                    maxLength={700}
-                    rows={3}
-                    placeholder={
-                      quote
-                        ? "Which wing, difficulty or encounter do you need help with?"
-                        : "Anything we should know about your character?"
-                    }
-                  />
-                </label>
-                {!quote && (
-                  <label className={styles.check}>
-                    <input name="tierUnlocked" type="checkbox" required />
-                    <span>
-                      I have access to Tier {config.tier} on this character.
-                    </span>
-                  </label>
-                )}
-                {!quote && config.format === "bountiful" && (
-                  <>
-                    <label>
-                      Your Restored Coffer Keys
-                      <input
-                        aria-label="Restored Coffer Keys"
-                        type="number"
-                        min={config.runs}
-                        max={1000}
-                        value={keys}
-                        onChange={(e) => setKeys(Number(e.target.value))}
-                        required
-                      />
-                    </label>
-                    <p className={styles.note}>
-                      At least {config.runs} keys needed. We verify Bountiful
-                      availability and remaining eligibility before payment.
-                    </p>
-                  </>
-                )}
-                <label className={styles.check}>
-                  <input type="checkbox" required />
-                  <span>
-                    I understand this is a self-play request, not an instant
-                    start or a guarantee of specific loot. Payment is arranged
-                    in-game after confirmation.
-                  </span>
-                </label>
-                <button type="submit" className={styles.primary}>
-                  {busy
-                    ? "Sending…"
-                    : quote
-                      ? "Send quote request"
-                      : "Send reservation request"}
-                  <span>↗</span>
-                </button>
-              </fieldset>
-              <p role="alert" className={styles.error}>
-                {error}
-              </p>
-            </form>
-          </>
-        )}
-      </dialog>
+      {open && (
+        <DelveReservation config={config} onClose={() => setOpen(false)} />
+      )}
     </main>
   );
 }

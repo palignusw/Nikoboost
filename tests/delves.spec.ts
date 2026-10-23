@@ -248,14 +248,14 @@ test("Delve reservation uses authoritative confirmation and preserves errors wit
     await modal.getByRole("textbox", { name: label, exact: true }).fill(value);
   await modal.getByRole("checkbox").nth(0).check();
   await modal.getByRole("checkbox").nth(1).check();
-  await modal.getByRole("button", { name: /Send reservation request/ }).click();
+  await modal.getByRole("button", { name: /Submit Reservation/ }).click();
   await expect(modal.getByRole("alert")).toHaveText(
     "Delivery unavailable. Try again.",
   );
   await expect(
     modal.getByRole("textbox", { name: "BattleTag", exact: true }),
   ).toHaveValue("Tester#1234");
-  await modal.getByRole("button", { name: /Send reservation request/ }).click();
+  await modal.getByRole("button", { name: /Submit Reservation/ }).click();
   await expect(modal.getByRole("status")).toContainText("190,000 gold");
   await expect(modal.getByRole("status")).toContainText("NB-D-TEST");
   expect(sent).toBe(2);

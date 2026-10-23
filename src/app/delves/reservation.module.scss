@@ -1,0 +1,162 @@
+@use "../../styles/variables" as *;
+.booking {
+  padding: 32px;
+  margin: auto;
+  width: min(790px, calc(100% - 32px));
+  max-height: calc(100dvh - 48px);
+  font-family: var(--font-sora), Arial, sans-serif;
+  &::backdrop {
+    background: rgba(2, 4, 9, 0.86);
+    backdrop-filter: blur(14px);
+  }
+  h2 {
+    font:
+      700 clamp(30px, 4vw, 40px) / 1.1 var(--font-rajdhani),
+      sans-serif;
+  }
+  h3 {
+    font-family: var(--font-rajdhani), sans-serif;
+  }
+  p {
+    font-family: var(--font-sora), sans-serif;
+  }
+  input:not([type="checkbox"]),
+  textarea,
+  select {
+    font:
+      13px/1.6 var(--font-sora),
+      sans-serif;
+    border-color: #354056;
+    background: #101620;
+  }
+  button {
+    font-family: var(--font-sora), sans-serif;
+  }
+}
+.fieldset {
+  min-width: 0;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+.previewArt {
+  height: 120px;
+  position: relative;
+  overflow: hidden;
+  img {
+    object-fit: cover;
+    object-position: center 42%;
+  }
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(0deg, #111824, transparent 95%);
+  }
+  > span {
+    position: absolute;
+    z-index: 1;
+    left: 22px;
+    bottom: 14px;
+    color: $text-primary;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+  }
+}
+.orderDetails {
+  > summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 22px;
+    font-size: 12px;
+    color: $brand-light;
+    cursor: pointer;
+    list-style: none;
+    &::-webkit-details-marker {
+      display: none;
+    }
+  }
+}
+
+.requirements {
+  margin-top: 24px;
+  padding: 18px;
+  border: 1px solid $border;
+  background: rgba(255, 255, 255, 0.015);
+  border-radius: 11px;
+  label {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    color: $text-secondary;
+    font-size: 12px;
+    line-height: 1.8;
+    + label {
+      margin-top: 13px;
+    }
+  }
+  input {
+    accent-color: $brand;
+    margin-top: 4px;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+}
+@media (max-width: 700px) {
+  .booking {
+    width: calc(100% - 24px);
+    padding: 22px 18px 28px;
+    max-height: calc(100dvh - 24px);
+  }
+  .previewArt {
+    height: 90px;
+  }
+  .orderDetails > summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 17px;
+    color: $brand-light;
+    font-size: 12px;
+    cursor: pointer;
+    list-style: none;
+    &::-webkit-details-marker {
+      display: none;
+    }
+  }
+}
+
+// Match the reference reservation typography, including its mobile sizes.
+.booking {
+  h2 {
+    letter-spacing: -0.055em;
+  }
+  form h3 {
+    font-size: 15px;
+    line-height: 1.1;
+  }
+  button {
+    font-family: var(--font-sora), sans-serif;
+  }
+}
+@media (max-width: 700px) {
+  .booking h2 {
+    font-size: 32px;
+    line-height: 1.05;
+  }
+  .booking form h3 {
+    font-size: 19px;
+  }
+}
+.booking button[type] {
+  font-family: var(--font-sora), sans-serif;
+}
+@media (max-width: 700px) {
+  .booking {
+    width: 100%;
+    max-height: 94dvh;
+    margin: auto auto 0;
+  }
+}

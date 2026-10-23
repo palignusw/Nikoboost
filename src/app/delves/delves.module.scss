@@ -150,85 +150,7 @@
     margin-right: 9px;
   }
 }
-.expedition {
-  position: relative;
-  padding: 28px;
-  border: 1px solid rgba($brand-light, 0.2);
-  border-radius: 24px;
-  background: linear-gradient(
-    140deg,
-    rgba($bg-card, 0.96),
-    rgba($bg-secondary, 0.9)
-  );
-  text-align: center;
-  box-shadow: 0 24px 80px #0004;
-  > p {
-    font-size: 12px;
-    margin: 18px 0;
-    line-height: 1.8;
-  }
-  > a {
-    display: flex;
-    justify-content: space-between;
-    padding-top: 17px;
-    border-top: 1px solid $border;
-    color: $brand-light;
-    font-size: 13px;
-  }
-}
-.tierSeal {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin: 26px auto;
-  width: 204px;
-  height: 204px;
-  border: 1px solid rgba($brand-light, 0.3);
-  border-radius: 50%;
-  outline: 1px solid rgba($brand-light, 0.1);
-  outline-offset: 12px;
-  background: radial-gradient(circle, rgba($brand, 0.12), transparent 70%);
-  position: relative;
-  &::before {
-    content: "";
-    position: absolute;
-    inset: 9px;
-    border: 1px dashed rgba($brand-light, 0.2);
-    border-radius: 50%;
-  }
-  small {
-    font-size: 12px;
-    letter-spacing: 0.25em;
-    color: $text-secondary;
-  }
-  strong {
-    font: 700 100px/0.95 var(--font-display);
-    color: $text-primary;
-  }
-  > span {
-    font-size: 8px;
-    letter-spacing: 0.18em;
-    margin-top: 12px;
-    color: $brand-light;
-  }
-}
-.expeditionStats {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  padding-top: 10px;
-  div + div {
-    border-left: 1px solid $border;
-  }
-  strong {
-    display: block;
-    font: 700 36px/1.2 var(--font-display);
-  }
-  span {
-    font-size: 11px;
-    color: $text-secondary;
-  }
-}
+
 .sectionNav {
   display: flex;
   justify-content: space-between;
@@ -861,69 +783,7 @@
     }
   }
 }
-.dialog {
-  width: min(650px, calc(100% - 24px));
-  max-height: calc(100dvh - 40px);
-  margin: auto;
-  padding: 30px;
-  border-radius: 20px;
-  border: 1px solid rgba($brand-light, 0.25);
-  background: $bg-secondary;
-  color: $text-primary;
-  overscroll-behavior: contain;
-  box-shadow: 0 30px 100px #0009;
-  &::backdrop {
-    background: #000b;
-    backdrop-filter: blur(6px);
-  }
-  h2 {
-    font-size: 34px;
-  }
-}
-.modalHeading {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  button {
-    width: 38px;
-    height: 38px;
-    background: $bg-card;
-    border: 1px solid $border;
-    border-radius: 9px;
-    color: $text-secondary;
-    font-size: 25px;
-  }
-}
-.modalIntro {
-  font-size: 13px;
-  border-bottom: 1px solid $border;
-  padding-bottom: 20px;
-}
-.bookingFields {
-  padding: 0;
-  margin: 0;
-  border: 0;
-  min-width: 0;
-  label:not(.check) {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-bottom: 16px;
-    font-size: 12px;
-    color: $text-secondary;
-  }
-  .twoFields {
-    margin-top: 0;
-    gap: 0 16px;
-  }
-  > .primary {
-    width: 100%;
-    margin-top: 20px;
-  }
-  textarea {
-    resize: vertical;
-  }
-}
+
 .bookingFields .honeypot {
   position: absolute;
   width: 1px;
@@ -931,86 +791,7 @@
   overflow: hidden;
   clip-path: inset(50%);
 }
-.scheduleChoices {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  button {
-    border: 1px solid $border;
-    background: $bg-card;
-    padding: 12px;
-    border-radius: 9px;
-    color: $text-secondary;
-    font-size: 16px;
-  }
-}
-.check {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  margin-top: 16px;
-  color: $text-secondary;
-  font-size: 12px;
-  line-height: 1.8;
-  input {
-    accent-color: $brand;
-    flex-shrink: 0;
-    width: 17px;
-    height: 17px;
-    margin-top: 3px;
-  }
-}
-.error {
-  color: #e9a1ab !important;
-  font-size: 13px;
-  &:empty {
-    margin: 0;
-  }
-}
-.success {
-  padding: 16px 0;
-  p {
-    font-size: 13px;
-  }
-  .primary {
-    width: 100%;
-    margin-top: 12px;
-  }
-  .textButton {
-    display: block;
-    margin: 8px auto 0;
-  }
-  dl {
-    padding: 20px;
-    border: 1px solid $border;
-    border-radius: 12px;
-    font-size: 13px;
-    div {
-      margin-bottom: 12px;
-      &:last-child {
-        margin: 0;
-      }
-    }
-    dt {
-      color: $text-secondary;
-      font-size: 11px;
-    }
-    dd {
-      margin: 4px 0 0;
-    }
-  }
-}
-.successMark {
-  display: grid;
-  place-items: center;
-  width: 48px;
-  height: 48px;
-  color: $season-light;
-  background: rgba($season, 0.1);
-  border: 1px solid rgba($season, 0.2);
-  border-radius: 50%;
-  font-size: 24px;
-}
+
 @media (max-width: 1050px) {
   .heroGrid {
     gap: 35px;
@@ -1189,5 +970,224 @@
   .page * {
     scroll-behavior: auto !important;
     transition: none !important;
+  }
+}
+
+/* Official expedition photography, framed within the existing site palette. */
+.heroArt {
+  background: radial-gradient(
+    ellipse at 80% 25%,
+    rgba($brand, 0.075),
+    transparent 60%
+  );
+}
+.heroGrid {
+  grid-template-columns: 1fr 1.08fr;
+  gap: 60px;
+}
+.heroVisual {
+  position: relative;
+  height: 455px;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid rgba($brand-light, 0.18);
+  border-radius: 22px;
+  background: $bg-card;
+  box-shadow: 0 30px 90px #0006;
+  img {
+    object-fit: cover;
+    object-position: 61% center;
+  }
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      0deg,
+      rgba($bg-main, 0.97),
+      rgba($bg-main, 0.05) 75%
+    );
+  }
+  figcaption {
+    position: absolute;
+    z-index: 1;
+    left: 28px;
+    right: 28px;
+    bottom: 27px;
+    > span {
+      color: $season-light;
+      font-size: 10px;
+      letter-spacing: 0.16em;
+    }
+    strong {
+      display: block;
+      margin: 12px 0;
+      font: 700 35px/1.02 var(--font-display);
+    }
+    small {
+      color: $text-secondary;
+      font-size: 10px;
+    }
+  }
+}
+.featuredGallery {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 40px;
+}
+.featuredCard {
+  position: relative;
+  isolation: isolate;
+  min-height: 340px;
+  overflow: hidden;
+  margin: 0;
+  border-radius: 16px;
+  border: 1px solid $border;
+  background: $bg-card;
+  img {
+    object-fit: cover;
+    transition: transform 0.35s;
+  }
+  &:hover img {
+    transform: scale(1.035);
+  }
+  &::after {
+    content: "";
+    z-index: 0;
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      0deg,
+      rgba($bg-main, 0.99),
+      rgba($bg-main, 0.6) 40%,
+      transparent 85%
+    );
+  }
+  figcaption {
+    position: absolute;
+    z-index: 1;
+    inset: auto 20px 19px;
+    > span {
+      color: $text-secondary;
+      font-size: 10px;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+    h3 {
+      color: $text-primary;
+      font-size: 28px;
+      margin: 9px 0 18px;
+    }
+    button {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      padding: 13px 0 0;
+      background: none;
+      border-top: 1px solid rgba(255, 255, 255, 0.18);
+      color: $brand-light;
+      font-size: 15px;
+      text-align: left;
+    }
+  }
+}
+.directoryHeading {
+  margin-bottom: 22px;
+  h3 {
+    font-size: 30px;
+    margin: 11px 0;
+  }
+  p {
+    font-size: 13px;
+    margin: 0;
+  }
+}
+.locationCard {
+  padding: 22px;
+  .locationTop {
+    margin-bottom: 18px;
+  }
+  h3 {
+    font-size: 25px;
+  }
+  p {
+    margin-bottom: 15px;
+  }
+}
+.specialGrid article {
+  overflow: hidden;
+}
+.specialArt {
+  position: relative;
+  height: 230px;
+  margin: -30px -30px 26px;
+  border-bottom: 1px solid $border;
+  img {
+    object-fit: cover;
+  }
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(0deg, $bg-secondary, transparent 50%);
+  }
+}
+@media (max-width: 1000px) {
+  .featuredGallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .featuredCard {
+    min-height: 310px;
+  }
+  .heroGrid {
+    gap: 30px;
+  }
+  .heroVisual {
+    height: 430px;
+  }
+}
+@media (max-width: 800px) {
+  .heroGrid {
+    grid-template-columns: 1fr;
+  }
+  .heroVisual {
+    height: 330px;
+  }
+  .heroVisual figcaption strong {
+    font-size: 31px;
+  }
+}
+@media (max-width: 550px) {
+  .hero h1 {
+    font-size: 52px;
+  }
+  .heroVisual {
+    height: 280px;
+  }
+  .heroVisual figcaption {
+    left: 21px;
+    bottom: 21px;
+  }
+  .heroVisual figcaption strong {
+    font-size: 29px;
+  }
+  .featuredGallery {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 12px;
+    scrollbar-width: thin;
+    scrollbar-color: $brand-dark $bg-main;
+  }
+  .featuredCard {
+    flex: 0 0 85%;
+    min-height: 310px;
+    scroll-snap-align: start;
+  }
+  .specialArt {
+    margin: -25px -25px 24px;
+    height: 210px;
   }
 }
