@@ -32,6 +32,13 @@ test("Delves uses the existing reservation design, official photos and matching 
     name: "Reserve your run.",
     exact: true,
   });
+  await expect(modal).toBeInViewport();
+  const bounds = await modal.boundingBox();
+  expect(bounds).not.toBeNull();
+  expect(bounds!.y).toBeGreaterThanOrEqual(0);
+  expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(
+    page.viewportSize()!.height + 1,
+  );
   await expect(modal.getByText("Contact & character details")).toBeVisible();
   await expect(
     modal.getByText("Preferred start time", { exact: true }),

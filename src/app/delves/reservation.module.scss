@@ -160,3 +160,9 @@
     margin: auto auto 0;
   }
 }
+// The shared window normally sits in a fixed overlay. Native dialog is its own overlay.
+.booking {
+  position: fixed;
+  inset: 0;
+  height: fit-content;
+}
