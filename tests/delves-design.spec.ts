@@ -100,3 +100,31 @@ test("Delves uses the existing reservation design, official photos and matching 
     fullPage: true,
   });
 });
+
+test("Delve destination buttons keep their dark grid layout", async ({
+  page,
+}, info) => {
+  await page.goto("/delves");
+  const routes = page.locator('[class*="locationGrid"]');
+  await routes.scrollIntoViewIfNeeded();
+  const buttons = routes.locator("article > button");
+  await expect(buttons).toHaveCount(12);
+  const layout = await routes.evaluate((el) => ({
+    display: getComputedStyle(el).display,
+    columns: getComputedStyle(el).gridTemplateColumns.split(" ").length,
+  }));
+  expect(layout.display).toBe("grid");
+  expect(layout.columns).toBe(info.project.name.includes("Mobile") ? 1 : 2);
+  const first = buttons.first();
+  await expect(first).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+  await expect(first).toHaveCSS("text-align", "left");
+  const widths = await first.evaluate((el) => ({
+    button: el.getBoundingClientRect().width,
+    card: el.parentElement!.getBoundingClientRect().width,
+  }));
+  expect(Math.abs(widths.button - widths.card)).toBeLessThanOrEqual(1);
+  await page.screenshot({
+    path: `/tmp/delve-routes-fixed-${info.project.name.replaceAll(" ", "-")}.png`,
+    fullPage: false,
+  });
+});

@@ -1174,11 +1174,13 @@
   }
 }
 .page .locationGrid {
+  display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
 }
 .page .locationCard {
   padding: 0;
+  border-radius: $radius-md;
   background: $bg-secondary;
   border: 0;
   > button {
@@ -1186,6 +1188,9 @@
     align-items: center;
     gap: 16px;
     height: 100%;
+    width: 100%;
+    text-align: left;
+    background: transparent;
     padding: 18px;
     border: 1px solid $border;
     border-radius: $radius-md;
