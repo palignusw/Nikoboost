@@ -1,3 +1,4 @@
+import { mockDelveReceipt } from "./helpers/receipt";
 import { expect, test } from "@playwright/test";
 import { POST } from "../src/app/api/order/route";
 import { delvePrice, delveLocations } from "../src/data/delves";
@@ -123,6 +124,11 @@ test("Delve API distrusts totals, validates service eligibility, and sends speci
     const result = await good.json();
     expect(good.status).toBe(200);
     expect(result.total).toBe(190000);
+    expect(result.receipt.total).toBe(result.total);
+    expect(result.receipt.orderId).toBe(result.orderId);
+    expect(result.receipt.customer.battleTag).toBe(p.customer.battleTag);
+    expect(result.receipt.service.destination).toBe("Any available Delve");
+    expect(Number.isNaN(Date.parse(result.receipt.createdAt))).toBe(false);
     expect(sent?.allowed_mentions.parse).toEqual([]);
     expect(
       (
@@ -144,6 +150,9 @@ test("Delve API distrusts totals, validates service eligibility, and sends speci
       const data = await r.json();
       expect(data.total).toBeNull();
       expect(data.quote).toBe(true);
+      expect(data.receipt.total).toBeNull();
+      expect(data.receipt.service.kind).toBe(kind);
+      expect(data.receipt.service.tier).toBeNull();
       expect(
         sent?.embeds[0].fields.find((f) => f.name === "Gold price")?.value,
       ).toContain("Manual quote");
@@ -247,6 +256,7 @@ test("Delve reservation uses authoritative confirmation and preserves errors wit
           orderId: "NB-D-TEST",
           total: 190000,
           quote: false,
+          receipt: mockDelveReceipt("NB-D-TEST", 190000),
         },
       });
   });
