@@ -1,8 +1,15 @@
 "use client";
-import { mythicDefaults, mythicExample, delveSources } from "@/data/season";
+import {
+  mythicDefaults,
+  mythicExample,
+  delveSources,
+  serviceContent,
+  delveSettings,
+} from "@/data/season";
 
 import { useEffect, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
+import Breadcrumbs from "@/components/Seo/Breadcrumbs";
 import {
   mythicRewards as rewards,
   getMythicReward,
@@ -212,19 +219,17 @@ export default function RewardsExplorer() {
     <main className={`${styles.page} ${styles.rewardsV2}`}>
       <div className={styles.ambient} aria-hidden="true" />
       <div className={styles.container}>
+        <Breadcrumbs page="rewards" />
         <header className={styles.newHero}>
           <div className={styles.kicker}>
             <span className={styles.statusDot} />
             {wowSeason.name.toUpperCase()} · FREE PLAYER TOOLS
           </div>
           <h1>
-            Mythic+ <span>Rewards</span>
+            {serviceContent.rewards.heading}{" "}
+            <span>{serviceContent.rewards.accent}</span>
           </h1>
-          <p>
-            Plan your next Mythic+ run.
-            <br />
-            <strong>See your Vault rewards before you queue.</strong>
-          </p>
+          <p>{serviceContent.rewards.lead}</p>
           <span className={styles.heroFootnote}>
             No login required. Free to use. Your week stays in this browser.
           </span>
@@ -1062,6 +1067,14 @@ export default function RewardsExplorer() {
             </a>
           </div>
         </details>
+        <p className={styles.storageNote}>
+          These tools calculate Mythic+ dungeon rewards. Delves use the World
+          Vault row with {delveSettings.vaultThresholds.join(" / ")} activity
+          thresholds.{" "}
+          <Link href="/delves#rewards">
+            Compare Delve rewards and gold prices ↗
+          </Link>
+        </p>
         <div className={styles.toolFooter}>
           <Link href="/">← Back to NikoBoost</Link>
           <Link href="/#mythic">Need a team? Explore Mythic+ runs →</Link>

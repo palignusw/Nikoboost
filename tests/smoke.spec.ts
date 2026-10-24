@@ -8,7 +8,7 @@ test.describe("NikoBoost smoke tests", () => {
     await expect(
       page.getByRole("heading", {
         level: 1,
-        name: /MYTHIC\+.*ADVENTURE/i,
+        name: /WoW Mythic\+ Boost for Gold/i,
       })
     ).toBeVisible();
   });

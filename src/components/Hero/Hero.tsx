@@ -1,3 +1,4 @@
+import { wowSeason, serviceContent } from "@/data/season";
 
 import Link from "next/link";
 import styles from "./Hero.module.scss";
@@ -33,13 +34,10 @@ export default function Hero() {
           loop
           playsInline
           preload="metadata"
-          poster="/images/hero/midnight-hero.jpg"
+          poster={serviceContent.home.image}
           disablePictureInPicture
         >
-          <source
-            src="/videos/midnight-hero.mp4"
-            type="video/mp4"
-          />
+          <source src={serviceContent.home.video} type="video/mp4" />
         </video>
       </div>
 
@@ -52,38 +50,24 @@ export default function Hero() {
             <span className={styles.seasonDot} />
             WORLD OF WARCRAFT
             <span className={styles.seasonDivider} />
-            MIDNIGHT SEASON 2
+            {wowSeason.name.toUpperCase()}
           </div>
 
           <div className={styles.headline}>
-            <span className={styles.headlineTop}>
-              YOUR NEXT
-            </span>
+            <span className={styles.headlineTop}>SELF-PLAY · EU & NA</span>
 
             <h1 className={styles.title}>
-              MYTHIC+
-              <span> ADVENTURE</span>
+              {serviceContent.home.heading}
+              <span> {serviceContent.home.accent}</span>
             </h1>
           </div>
 
-          <p className={styles.description}>
-            Conquer the toughest keys with experienced
-            players. Customize your Mythic+ runs,
-            choose your dungeons and reserve your spot
-            in just a few clicks.
-          </p>
+          <p className={styles.description}>{serviceContent.home.lead}</p>
 
           <div className={styles.actions}>
-            <Link
-              href="#mythic"
-              className={styles.primary}
-            >
+            <Link href="#mythic" className={styles.primary}>
               <span>Build Your Run</span>
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                aria-hidden="true"
-              >
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path
                   d="M5 12h14m-6-6 6 6-6 6"
                   stroke="currentColor"
@@ -94,10 +78,7 @@ export default function Hero() {
               </svg>
             </Link>
 
-            <Link
-              href="#how"
-              className={styles.secondary}
-            >
+            <Link href="#how" className={styles.secondary}>
               How It Works
               <span aria-hidden="true">↗</span>
             </Link>
@@ -105,20 +86,18 @@ export default function Hero() {
 
           <div className={styles.trustLine}>
             <span className={styles.trustDot} />
-            <span>
-              MYTHIC+ BOOSTING • IN-GAME GOLD
-            </span>
+            <span>MYTHIC+ BOOSTING • IN-GAME GOLD</span>
           </div>
         </div>
 
-        <div
-          className={styles.artCaption}
-          aria-hidden="true"
-        >
+        <div className={styles.artCaption} aria-hidden="true">
           <span className={styles.captionLine} />
           <div>
             <strong>AZEROTH AWAITS</strong>
-            <span>MIDNIGHT • SEASON 02</span>
+            <span>
+              {wowSeason.expansion.toUpperCase()} • SEASON{" "}
+              {String(wowSeason.number).padStart(2, "0")}
+            </span>
           </div>
         </div>
       </div>
@@ -126,13 +105,8 @@ export default function Hero() {
       <div className={styles.benefitWrap}>
         <div className={`container ${styles.benefitInner}`}>
           {benefits.map((benefit) => (
-            <div
-              className={styles.benefit}
-              key={benefit.number}
-            >
-              <span className={styles.benefitNumber}>
-                {benefit.number}
-              </span>
+            <div className={styles.benefit} key={benefit.number}>
+              <span className={styles.benefitNumber}>{benefit.number}</span>
 
               <div>
                 <strong>{benefit.title}</strong>
@@ -141,10 +115,7 @@ export default function Hero() {
             </div>
           ))}
 
-          <Link
-            href="#mythic"
-            className={styles.benefitLink}
-          >
+          <Link href="#mythic" className={styles.benefitLink}>
             Configure Now
             <span aria-hidden="true">→</span>
           </Link>
