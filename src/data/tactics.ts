@@ -1,6 +1,37 @@
 /** Tactics preview. Diagram coordinates and playback tempo are illustrative, not game measurements. */
 export type TacticRole = "dps" | "healer" | "tank";
-export const tacticsPreview = {
+export type TacticLesson = {
+  id: string;
+  seasonId: string;
+  seasonName: string;
+  dungeon: string;
+  boss: string;
+  mechanic: string;
+  image: string;
+  checked: string;
+  source: { label: string; url: string };
+  note: string;
+  steps: readonly {
+    label: string;
+    title: string;
+    text: string;
+    action: string;
+    phase: string;
+  }[];
+  roles: Record<
+    TacticRole,
+    { label: string; icon: string; title: string; text: string }
+  >;
+  choices: readonly {
+    id: string;
+    x: number;
+    y: number;
+    label: string;
+    correct: boolean;
+    feedback: string;
+  }[];
+};
+export const tacticsPreview: TacticLesson = {
   id: "ruby-chillstorm-v1",
   seasonId: "midnight-s2",
   seasonName: "Midnight Season 2",

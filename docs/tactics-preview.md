@@ -1,28 +1,32 @@
-# Tactics Lab design preview
+# Tactics Lab review build
 
-Route: `/tactics/ruby-life-pools`. This is a reviewable prototype for one positioning mechanic, not a complete boss guide or a published Academy. It is intentionally absent from navigation and sitemap, and has `noindex, nofollow` metadata.
+Preview entry: `/tactics`. Eight Midnight Season 2 dungeons and 28 encounters, including paired bosses as one encounter. The original `/tactics/ruby-life-pools` Chillstorm study remains available.
 
-## Scope
+Each boss has one four-step key-mechanic study, a practice decision with retry feedback, three role hints, additional encounter reminders and a linked guide. Search matches dungeon, boss and mechanic; the dungeon selector narrows the catalog. Scenes cover position and action decisions, including cover, interrupts, target swaps, add priority, healing, beams and gateways.
 
-Melidrussa Chillworn's Chillstorm: recognize the target, separate from teammates, avoid the storm/pull, and recover after danger ends. The example always marks one DPS. Changing the selected role changes advice, not the target assignment.
+## Editing and season rollover
 
-- Four selectable steps with play, pause and restart.
-- Native HTML controls for mouse, touch and keyboard.
-- A practice decision with incorrect-answer feedback, retry and a correct destination.
-- The SVG is an authored schematic, not a game map. Its distances, storm radius and 2.6-second teaching steps are illustrative. This is not a reflex benchmark or simulated game damage.
-- The source is linked on the page; no profile, character or Battle.net access is requested.
+- `src/data/tactics-catalog.ts` owns the roster, boss IDs, mechanics, reminders, role hints, guide review dates and scene types. Add or edit encounters here. The catalog, static routes and encounter navigation derive from that file.
+- `src/data/tactics.ts` owns the pinned reviewed season and original Chillstorm lesson. Update the season only after reviewing the entire catalog. A mismatch with the store season labels lessons archived.
+- `CatalogArena.tsx` renders authored teaching schematics. Boss-specific geometry overrides are necessary when an encounter does not fit a shared scene type.
+- `TacticsPreview.tsx` owns playback, role switching and practice. Role switching changes advice; the marked actor in the study stays fixed.
+- Existing Sora/Rajdhani typography and site colors are reused.
 
-## Editing
+The SVGs are original teaching diagrams, not dungeon maps or a combat simulator. Distances, radii, marker counts for adds and playback timing are illustrative. One study plus reminders is not an exhaustive ability database. No timers, damage predictions, player tracking or persistent progress are claimed.
 
-`src/data/tactics.ts` holds the mechanic copy, source, reviewed date, role notes and practice destinations. `seasonId` is pinned to the reviewed season: when the main season changes, an old lesson is labelled archived rather than silently claiming to be current. Review every mechanic before updating it.
+## Sources
 
-`TacticsPreview.tsx` holds the arena and interaction. `tactics.module.scss` uses the existing Sora/Rajdhani fonts and site palette. Warm gold marks the target, muted red indicates danger, blue marks party/controls. Text labels and numbered HTML choices supplement color.
+Rotation: https://worldofwarcraft.blizzard.com/en-us/news/24294369/
 
-No persistent progress, full dungeon simulation, arbitrary movement, exact boss timers or external game integration is included in this design trial. Expand only after design feedback and further mechanic verification.
+Mechanics: Method guides by Tactyks, reviewed for this build on 25 October 2026. Each encounter links its dungeon guide. Guide update dates are stored per dungeon: Altar of Fangs 22 August; Murder Row, Voidscar Arena, Kings’ Rest and Temple of Sethraliss 18 August; Den of Nalorakk, The Blinding Vale and Ruby Life Pools 14 October 2026.
 
-## Reference
+- https://www.method.gg/guides/dungeons/altar-of-fangs
+- https://www.method.gg/guides/dungeons/murder-row
+- https://www.method.gg/guides/dungeons/den-of-nalorakk
+- https://www.method.gg/guides/dungeons/the-blinding-vale
+- https://www.method.gg/guides/dungeons/voidscar-arena
+- https://www.method.gg/guides/dungeons/kings-rest
+- https://www.method.gg/guides/dungeons/temple-of-sethraliss
+- https://www.method.gg/guides/dungeons/ruby-life-pools
 
-- Blizzard encounter identity: https://worldofwarcraft.blizzard.com/en-us/news/23874316/dragonflight-esplora-le-terre-selvagge-delle-sponde-del-risveglio
-- Guide author Tactyks, Method, updated 14 October 2026: https://www.method.gg/guides/dungeons/ruby-life-pools
-
-The trial intentionally avoids health thresholds and unrelated abilities because older and current guide versions differ. Positions are original teaching choices, not an asserted mandatory route.
+This remains a draft review feature: noindex/nofollow, absent from the production navbar and sitemap. Review the design before merging or opening it to search engines.

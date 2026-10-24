@@ -1,0 +1,357 @@
+@use "../../styles/variables" as *;
+.shell {
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 60% 0, rgba($brand, 0.055), transparent 48%),
+    $bg-main;
+  color: $text-primary;
+  font:
+    13px/1.7 var(--font-sora),
+    sans-serif;
+  button,
+  input,
+  select {
+    font: inherit;
+  }
+  button,
+  a,
+  input,
+  select {
+    &:focus-visible {
+      outline: 2px solid $brand-light;
+      outline-offset: 4px;
+    }
+  }
+  button {
+    cursor: pointer;
+  }
+}
+.header {
+  height: 82px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 38px;
+  border-bottom: 1px solid $border;
+  img {
+    width: 150px;
+    height: auto;
+  }
+  > span {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: $brand-light;
+    b {
+      font-size: 8px;
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      color: $text-muted;
+      border: 1px solid $border;
+      padding: 4px 7px;
+      margin-left: 12px;
+      border-radius: 5px;
+    }
+  }
+  > a:last-child {
+    font-size: 11px;
+    color: $text-secondary;
+  }
+}
+.main {
+  max-width: 1280px;
+  padding: 48px 30px;
+  margin: auto;
+}
+.eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: $season-light;
+  font-weight: 600;
+}
+.heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+  h1 {
+    font:
+      700 clamp(44px, 5vw, 70px)/1.03 var(--font-rajdhani),
+      sans-serif;
+    margin: 14px 0 22px;
+    letter-spacing: -0.03em;
+    span {
+      color: $brand-light;
+    }
+  }
+  p {
+    color: $text-secondary;
+  }
+}
+.counts {
+  display: flex;
+  gap: 40px;
+  padding-right: 20px;
+  div {
+    display: grid;
+    text-align: center;
+  }
+  strong {
+    font:
+      600 62px/1 var(--font-rajdhani),
+      sans-serif;
+    color: $brand-light;
+  }
+  span {
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    color: $text-muted;
+    margin-top: 10px;
+  }
+}
+.notice {
+  margin: 30px 0;
+  padding: 15px 20px;
+  border-left: 2px solid $brand;
+  background: $bg-secondary;
+  color: $text-secondary;
+  font-size: 11px;
+}
+.filters {
+  display: flex;
+  gap: 16px;
+  align-items: end;
+  label {
+    display: grid;
+    gap: 8px;
+    color: $text-secondary;
+    font-size: 11px;
+    flex: 1;
+  }
+  label:first-child {
+    flex: 2;
+  }
+  input,
+  select {
+    width: 100%;
+    min-height: 46px;
+    border: 1px solid $border;
+    border-radius: 9px;
+    background: $bg-secondary;
+    color: $text-primary;
+    padding: 10px 14px;
+    min-width: 0;
+    outline: none;
+  }
+  select {
+    color-scheme: dark;
+  }
+  button {
+    min-height: 46px;
+    padding: 10px 16px;
+    background: $bg-elevated;
+    border: 1px solid $border;
+    border-radius: 9px;
+    color: $brand-light;
+    font-size: 11px;
+  }
+}
+.results {
+  font-size: 10px;
+  color: $text-muted;
+  margin: 22px 0 18px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+  align-items: start;
+}
+.card {
+  border: 1px solid $border;
+  border-radius: 16px;
+  background: $bg-secondary;
+  overflow: hidden;
+}
+.cardHeader {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 23px;
+  img {
+    border-radius: 10px;
+    object-fit: cover;
+  }
+  span {
+    font-size: 8px;
+    letter-spacing: 0.12em;
+    color: $text-muted;
+  }
+  h2 {
+    font:
+      600 29px/1.15 var(--font-rajdhani),
+      sans-serif;
+    margin: 4px 0;
+  }
+  small {
+    font-size: 10px;
+    color: $text-secondary;
+  }
+}
+.card ol {
+  margin: 0;
+  padding: 0 23px;
+  list-style: none;
+  li {
+    border-top: 1px solid $border;
+  }
+  a {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-height: 79px;
+    padding: 14px 0;
+    transition: color 0.15s;
+  }
+  a:hover strong {
+    color: $brand-light;
+  }
+  a > div {
+    min-width: 0;
+    flex: 1;
+  }
+  strong {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  li span {
+    display: block;
+    font-size: 10px;
+    color: $text-muted;
+    margin-top: 3px;
+  }
+  li small {
+    font-size: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: $text-secondary;
+    border: 1px solid $border;
+    border-radius: 5px;
+    padding: 3px 7px;
+  }
+  li b {
+    color: $brand-light;
+    font-size: 13px;
+    font-weight: 400;
+  }
+}
+.source {
+  display: block;
+  padding: 15px 23px;
+  border-top: 1px solid $border;
+  font-size: 9px;
+  color: $text-muted;
+}
+.empty {
+  padding: 60px 20px;
+  text-align: center;
+  background: $bg-secondary;
+  border: 1px solid $border;
+  border-radius: 16px;
+  h2 {
+    font:
+      600 32px var(--font-rajdhani),
+      sans-serif;
+  }
+  p {
+    color: $text-secondary;
+  }
+  button {
+    background: $brand;
+    border-radius: 8px;
+    color: white;
+    padding: 12px 18px;
+  }
+}
+.footer {
+  border-top: 1px solid $border;
+  margin-top: 35px;
+  padding-top: 22px;
+  color: $text-muted;
+  font-size: 10px;
+  p {
+    max-width: 760px;
+  }
+  a {
+    color: $text-secondary;
+  }
+  span {
+    display: block;
+    font-size: 9px;
+    margin-top: 12px;
+  }
+}
+@media (max-width: 760px) {
+  .header {
+    height: 68px;
+    padding: 0 16px;
+    img {
+      width: 120px;
+    }
+    > span {
+      font-size: 9px;
+    }
+    b,
+    > a:last-child {
+      display: none;
+    }
+  }
+  .main {
+    padding: 30px 16px;
+  }
+  .heading {
+    display: block;
+  }
+  .heading h1 {
+    font-size: 49px;
+  }
+  .counts {
+    justify-content: flex-start;
+    gap: 35px;
+    margin-top: 26px;
+    strong {
+      font-size: 42px;
+    }
+    div {
+      text-align: left;
+    }
+  }
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .filters {
+    flex-wrap: wrap;
+    label,
+    label:first-child {
+      flex: 1 1 100%;
+    }
+  }
+  .cardHeader {
+    padding: 19px;
+  }
+  .cardHeader h2 {
+    font-size: 27px;
+  }
+  .card ol {
+    padding: 0 19px;
+  }
+  .card li small {
+    display: none;
+  }
+  .source {
+    padding: 15px 19px;
+  }
+  .notice {
+    margin: 26px 0;
+  }
+}
