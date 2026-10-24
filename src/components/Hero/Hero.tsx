@@ -1,6 +1,8 @@
 import { wowSeason, serviceContent } from "@/data/season";
 
 import Link from "next/link";
+import Image from "next/image";
+import HeroVideo from "./HeroVideo";
 import styles from "./Hero.module.scss";
 
 const benefits = [
@@ -27,18 +29,16 @@ export default function Hero() {
       {/* Cinematic background */}
 
       <div className={styles.artwork} aria-hidden="true">
-        <video
-          className={styles.heroVideo}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          poster={serviceContent.home.image}
-          disablePictureInPicture
-        >
-          <source src={serviceContent.home.video} type="video/mp4" />
-        </video>
+        <Image
+          src={serviceContent.home.image}
+          alt=""
+          fill
+          sizes="100vw"
+          loading="eager"
+          fetchPriority="high"
+          className={styles.heroPoster}
+        />
+        <HeroVideo src={serviceContent.home.video} />
       </div>
 
       <div className={styles.overlay} aria-hidden="true" />

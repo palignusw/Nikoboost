@@ -53,12 +53,7 @@ test.describe("NikoBoost smoke tests", () => {
       ""
     );
 
-    const source = video.locator("source");
-
-    await expect(source).toHaveAttribute(
-      "src",
-      "/videos/midnight-hero.mp4"
-    );
+    await expect(video).toHaveAttribute("preload", "none");
 
     const response = await page.request.get(
       "/videos/midnight-hero.mp4"
