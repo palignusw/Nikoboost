@@ -110,7 +110,7 @@ export default function TacticsPreview() {
             />
             <div>
               <span>
-                {lesson.seasonId === wowSeason.id
+                {lesson.seasonId === String(wowSeason.id)
                   ? lesson.seasonName
                   : "ARCHIVED LESSON"}{" "}
                 · MYTHIC+
