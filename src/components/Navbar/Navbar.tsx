@@ -14,6 +14,7 @@ const links = [
     label: "Rewards & Tools",
     page: "/mythic-plus-rewards",
   },
+  { href: "/gold-prices", label: "Gold Prices", page: "/gold-prices" },
   { href: "/#how", label: "How it works", page: null },
   { href: "/#faq", label: "FAQ", page: null },
 ];

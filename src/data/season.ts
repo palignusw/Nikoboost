@@ -529,4 +529,15 @@ export const serviceContent = {
     image: "/images/hero/midnight-hero.jpg",
     updatedAt: "2026-10-24",
   },
+  prices: {
+    path: "/gold-prices",
+    label: "Gold Prices",
+    heading: "WoW Boost Prices",
+    accent: "in Gold",
+    seoTitle: "WoW Boost Prices in Gold | Mythic+ & Delves",
+    metaDescription: "Compare NikoBoost Mythic+ and Delves prices in in-game gold. See single-run and bundle totals, understand optional surcharges and reserve self-play runs.",
+    lead: "Compare Mythic+ keys and Delve Tiers before choosing your run. These are NikoBoost’s own gold prices, with package savings included and optional extras explained.",
+    image: "/images/hero/midnight-hero.jpg",
+    updatedAt: "2026-10-24",
+  },
 } as const;

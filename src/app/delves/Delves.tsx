@@ -790,6 +790,7 @@ export default function Delves() {
           </div>
         </details>
         <footer className={styles.footer}>
+          <Link href="/gold-prices">Compare gold prices ↗</Link>
           <Link href="/">← Back to NikoBoost</Link>
           <Link href="/#mythic">Looking for Mythic+ instead? ↗</Link>
           <Link href="/mythic-plus-rewards">Mythic+ rewards calculator ↗</Link>

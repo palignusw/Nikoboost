@@ -1076,6 +1076,7 @@ export default function RewardsExplorer() {
           </Link>
         </p>
         <div className={styles.toolFooter}>
+          <Link href="/gold-prices">Compare run prices in gold →</Link>
           <Link href="/">← Back to NikoBoost</Link>
           <Link href="/#mythic">Need a team? Explore Mythic+ runs →</Link>
         </div>
