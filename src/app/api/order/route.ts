@@ -1,3 +1,5 @@
+import { mythicSettings } from "@/data/season";
+import { submitDelveOrder } from "@/lib/delveOrder";
 
 import { createHash, randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
@@ -458,7 +460,8 @@ export async function POST(request: Request) {
           process.env.SITE_URL,
           process.env.NODE_ENV === "production",
           process.env.VERCEL_ENV,
-          process.env.VERCEL_URL
+          process.env.VERCEL_URL,
+          process.env.VERCEL_BRANCH_URL
         )
       ) {
         return jsonError("Origin not allowed.", 403);
@@ -569,6 +572,10 @@ export async function POST(request: Request) {
       scheduleValidation.tbilisiTime ??
       "Flexible — arrange with customer";
 
+    if (order.service === "delves") {
+      return submitDelveOrder(order, { battleTag, discord, character, realm, preferredTime, comment }, ip, webhook, tbilisiTime);
+    }
+
     // SERVICE VALIDATION
 
     const runGoal = order.runGoal;
@@ -583,21 +590,20 @@ export async function POST(request: Request) {
     const runs = order.runs;
 
     if (
-      !isInteger(
-        keyLevel,
-        2,
-        isCrestFarming ? 12 : 20
-      )
+      typeof keyLevel !== "number" ||
+      !Number.isInteger(keyLevel) ||
+      !Object.hasOwn(basePrices, keyLevel) ||
+      (isCrestFarming && keyLevel > mythicSettings.crestMaxKey)
     ) {
       return jsonError(
         isCrestFarming
-          ? "Crest Farming supports keys +2 to +12."
+          ? `Crest Farming supports keys up to +${mythicSettings.crestMaxKey}.`
           : "Invalid key level.",
         400
       );
     }
 
-    if (!isInteger(runs, 1, 50)) {
+    if (!isInteger(runs, 1, mythicSettings.maxRuns)) {
       return jsonError("Invalid run count.", 400);
     }
 

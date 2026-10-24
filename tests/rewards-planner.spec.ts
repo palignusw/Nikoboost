@@ -244,3 +244,22 @@ test("the teaching example is labeled and never saved as real completed progress
   await expect(page.getByRole("note")).toHaveCount(0);
   await expect(page.getByTestId("vault-current-0")).toHaveText("Locked");
 });
+
+test("a shared plan from another season cannot overwrite the current week", async ({
+  page,
+}) => {
+  await page.addInitScript(
+    (key) => localStorage.setItem(key, JSON.stringify({ runs: [2] })),
+    storageKey,
+  );
+  await page.goto(
+    "/mythic-plus-rewards?season=retired-season&plan=10x3&done=12x1",
+  );
+  await expect(page.getByRole("status")).toContainText("different season");
+  await expect(
+    page.getByRole("button", { name: "Import shared plan" }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "Remove key +2 run", exact: true }),
+  ).toHaveCount(1);
+});

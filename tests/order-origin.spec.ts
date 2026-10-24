@@ -43,3 +43,24 @@ test.describe("order origin validation", () => {
     expect(() => isAllowedOrderOrigin("https://www.nikoboost.online", "javascript:alert(1)", true)).toThrow();
   });
 });
+
+
+test("accepts the exact branch alias alongside the immutable preview URL", () => {
+  const deployment = "nikoboost-abc123-palignusws-projects.vercel.app";
+  const branch = "nikoboost-git-feat-delves-service-palignusws-projects.vercel.app";
+  for (const host of [deployment, branch]) {
+    expect(isAllowedOrderOrigin(`https://${host}`, undefined, true, "preview", deployment, branch)).toBe(true);
+  }
+  for (const origin of ["https://another.vercel.app", `https://${branch}.evil.test`, `http://${branch}`, `https://${branch}:444`, `https://evil.test@${branch}`, "null"]) {
+    expect(isAllowedOrderOrigin(origin, undefined, true, "preview", deployment, branch)).toBe(false);
+  }
+  expect(isAllowedOrderOrigin(`https://${branch}`, undefined, true, "production", deployment, branch)).toBe(false);
+  expect(isAllowedOrderOrigin(`https://${branch}`, undefined, true, undefined, deployment, branch)).toBe(false);
+  expect(isAllowedOrderOrigin(`https://${branch}`, undefined, true, "preview", undefined, branch)).toBe(true);
+});
+
+test("rejects malformed Vercel-provided hosts rather than broadening the allowlist", () => {
+  for (const host of ["https://example.vercel.app", "example.vercel.app/path", "example.vercel.app.evil.test", "example.vercel.app:443", "user@example.vercel.app", "-invalid.vercel.app", "*.vercel.app"]) {
+    expect(isAllowedOrderOrigin("https://example.vercel.app", undefined, true, "preview", host, host)).toBe(false);
+  }
+});

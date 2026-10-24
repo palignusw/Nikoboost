@@ -1,12 +1,7 @@
-
 "use client";
+import { mythicDefaults, mythicSettings } from "@/data/season";
 
-import {
-  useMemo,
-  useState,
-  type Dispatch,
-  type SetStateAction,
-} from "react";
+import { useMemo, useState, type Dispatch, type SetStateAction } from "react";
 
 import {
   AFK_SURCHARGE,
@@ -27,24 +22,22 @@ import {
 
 export type RunGoal = "standard" | "crest";
 
-const keyLevels = Array.from(
-  { length: 19 },
-  (_, index) => index + 2
-);
+const keyLevels = Object.keys(basePrices)
+  .map(Number)
+  .sort((a, b) => a - b);
 
-const quickRunOptions = [1, 4, 8];
+const quickRunOptions = mythicSettings.quickRuns;
 const classes = Object.keys(classArmor);
 
 function createEmptyDungeonCounts(): Record<DungeonName, number> {
-  return Object.fromEntries(
-    dungeons.map((dungeon) => [dungeon, 0])
-  ) as Record<DungeonName, number>;
+  return Object.fromEntries(dungeons.map((dungeon) => [dungeon, 0])) as Record<
+    DungeonName,
+    number
+  >;
 }
 
 export function formatRole(role: Role) {
-  return role === "dps"
-    ? "DPS"
-    : role[0].toUpperCase() + role.slice(1);
+  return role === "dps" ? "DPS" : role[0].toUpperCase() + role.slice(1);
 }
 
 type ConfirmedChoices = {
@@ -62,78 +55,63 @@ export function useMythicPlusConfig() {
   // Default values are for estimated pricing only.
   // They are not confirmed user choices.
 
-  const [keyLevel, setKeyLevelState] = useState(10);
+  const [keyLevel, setKeyLevelState] = useState(mythicDefaults.key);
   const [runs, setRuns] = useState(1);
   const [runGoal, setRunGoal] = useState<RunGoal>("standard");
 
-  const [participation, setParticipation] =
-    useState<Participation>("play");
+  const [participation, setParticipation] = useState<Participation>("play");
 
-  const [region, setRegionState] =
-    useState<Region>("EU");
+  const [region, setRegionState] = useState<Region>("EU");
 
-  const [role, setRoleState] =
-    useState<Role>("dps");
+  const [role, setRoleState] = useState<Role>("dps");
 
-  const [playerClass, setPlayerClass] =
-    useState("Rogue");
+  const [playerClass, setPlayerClass] = useState("Rogue");
 
   const armorType = classArmor[playerClass];
   const allowedRoles = classRoles[playerClass];
 
-  const [specificDungeon, setSpecificDungeon] =
-    useState(false);
+  const [specificDungeon, setSpecificDungeon] = useState(false);
 
-  const [dungeonCounts, setDungeonCounts] =
-    useState<Record<DungeonName, number>>(
-      createEmptyDungeonCounts
-    );
+  const [dungeonCounts, setDungeonCounts] = useState<
+    Record<DungeonName, number>
+  >(createEmptyDungeonCounts);
 
   const [traders, setTradersState] = useState(0);
   const maxTraders = getMaxTraders(armorType);
 
-  const [confirmed, setConfirmed] =
-    useState<ConfirmedChoices>({
-      keyLevel: false,
-      runs: false,
-      participation: false,
-      playerClass: false,
-      role: false,
-      dungeon: false,
-      traders: false,
-      region: false,
-    });
+  const [confirmed, setConfirmed] = useState<ConfirmedChoices>({
+    keyLevel: false,
+    runs: false,
+    participation: false,
+    playerClass: false,
+    role: false,
+    dungeon: false,
+    traders: false,
+    region: false,
+  });
 
   // KEY LEVEL
 
-  const setKeyLevel: Dispatch<SetStateAction<number>> =
-    (value) => {
-      const requested =
-        typeof value === "function"
-          ? value(keyLevel)
-          : value;
+  const setKeyLevel: Dispatch<SetStateAction<number>> = (value) => {
+    const requested = typeof value === "function" ? value(keyLevel) : value;
 
-      if (
-        !Number.isInteger(requested) ||
-        requested < 2 ||
-        requested > 20
-      ) {
-        return;
-      }
+    if (!Number.isInteger(requested) || !Object.hasOwn(basePrices, requested)) {
+      return;
+    }
 
-      setKeyLevelState(requested);
+    setKeyLevelState(requested);
 
-      setConfirmed((previous) => ({
-        ...previous,
-        keyLevel: true,
-      }));
-    };
+    setConfirmed((previous) => ({
+      ...previous,
+      keyLevel: true,
+    }));
+  };
 
   const resetKeyLevelForCrest = () => {
-    if (keyLevel <= 12) return;
+    if (keyLevel <= mythicSettings.crestMaxKey) return;
 
     // Возвращаем допустимое начальное значение
-    setKeyLevelState(12);
+    setKeyLevelState(mythicSettings.crestMaxKey);
 
     // Но не считаем его выбранным пользователем
     setConfirmed((previous) => ({
@@ -144,85 +122,67 @@ export function useMythicPlusConfig() {
 
   // ROLE
 
-  const setRole: Dispatch<SetStateAction<Role>> =
-    (value) => {
-      if (
-        !confirmed.playerClass ||
-        participation === "afk"
-      ) {
-        return;
-      }
+  const setRole: Dispatch<SetStateAction<Role>> = (value) => {
+    if (!confirmed.playerClass || participation === "afk") {
+      return;
+    }
 
-      const requested =
-        typeof value === "function"
-          ? value(role)
-          : value;
+    const requested = typeof value === "function" ? value(role) : value;
 
-      if (!allowedRoles.includes(requested)) {
-        return;
-      }
+    if (!allowedRoles.includes(requested)) {
+      return;
+    }
 
-      setRoleState(requested);
+    setRoleState(requested);
 
-      setConfirmed((previous) => ({
-        ...previous,
-        role: true,
-      }));
-    };
+    setConfirmed((previous) => ({
+      ...previous,
+      role: true,
+    }));
+  };
 
   // REGION
 
-  const setRegion: Dispatch<SetStateAction<Region>> =
-    (value) => {
-      const requested =
-        typeof value === "function"
-          ? value(region)
-          : value;
+  const setRegion: Dispatch<SetStateAction<Region>> = (value) => {
+    const requested = typeof value === "function" ? value(region) : value;
 
-      if (requested !== "EU" && requested !== "NA") {
-        return;
-      }
+    if (requested !== "EU" && requested !== "NA") {
+      return;
+    }
 
-      setRegionState(requested);
+    setRegionState(requested);
 
-      setConfirmed((previous) => ({
-        ...previous,
-        region: true,
-      }));
-    };
+    setConfirmed((previous) => ({
+      ...previous,
+      region: true,
+    }));
+  };
 
   // LOOT TRADERS
 
-  const setTraders: Dispatch<SetStateAction<number>> =
-    (value) => {
-      const requested =
-        typeof value === "function"
-          ? value(traders)
-          : value;
+  const setTraders: Dispatch<SetStateAction<number>> = (value) => {
+    const requested = typeof value === "function" ? value(traders) : value;
 
-      if (!Number.isFinite(requested)) {
-        return;
-      }
+    if (!Number.isFinite(requested)) {
+      return;
+    }
 
-      const next = Math.max(
-        0,
-        Math.min(maxTraders, Math.trunc(requested))
-      );
+    const next = Math.max(0, Math.min(maxTraders, Math.trunc(requested)));
 
-      setTradersState(next);
+    setTradersState(next);
 
-      setConfirmed((previous) => ({
-        ...previous,
-        traders: true,
-      }));
-    };
+    setConfirmed((previous) => ({
+      ...previous,
+      traders: true,
+    }));
+  };
 
   // DUNGEON ALLOCATION
 
   const allocatedSpecificRuns = useMemo(() => {
     return Object.values(dungeonCounts).reduce(
       (total, amount) => total + amount,
-      0
+      0,
     );
   }, [dungeonCounts]);
 
@@ -244,9 +204,7 @@ export function useMythicPlusConfig() {
     const base = singleRun * runs;
 
     const afkExtra =
-      participation === "afk"
-        ? Math.round(base * AFK_SURCHARGE)
-        : 0;
+      participation === "afk" ? Math.round(base * AFK_SURCHARGE) : 0;
 
     const roleExtra =
       runGoal === "standard" && participation === "play"
@@ -256,30 +214,20 @@ export function useMythicPlusConfig() {
     const specificExtra =
       runGoal === "standard"
         ? Math.round(
-          singleRun *
-          allocatedSpecificRuns *
-          SPECIFIC_DUNGEON_SURCHARGE
-        )
+            singleRun * allocatedSpecificRuns * SPECIFIC_DUNGEON_SURCHARGE,
+          )
         : 0;
 
     const traderExtra =
-      runGoal === "standard"
-        ? Math.round(base * traderSurcharges[traders])
-        : 0;
+      runGoal === "standard" ? Math.round(base * traderSurcharges[traders]) : 0;
 
-    const extras =
-      afkExtra +
-      roleExtra +
-      specificExtra +
-      traderExtra;
+    const extras = afkExtra + roleExtra + specificExtra + traderExtra;
 
     const beforeDiscount = base + extras;
 
     const discountPercent = getRunsDiscount(runs);
 
-    const discount = Math.round(
-      beforeDiscount * discountPercent
-    );
+    const discount = Math.round(beforeDiscount * discountPercent);
 
     const total = beforeDiscount - discount;
 
@@ -314,7 +262,7 @@ export function useMythicPlusConfig() {
 
     const next = Math.max(
       1,
-      Math.min(50, Math.trunc(amount))
+      Math.min(mythicSettings.maxRuns, Math.trunc(amount)),
     );
 
     if (next < allocatedSpecificRuns) {
@@ -360,12 +308,7 @@ export function useMythicPlusConfig() {
   // CLASS CHANGE
 
   function handleClassChange(newClass: string) {
-    if (
-      !Object.prototype.hasOwnProperty.call(
-        classArmor,
-        newClass
-      )
-    ) {
+    if (!Object.prototype.hasOwnProperty.call(classArmor, newClass)) {
       return;
     }
 
@@ -381,22 +324,14 @@ export function useMythicPlusConfig() {
         return newRoles[0];
       }
 
-      return newRoles.includes(currentRole)
-        ? currentRole
-        : newRoles[0];
+      return newRoles.includes(currentRole) ? currentRole : newRoles[0];
     });
 
     setConfirmed((previous) => ({
       ...previous,
       playerClass: true,
-      role: hasSingleRole
-        ? true
-        : changed
-          ? false
-          : previous.role,
-      traders: changed
-        ? false
-        : previous.traders,
+      role: hasSingleRole ? true : changed ? false : previous.role,
+      traders: changed ? false : previous.traders,
     }));
 
     if (changed) {
@@ -421,10 +356,7 @@ export function useMythicPlusConfig() {
 
   // SPECIFIC DUNGEON COUNTS
 
-  function changeDungeonAmount(
-    dungeonName: DungeonName,
-    difference: number
-  ) {
+  function changeDungeonAmount(dungeonName: DungeonName, difference: number) {
     if (!Number.isFinite(difference)) {
       return;
     }
@@ -436,12 +368,7 @@ export function useMythicPlusConfig() {
     }
 
     setDungeonCounts((current) => {
-      if (
-        !Object.prototype.hasOwnProperty.call(
-          current,
-          dungeonName
-        )
-      ) {
+      if (!Object.prototype.hasOwnProperty.call(current, dungeonName)) {
         return current;
       }
 
@@ -449,20 +376,14 @@ export function useMythicPlusConfig() {
 
       const currentTotal = Object.values(current).reduce(
         (total, amount) => total + amount,
-        0
+        0,
       );
 
-      const maxForDungeon = Math.max(
-        0,
-        runs - (currentTotal - currentAmount)
-      );
+      const maxForDungeon = Math.max(0, runs - (currentTotal - currentAmount));
 
       const nextAmount = Math.max(
         0,
-        Math.min(
-          maxForDungeon,
-          currentAmount + change
-        )
+        Math.min(maxForDungeon, currentAmount + change),
       );
 
       if (nextAmount === currentAmount) {
@@ -489,31 +410,17 @@ export function useMythicPlusConfig() {
 
     2:
       runGoal === "crest" ||
-      (
-        confirmed.playerClass &&
-        (
-          participation === "afk" ||
-          confirmed.role
-        )
-      ),
+      (confirmed.playerClass && (participation === "afk" || confirmed.role)),
 
     3:
       runGoal === "crest" ||
-      (
-        confirmed.dungeon &&
-        (
-          !specificDungeon ||
-          allocatedSpecificRuns > 0
-        ) &&
+      (confirmed.dungeon &&
+        (!specificDungeon || allocatedSpecificRuns > 0) &&
         confirmed.traders &&
-        confirmed.region
-      ),
+        confirmed.region),
   };
 
-  const canReserve =
-    stepComplete[1] &&
-    stepComplete[2] &&
-    stepComplete[3];
+  const canReserve = stepComplete[1] && stepComplete[2] && stepComplete[3];
 
   return {
     keyLevels,
@@ -550,8 +457,6 @@ export function useMythicPlusConfig() {
     traders,
     setTraders,
 
-
-
     armorType,
     allowedRoles,
     maxTraders,
@@ -569,6 +474,4 @@ export function useMythicPlusConfig() {
   };
 }
 
-export type MythicPlusConfig = ReturnType<
-  typeof useMythicPlusConfig
->;
+export type MythicPlusConfig = ReturnType<typeof useMythicPlusConfig>;

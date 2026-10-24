@@ -1,104 +1,63 @@
+import { dungeonImages } from "@/data/season";
 
-import {
-  SPECIFIC_DUNGEON_SURCHARGE,
-  dungeons,
-} from "@/data/mythicPlus";
+import { SPECIFIC_DUNGEON_SURCHARGE, dungeons } from "@/data/mythicPlus";
 
-import type {
-  MythicPlusConfig,
-} from "../../hooks/useMythicPlusConfig";
+import type { MythicPlusConfig } from "../../hooks/useMythicPlusConfig";
 
-import {
-  ChoiceCard,
-  OptionSection,
-} from "../../components/ConfiguratorUI";
+import { ChoiceCard, OptionSection } from "../../components/ConfiguratorUI";
 
 import styles from "./DungeonSetup.module.scss";
 
-const dungeonImages: Record<string, string> = {
-  "Altar of Fangs": "altar-of-fangs",
-  "Murder Row": "murder-row",
-  "Den of Nalorakk": "den-of-nalorakk",
-  "The Blinding Vale": "the-blinding-vale",
-  "Voidscar Arena": "voidscar-arena",
-  "Kings' Rest": "kings-rest",
-  "Temple of Sethraliss": "temple-of-sethraliss",
-  "Ruby Life Pools": "ruby-life-pools",
-};
-
-export default function DungeonSetup({
-  config,
-}: {
-  config: MythicPlusConfig;
-}) {
+export default function DungeonSetup({ config }: { config: MythicPlusConfig }) {
   const progress =
     config.runs > 0
-      ? Math.min(
-        100,
-        (config.allocatedSpecificRuns /
-          config.runs) *
-        100
-      )
+      ? Math.min(100, (config.allocatedSpecificRuns / config.runs) * 100)
       : 0;
 
   return (
     <OptionSection
       number="05"
       title="Dungeon"
- value={
-  !config.confirmed.dungeon
-    ? "Not selected"
-    : config.specificDungeon
-      ? `${config.allocatedSpecificRuns}/${config.runs} specific`
-      : "Any dungeon"
-}
+      value={
+        !config.confirmed.dungeon
+          ? "Not selected"
+          : config.specificDungeon
+            ? `${config.allocatedSpecificRuns}/${config.runs} specific`
+            : "Any dungeon"
+      }
     >
       <div className={styles.twoCards}>
         <ChoiceCard
-          active={
-            config.confirmed.dungeon &&
-            !config.specificDungeon
-          }
+          active={config.confirmed.dungeon && !config.specificDungeon}
           title="Any dungeon"
           description="Fastest available group and best price."
           badge="BEST PRICE"
-          onClick={() =>
-            config.handleSpecificDungeon(false)
-          }
+          onClick={() => config.handleSpecificDungeon(false)}
         />
 
         <ChoiceCard
-          active={
-            config.confirmed.dungeon &&
-            config.specificDungeon
-          }
+          active={config.confirmed.dungeon && config.specificDungeon}
           title="Specific dungeons"
           description="Choose how many runs you want in each dungeon."
           price={`+${Math.round(
-            SPECIFIC_DUNGEON_SURCHARGE * 100
+            SPECIFIC_DUNGEON_SURCHARGE * 100,
           )}% / selected run`}
-          onClick={() =>
-            config.handleSpecificDungeon(true)
-          }
+          onClick={() => config.handleSpecificDungeon(true)}
         />
       </div>
 
-
       {config.specificDungeon && (
         <div className={styles.dungeonAllocator}>
-
           {/* INFORMATION BLOCK */}
           <div className={styles.allocationIntro}>
-            <div className={styles.allocationIntroIcon}>
-              ✦
-            </div>
+            <div className={styles.allocationIntroIcon}>✦</div>
 
             <div>
               <strong>Customize your dungeon runs</strong>
 
               <p>
-                Assign runs to your preferred dungeons.
-                Any unassigned runs will remain
+                Assign runs to your preferred dungeons. Any unassigned runs will
+                remain
                 <span> Any dungeon</span> at the standard price.
               </p>
             </div>
@@ -118,9 +77,7 @@ export default function DungeonSetup({
             <div>
               {config.remainingRuns > 0 ? (
                 <>
-                  <strong>
-                    {config.remainingRuns}
-                  </strong>
+                  <strong>{config.remainingRuns}</strong>
 
                   <span>
                     {config.remainingRuns === 1
@@ -129,9 +86,7 @@ export default function DungeonSetup({
                   </span>
                 </>
               ) : (
-                <span className={styles.allAssigned}>
-                  ✓ ALL RUNS ASSIGNED
-                </span>
+                <span className={styles.allAssigned}>✓ ALL RUNS ASSIGNED</span>
               )}
             </div>
           </div>
@@ -139,27 +94,19 @@ export default function DungeonSetup({
           {/* ALLOCATION BREAKDOWN */}
           <div className={styles.allocationBreakdown}>
             <div className={styles.breakdownItem}>
-              <span
-                className={styles.breakdownDotSpecific}
-              />
+              <span className={styles.breakdownDotSpecific} />
 
               <span>Specific dungeons</span>
 
-              <strong>
-                {config.allocatedSpecificRuns}
-              </strong>
+              <strong>{config.allocatedSpecificRuns}</strong>
             </div>
 
             <div className={styles.breakdownItem}>
-              <span
-                className={styles.breakdownDotAny}
-              />
+              <span className={styles.breakdownDotAny} />
 
               <span>Any dungeon</span>
 
-              <strong>
-                {config.remainingRuns}
-              </strong>
+              <strong>{config.remainingRuns}</strong>
             </div>
           </div>
 
@@ -181,15 +128,11 @@ export default function DungeonSetup({
           {/* DUNGEON ALLOCATION GRID */}
           <div className={styles.dungeonAllocationGrid}>
             {dungeons.map((dungeonName) => {
-              const amount =
-                config.dungeonCounts[dungeonName];
+              const amount = config.dungeonCounts[dungeonName];
 
-              const maxReached =
-                config.allocatedSpecificRuns >=
-                config.runs;
+              const maxReached = config.allocatedSpecificRuns >= config.runs;
 
-              const image =
-                dungeonImages[dungeonName];
+              const image = dungeonImages[dungeonName];
 
               return (
                 <div
@@ -208,8 +151,7 @@ export default function DungeonSetup({
                         alt=""
                         loading="lazy"
                         onError={(event) => {
-                          event.currentTarget.style.display =
-                            "none";
+                          event.currentTarget.style.display = "none";
                         }}
                       />
                     </div>
@@ -219,10 +161,7 @@ export default function DungeonSetup({
 
                       {amount > 0 && (
                         <small>
-                          {amount}{" "}
-                          {amount === 1
-                            ? "run"
-                            : "runs"}
+                          {amount} {amount === 1 ? "run" : "runs"}
                         </small>
                       )}
                     </div>
@@ -235,10 +174,7 @@ export default function DungeonSetup({
                       aria-label={`Remove one ${dungeonName} run`}
                       disabled={amount === 0}
                       onClick={() =>
-                        config.changeDungeonAmount(
-                          dungeonName,
-                          -1
-                        )
+                        config.changeDungeonAmount(dungeonName, -1)
                       }
                     >
                       −
@@ -250,12 +186,7 @@ export default function DungeonSetup({
                       type="button"
                       aria-label={`Add one ${dungeonName} run`}
                       disabled={maxReached}
-                      onClick={() =>
-                        config.changeDungeonAmount(
-                          dungeonName,
-                          1
-                        )
-                      }
+                      onClick={() => config.changeDungeonAmount(dungeonName, 1)}
                     >
                       +
                     </button>
@@ -266,7 +197,6 @@ export default function DungeonSetup({
           </div>
         </div>
       )}
-
     </OptionSection>
   );
 }

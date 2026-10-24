@@ -1,4 +1,5 @@
 "use client";
+import { mythicDefaults, mythicExample, delveSources } from "@/data/season";
 
 import { useEffect, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
@@ -77,15 +78,15 @@ export default function RewardsExplorer() {
   const [shared, setShared] = useState<PlannerWeek | null>(null);
   const [notice, setNotice] = useState("");
   const [shareLink, setShareLink] = useState("");
-  const [level, setLevel] = useState(10);
+  const [level, setLevel] = useState(mythicDefaults.key);
   const [quantity, setQuantity] = useState(1);
-  const [compareA, setCompareA] = useState(10);
-  const [compareB, setCompareB] = useState(12);
+  const [compareA, setCompareA] = useState(mythicDefaults.key);
+  const [compareB, setCompareB] = useState(mythicDefaults.compareKey);
   const [showTable, setShowTable] = useState(false);
   const [crestType, setCrestType] = useState<CrestType>("Myth");
   const [crestGoal, setCrestGoal] = useState("120");
   const [currentCrests, setCurrentCrests] = useState("0");
-  const [farmKey, setFarmKey] = useState(12);
+  const [farmKey, setFarmKey] = useState(mythicDefaults.farmKey);
   const [customYield, setCustomYield] = useState("");
   const hydrated = useSyncExternalStore(
     subscribeHydration,
@@ -95,7 +96,11 @@ export default function RewardsExplorer() {
   if (hydrated && !loaded) {
     setWeek(readSavedWeek());
     const query = new URLSearchParams(window.location.search);
-    if (query.has("plan") || query.has("done")) {
+    if (query.get("season") && query.get("season") !== wowSeason.id) {
+      setNotice(
+        "This link belongs to a different season. Your saved week is unchanged.",
+      );
+    } else if (query.has("plan") || query.has("done")) {
       const planned = decodePlan(query.get("plan") ?? "");
       const completed = decodePlan(query.get("done") ?? "");
       if (
@@ -183,10 +188,12 @@ export default function RewardsExplorer() {
     const url = new URL(window.location.href);
     url.searchParams.delete("plan");
     url.searchParams.delete("done");
+    url.searchParams.delete("season");
     window.history.replaceState(window.history.state, "", url);
   }
   async function shareWeek() {
     const url = new URL(window.location.pathname, window.location.origin);
+    url.searchParams.set("season", wowSeason.id);
     url.searchParams.set("plan", encodePlan(week.planned));
     if (week.completed.length)
       url.searchParams.set("done", encodePlan(week.completed));
@@ -219,7 +226,7 @@ export default function RewardsExplorer() {
             <strong>See your Vault rewards before you queue.</strong>
           </p>
           <span className={styles.heroFootnote}>
-            No login. No booking. Your week stays in this browser.
+            No login required. Free to use. Your week stays in this browser.
           </span>
         </header>
 
@@ -292,6 +299,38 @@ export default function RewardsExplorer() {
               mark them completed.
             </p>
           </div>
+          <details className={styles.guideDisclosure}>
+            <summary>
+              First visit? See how the planner works{" "}
+              <span aria-hidden="true">+</span>
+            </summary>
+            <ol
+              className={styles.plannerSteps}
+              aria-label="How to use the weekly planner"
+            >
+              <li>
+                <span>1</span>
+                <div>
+                  <strong>Log what you’ve finished</strong>
+                  <small>Completed keys determine your current Vault.</small>
+                </div>
+              </li>
+              <li>
+                <span>2</span>
+                <div>
+                  <strong>Choose your next reward</strong>
+                  <small>Set an item level and the number of choices.</small>
+                </div>
+              </li>
+              <li>
+                <span>3</span>
+                <div>
+                  <strong>Run the missing keys</strong>
+                  <small>Mark planned runs completed as you finish them.</small>
+                </div>
+              </li>
+            </ol>
+          </details>
           {example && (
             <div className={styles.demoBanner} role="note">
               <div>
@@ -414,8 +453,11 @@ export default function RewardsExplorer() {
                   onClick={() => {
                     setExample(true);
                     update(
-                      { completed: [10, 8, 6, 6], planned: [] },
-                      "Example loaded: one +10, one +8 and two +6 keys. Try adding three +10s to improve your second choice.",
+                      {
+                        completed: [...mythicExample.completed],
+                        planned: [...mythicExample.planned],
+                      },
+                      mythicExample.notice,
                     );
                   }}
                 >
@@ -595,7 +637,10 @@ export default function RewardsExplorer() {
               </div>
             </div>
             <div className={styles.plannerToolbar}>
-              <span>{allRuns.length} / 200 runs · Saved in this browser</span>
+              <span>
+                {allRuns.length} / 200 runs ·{" "}
+                {example ? "Example only · not saved" : "Saved in this browser"}
+              </span>
               <div>
                 <button
                   type="button"
@@ -630,6 +675,11 @@ export default function RewardsExplorer() {
                 </button>
               </div>
             </div>
+            <p className={styles.storageNote}>
+              This is a manual planner, not a live character sync. After the
+              weekly reset, use Reset planner to start a new week. Undo restores
+              the last change.
+            </p>
             {shareLink && (
               <label className={styles.shareField}>
                 Your plan link
@@ -754,7 +804,10 @@ export default function RewardsExplorer() {
               onClick={() => setShowTable(!showTable)}
             >
               <span>
-                <strong>Full +2–20 reward table</strong>
+                <strong>
+                  Full +{Math.min(...rewards.map((row) => row.level))}–
+                  {Math.max(...rewards.map((row) => row.level))} reward table
+                </strong>
                 <small>All listed dungeon, Vault and Crest rewards</small>
               </span>
               <span>{showTable ? "−" : "+"}</span>
@@ -994,14 +1047,14 @@ export default function RewardsExplorer() {
               Battle.net account is connected.
             </p>
             <a
-              href="https://worldofwarcraft.blizzard.com/news/24294369/midnight-season-2-is-now-live"
+              href={wowSeason.announcement}
               target="_blank"
               rel="noopener noreferrer"
             >
               Blizzard season overview ↗
             </a>
             <a
-              href="https://worldofwarcraft.blizzard.com/news/24304162/1215-content-update-notes"
+              href={delveSources[2].href}
               target="_blank"
               rel="noopener noreferrer"
             >

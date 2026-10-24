@@ -8,6 +8,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ).replace(/\/$/, "");
 
   return [
+    { url: `${baseUrl}/delves`, changeFrequency: "weekly", priority: 0.9 },
     {
       url: `${baseUrl}/mythic-plus-rewards`,
       changeFrequency: "weekly",

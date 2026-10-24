@@ -14,7 +14,8 @@ export function isAllowedOrderOrigin(
   siteUrl: string | undefined,
   isProduction: boolean,
   vercelEnv?: string,
-  vercelUrl?: string
+  vercelUrl?: string,
+  vercelBranchUrl?: string
 ): boolean {
   if (!origin) return false;
 
@@ -25,14 +26,15 @@ export function isAllowedOrderOrigin(
     allowed.add("http://127.0.0.1:3000");
   }
 
-  // Vercel preview deployments run with NODE_ENV=production but have
-  // their own unique hostname. Trust only the hostname provided by Vercel.
-  if (vercelEnv === "preview" && vercelUrl) {
-    const previewHost = vercelUrl.trim();
-    if (
-      /^[a-z0-9-]+(?:\.[a-z0-9-]+)*\.vercel\.app$/i.test(previewHost)
-    ) {
-      allowed.add(`https://${previewHost}`);
+  // A preview has both an immutable deployment URL and a stable Git-branch
+  // alias. Accept only the exact hosts supplied by Vercel, never a wildcard
+  // or an address derived from request/forwarded headers.
+  if (vercelEnv === "preview") {
+    for (const value of [vercelUrl, vercelBranchUrl]) {
+      const host = value?.trim().toLowerCase();
+      if (host && /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.vercel\.app$/.test(host)) {
+        allowed.add(`https://${host}`);
+      }
     }
   }
 

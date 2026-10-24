@@ -1,13 +1,8 @@
+import { mythicSettings } from "@/data/season";
 
-import {
-  AFK_SURCHARGE,
-  getRunsDiscount,
-  basePrices,
-} from "@/data/mythicPlus";
+import { AFK_SURCHARGE, getRunsDiscount, basePrices } from "@/data/mythicPlus";
 
-import type {
-  MythicPlusConfig,
-} from "../../hooks/useMythicPlusConfig";
+import type { MythicPlusConfig } from "../../hooks/useMythicPlusConfig";
 
 import {
   ChoiceCard,
@@ -18,25 +13,16 @@ import {
 import styles from "./RunSetup.module.scss";
 import { getMythicReward } from "@/data/wowSeason";
 
-export default function RunSetup({
-  config,
-}: {
-  config: MythicPlusConfig;
-}) {
-  const selectedDiscount = Math.round(
-    config.calculation.discountPercent * 100
-  );
+export default function RunSetup({ config }: { config: MythicPlusConfig }) {
+  const selectedDiscount = Math.round(config.calculation.discountPercent * 100);
 
-  const hasAllocatedDungeons =
-    config.allocatedSpecificRuns > 0;
+  const hasAllocatedDungeons = config.allocatedSpecificRuns > 0;
   const reward = config.confirmed.keyLevel
     ? getMythicReward(config.keyLevel)
     : null;
 
   const estimatedCrests =
-    reward && config.confirmed.runs
-      ? reward.crestAmount * config.runs
-      : null;
+    reward && config.confirmed.runs ? reward.crestAmount * config.runs : null;
 
   return (
     <>
@@ -54,19 +40,16 @@ export default function RunSetup({
           <button
             type="button"
             aria-pressed={config.runGoal === "standard"}
-            className={`${styles.goalCard} ${config.runGoal === "standard"
-              ? styles.goalCardActive
-              : ""
-              }`}
+            className={`${styles.goalCard} ${
+              config.runGoal === "standard" ? styles.goalCardActive : ""
+            }`}
             onClick={() => config.setRunGoal("standard")}
           >
             <span className={styles.goalIcon}>⚔</span>
 
             <span className={styles.goalContent}>
               <strong>Standard Run</strong>
-              <small>
-                Gear, Great Vault & dungeon completion
-              </small>
+              <small>Gear, Great Vault & dungeon completion</small>
             </span>
 
             <span className={styles.goalRadio} />
@@ -75,10 +58,9 @@ export default function RunSetup({
           <button
             type="button"
             aria-pressed={config.runGoal === "crest"}
-            className={`${styles.goalCard} ${config.runGoal === "crest"
-              ? styles.goalCardActive
-              : ""
-              }`}
+            className={`${styles.goalCard} ${
+              config.runGoal === "crest" ? styles.goalCardActive : ""
+            }`}
             onClick={() => {
               config.resetKeyLevelForCrest();
               config.setRunGoal("crest");
@@ -88,9 +70,7 @@ export default function RunSetup({
 
             <span className={styles.goalContent}>
               <strong>Crest Farming</strong>
-              <small>
-                Farm upgrade currency efficiently
-              </small>
+              <small>Farm upgrade currency efficiently</small>
             </span>
 
             <span className={styles.goalRadio} />
@@ -110,16 +90,14 @@ export default function RunSetup({
             <div>
               <strong>Crest Farming</strong>
               <p>
-                Choose your key level and number of runs below.
-                Your estimated rewards will update automatically.
+                Choose your key level and number of runs below. Your estimated
+                rewards will update automatically.
               </p>
             </div>
           </div>
 
           <div className={styles.crestRegion}>
-            <span className={styles.crestRegionLabel}>
-              SELECT REGION
-            </span>
+            <span className={styles.crestRegionLabel}>SELECT REGION</span>
 
             <div className={styles.crestRegionOptions}>
               {(["EU", "NA"] as const).map((region) => (
@@ -127,20 +105,16 @@ export default function RunSetup({
                   key={region}
                   type="button"
                   aria-pressed={
-                    config.confirmed.region &&
-                    config.region === region
+                    config.confirmed.region && config.region === region
                   }
                   className={
-                    config.confirmed.region &&
-                      config.region === region
+                    config.confirmed.region && config.region === region
                       ? styles.crestRegionActive
                       : styles.crestRegionButton
                   }
                   onClick={() => config.setRegion(region)}
                 >
-                  {region === "EU"
-                    ? "Europe (EU)"
-                    : "North America (NA)"}
+                  {region === "EU" ? "Europe (EU)" : "North America (NA)"}
                 </button>
               ))}
             </div>
@@ -151,9 +125,7 @@ export default function RunSetup({
               <div>
                 <span>KEY LEVEL</span>
                 <strong>
-                  {config.confirmed.keyLevel
-                    ? `+${config.keyLevel}`
-                    : "—"}
+                  {config.confirmed.keyLevel ? `+${config.keyLevel}` : "—"}
                 </strong>
               </div>
 
@@ -175,8 +147,9 @@ export default function RunSetup({
               : !config.confirmed.runs
                 ? "Select the number of runs to calculate your rewards."
                 : reward
-                  ? `Estimated ${reward.crest} Mistcrests across ${config.runs} ${config.runs === 1 ? "run" : "runs"
-                  }. Rewards depend on completion conditions.`
+                  ? `Estimated ${reward.crest} Mistcrests across ${config.runs} ${
+                      config.runs === 1 ? "run" : "runs"
+                    }. Rewards depend on completion conditions.`
                   : "Crest rewards are unavailable for this key level."}
           </p>
         </div>
@@ -196,17 +169,17 @@ export default function RunSetup({
         <div className={styles.keyGrid}>
           {config.keyLevels
             .filter((level) =>
-              config.runGoal === "crest" ? level <= 12 : true
+              config.runGoal === "crest"
+                ? level <= mythicSettings.crestMaxKey
+                : true,
             )
             .map((level) => {
               const active =
-                config.confirmed.keyLevel &&
-                config.keyLevel === level;
+                config.confirmed.keyLevel && config.keyLevel === level;
 
               const price = basePrices[level];
 
-              const formattedPrice =
-                price.toLocaleString("en-US");
+              const formattedPrice = price.toLocaleString("en-US");
 
               const shortPrice =
                 price >= 1_000_000
@@ -219,43 +192,28 @@ export default function RunSetup({
                   key={level}
                   aria-pressed={active}
                   aria-label={`Mythic Plus ${level}, ${formattedPrice} gold per run`}
-                  className={`${active
-                    ? styles.activeOption
-                    : styles.option
-                    } ${styles.keyButton}`}
-                  onClick={() =>
-                    config.setKeyLevel(level)
-                  }
+                  className={`${
+                    active ? styles.activeOption : styles.option
+                  } ${styles.keyButton}`}
+                  onClick={() => config.setKeyLevel(level)}
                 >
-                  <span className={styles.keyNumber}>
-                    +{level}
-                  </span>
+                  <span className={styles.keyNumber}>+{level}</span>
 
                   {/* Mobile: visible price */}
-                  <span
-                    className={styles.keyMobilePrice}
-                    aria-hidden="true"
-                  >
+                  <span className={styles.keyMobilePrice} aria-hidden="true">
                     {shortPrice}
                   </span>
 
                   {/* Desktop: hover tooltip */}
-                  <span
-                    className={styles.keyTooltip}
-                    aria-hidden="true"
-                  >
-                    <span className={styles.tooltipLabel}>
-                      KEY +{level}
-                    </span>
+                  <span className={styles.keyTooltip} aria-hidden="true">
+                    <span className={styles.tooltipLabel}>KEY +{level}</span>
 
                     <strong className={styles.tooltipPrice}>
                       {formattedPrice}
                       <span> GOLD</span>
                     </strong>
 
-                    <span className={styles.tooltipFooter}>
-                      PER RUN
-                    </span>
+                    <span className={styles.tooltipFooter}>PER RUN</span>
                   </span>
                 </button>
               );
@@ -272,22 +230,16 @@ export default function RunSetup({
       <OptionSection
         number="02"
         title="Number of runs"
-        value={`${config.runs} ${config.runs === 1 ? "run" : "runs"
-          }`}
+        value={`${config.runs} ${config.runs === 1 ? "run" : "runs"}`}
       >
         <div className={styles.runControls}>
           <div className={styles.quickRuns}>
             {config.quickRunOptions.map((amount) => {
-              const unavailable =
-                amount < config.allocatedSpecificRuns;
+              const unavailable = amount < config.allocatedSpecificRuns;
 
-              const active =
-                config.confirmed.runs &&
-                config.runs === amount;
+              const active = config.confirmed.runs && config.runs === amount;
 
-              const discountPercent = Math.round(
-                getRunsDiscount(amount) * 100
-              );
+              const discountPercent = Math.round(getRunsDiscount(amount) * 100);
 
               return (
                 <button
@@ -295,26 +247,18 @@ export default function RunSetup({
                   key={amount}
                   disabled={unavailable}
                   aria-pressed={active}
-                  aria-label={`${amount} ${amount === 1 ? "run" : "runs"
-                    }${discountPercent > 0
+                  aria-label={`${amount} ${amount === 1 ? "run" : "runs"}${
+                    discountPercent > 0
                       ? `, save ${discountPercent} percent`
                       : ""
-                    }`}
-                  className={
-                    active
-                      ? styles.activeOption
-                      : styles.option
-                  }
-                  onClick={() =>
-                    config.setRunCount(amount)
-                  }
+                  }`}
+                  className={active ? styles.activeOption : styles.option}
+                  onClick={() => config.setRunCount(amount)}
                 >
                   <strong>{amount}</strong>
 
                   <span className={styles.runCaption}>
-                    {amount === 1
-                      ? "RUN"
-                      : "RUNS"}
+                    {amount === 1 ? "RUN" : "RUNS"}
                   </span>
 
                   {discountPercent > 0 && (
@@ -332,22 +276,19 @@ export default function RunSetup({
               type="button"
               aria-label="Decrease number of runs"
               disabled={
-                config.runs <= 1 ||
-                config.runs <= config.allocatedSpecificRuns
+                config.runs <= 1 || config.runs <= config.allocatedSpecificRuns
               }
               onClick={config.decreaseRuns}
             >
               −
             </button>
 
-            <strong aria-live="polite">
-              {config.runs}
-            </strong>
+            <strong aria-live="polite">{config.runs}</strong>
 
             <button
               type="button"
               aria-label="Increase number of runs"
-              disabled={config.runs >= 50}
+              disabled={config.runs >= mythicSettings.maxRuns}
               onClick={config.increaseRuns}
             >
               +
@@ -364,15 +305,9 @@ export default function RunSetup({
         {hasAllocatedDungeons && (
           <p className={styles.runsHint}>
             You have already selected{" "}
-            <strong>
-              {config.allocatedSpecificRuns}
-            </strong>{" "}
-            specific{" "}
-            {config.allocatedSpecificRuns === 1
-              ? "run"
-              : "runs"}
-            . To select fewer runs, first adjust your
-            dungeon selection.
+            <strong>{config.allocatedSpecificRuns}</strong> specific{" "}
+            {config.allocatedSpecificRuns === 1 ? "run" : "runs"}. To select
+            fewer runs, first adjust your dungeon selection.
           </p>
         )}
       </OptionSection>
@@ -397,30 +332,22 @@ export default function RunSetup({
         <div className={styles.twoCards}>
           <ChoiceCard
             active={
-              config.confirmed.participation &&
-              config.participation === "play"
+              config.confirmed.participation && config.participation === "play"
             }
             title="I Play"
             description="Play normally together with the boosting team."
             badge="PLAY WITH TEAM"
-            onClick={() =>
-              config.handleParticipation("play")
-            }
+            onClick={() => config.handleParticipation("play")}
           />
 
           <ChoiceCard
             active={
-              config.confirmed.participation &&
-              config.participation === "afk"
+              config.confirmed.participation && config.participation === "afk"
             }
             title="AFK / Minimal"
             description="Minimal participation. Some mechanics may still require movement."
-            price={`+${Math.round(
-              AFK_SURCHARGE * 100
-            )}%`}
-            onClick={() =>
-              config.handleParticipation("afk")
-            }
+            price={`+${Math.round(AFK_SURCHARGE * 100)}%`}
+            onClick={() => config.handleParticipation("afk")}
           />
         </div>
       </OptionSection>
