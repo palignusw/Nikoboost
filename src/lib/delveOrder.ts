@@ -1,3 +1,4 @@
+import type { DelveOrderReceipt } from "./orderReceipt";
 import { delvePrices, delveSettings, delveSpecialists } from "@/data/season";
 import { createHash, randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
@@ -25,6 +26,7 @@ type Delivery = {
     total: number | null;
     service: "delves";
     quote: boolean;
+    receipt: DelveOrderReceipt;
   };
 };
 const deliveries = new Map<string, Delivery>();
@@ -114,6 +116,36 @@ export async function submitDelveOrder(
         );
   deliveries.set(fingerprint, { expires: now + 30_000 });
   const orderId = `NB-D-${randomUUID().slice(0, 8).toUpperCase()}`;
+  const receipt: DelveOrderReceipt = {
+    serviceType: "delves",
+    orderId,
+    createdAt: new Date(now).toISOString(),
+    total,
+    quote,
+    customer: {
+      battleTag: customer.battleTag,
+      discord: customer.discord,
+      character: customer.character,
+      realm: customer.realm,
+      comment: customer.comment,
+    },
+    schedule: { preferredTime: customer.preferredTime, tbilisiTime },
+    service: {
+      kind,
+      name: specialist?.orderTitle ?? `Delves - Tier ${tier}`,
+      tier: quote ? null : Number(tier),
+      runs: Number(runs),
+      mode: "Self-play",
+      region,
+      playerClass,
+      delveId,
+      destination: specialist?.title ?? delveName(delveId),
+      format: quote ? null : format,
+      cofferKeys:
+        !quote && format === "bountiful" ? Number(order.cofferKeys) : null,
+      tierUnlocked: !quote && order.tierUnlocked === true,
+    },
+  };
   const fields = [
     {
       name: "Service",
@@ -154,7 +186,7 @@ export async function submitDelveOrder(
             title: `${quote ? "Delves quote request" : "New Delves reservation"} ${orderId}`,
             color: 0x5f7cff,
             fields,
-            timestamp: new Date().toISOString(),
+            timestamp: receipt.createdAt,
           },
         ],
       }),
@@ -169,6 +201,7 @@ export async function submitDelveOrder(
       total,
       service: "delves" as const,
       quote,
+      receipt,
     };
     deliveries.set(fingerprint, { expires: Date.now() + 30_000, result });
     return NextResponse.json(result);

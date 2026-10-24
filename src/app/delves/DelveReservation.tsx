@@ -5,6 +5,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import Image from "next/image";
 import DatePicker from "@/components/DatePicker/DatePicker";
 import TimePicker from "@/components/TimePicker/TimePicker";
+import type { DelveOrderReceipt } from "@/lib/orderReceipt";
 import { validateSchedule } from "@/lib/reservationSchedule";
 import { delveName, delvePrice, gold, type DelveConfig } from "@/data/delves";
 import { delveArt } from "@/data/delveArt";
@@ -22,10 +23,13 @@ export default function DelveReservation({
   const dialog = useRef<HTMLDialogElement>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [downloading, setDownloading] = useState(false);
+  const [pdfError, setPdfError] = useState("");
   const [receipt, setReceipt] = useState<{
     orderId: string;
     total: number | null;
     quote: boolean;
+    receipt: DelveOrderReceipt;
   } | null>(null);
   const [exact, setExact] = useState(false);
   const [date, setDate] = useState("");
@@ -102,6 +106,12 @@ export default function DelveReservation({
         throw new Error(result.error || "Could not submit your request.");
       if (
         typeof result.orderId !== "string" ||
+        typeof result.quote !== "boolean" ||
+        !result.receipt ||
+        result.receipt.serviceType !== "delves" ||
+        result.receipt.orderId !== result.orderId ||
+        result.receipt.total !== result.total ||
+        result.receipt.quote !== result.quote ||
         (result.total !== null &&
           (!Number.isInteger(result.total) || result.total < 0))
       )
@@ -120,6 +130,23 @@ export default function DelveReservation({
       );
     } finally {
       setBusy(false);
+    }
+  }
+  async function downloadPdf() {
+    if (!receipt || downloading) return;
+    setDownloading(true);
+    setPdfError("");
+    try {
+      const { downloadOrderPdf } = await import(
+        "@/components/MythicPlus/components/downloadOrderPdf"
+      );
+      await downloadOrderPdf(receipt.receipt);
+    } catch {
+      setPdfError(
+        "Could not generate PDF. Your request is already received. Try downloading again without resubmitting.",
+      );
+    } finally {
+      setDownloading(false);
     }
   }
   return (
@@ -177,9 +204,25 @@ export default function DelveReservation({
             No payment has been taken. Your start time is confirmed with the
             team.
           </p>
-          <button type="button" className={shared.done} onClick={onClose}>
-            Done →
-          </button>
+          <div className={shared.receiptActions}>
+            <button
+              type="button"
+              className={shared.downloadReceipt}
+              onClick={downloadPdf}
+              disabled={downloading}
+              aria-busy={downloading}
+            >
+              {downloading ? "Generating PDF..." : "↓ Download PDF Receipt"}
+            </button>
+            <button type="button" className={shared.done} onClick={onClose}>
+              Done →
+            </button>
+          </div>
+          {pdfError && (
+            <div className={shared.error} role="alert">
+              {pdfError}
+            </div>
+          )}
         </div>
       ) : (
         <>

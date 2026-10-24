@@ -1,41 +1,5 @@
-
-
-export type OrderReceipt = {
-  orderId: string;
-  createdAt: string;
-  total: number;
-
-  customer: {
-    battleTag: string;
-    discord: string;
-    character: string;
-    realm: string;
-    comment: string;
-  };
-
-  service: {
-    runGoal: "standard" | "crest";
-    keyLevel: number;
-    runs: number;
-    mode: string;
-    region: string;
-    playerClass: string;
-    role: string;
-    armor: string;
-    traders: number;
-    dungeons: string[];
-
-    crestType?: string;
-    crestsPerRun?: number | null;
-    estimatedCrests?: number | null;
-  };
-
-  schedule: {
-    preferredTime: string;
-    tbilisiTime: string;
-  };
-};
-
+import type { OrderReceipt, DelveOrderReceipt } from "@/lib/orderReceipt";
+export type { OrderReceipt, DelveOrderReceipt } from "@/lib/orderReceipt";
 
 type FontName = "NotoSans" | "NotoSansGeorgian";
 
@@ -51,7 +15,7 @@ type WrappedLine = {
 };
 
 export async function downloadOrderPdf(
-  receipt: OrderReceipt
+  receipt: OrderReceipt | DelveOrderReceipt
 ): Promise<void> {
   const { jsPDF } = await import("jspdf");
 
@@ -644,7 +608,7 @@ export async function downloadOrderPdf(
     pdf.setTextColor(190, 200, 225);
 
     pdf.text(
-      "ESTIMATED TOTAL",
+      "serviceType" in receipt ? (receipt.quote ? "GOLD PRICE" : "CONFIRMED TOTAL") : "ESTIMATED TOTAL",
       MARGIN + 5,
       y + 10
     );
@@ -653,7 +617,7 @@ export async function downloadOrderPdf(
     pdf.setTextColor(255, 255, 255);
 
     pdf.text(
-      `${receipt.total.toLocaleString("en-US")} GOLD`,
+      receipt.total === null ? "MANUAL QUOTE REQUIRED" : `${receipt.total.toLocaleString("en-US")} GOLD`,
       PAGE_W - MARGIN - 5,
       y + 10,
       { align: "right" }
@@ -689,8 +653,8 @@ export async function downloadOrderPdf(
   // ----------------------------------
   // DOCUMENT CONTENT
   // ----------------------------------
-  const isCrestFarming =
-    receipt.service.runGoal === "crest";
+  const isDelves = "serviceType" in receipt;
+  const isCrestFarming = !isDelves && receipt.service.runGoal === "crest";
 
   startPage(true);
 
@@ -734,7 +698,7 @@ export async function downloadOrderPdf(
     ],
     [
       "Service",
-      isCrestFarming
+      isDelves ? receipt.service.name : isCrestFarming
         ? `Crest Farming — Mythic+ +${receipt.service.keyLevel}`
         : `Mythic+ +${receipt.service.keyLevel}`,
     ],
@@ -745,7 +709,56 @@ export async function downloadOrderPdf(
 
   priceBlock();
 
-  if (isCrestFarming) {
+  if (isDelves) {
+    section("Delve Details", [
+      [
+        "Request",
+        receipt.quote
+          ? "Specialist scope and gold quote"
+          : "Fixed-price reservation request",
+      ],
+      ["Destination", receipt.service.destination],
+      ...(receipt.service.tier === null
+        ? []
+        : ([["Tier", String(receipt.service.tier)]] as Array<
+            [string, string]
+          >)),
+      [
+        "Format",
+        receipt.service.format === "bountiful"
+          ? "Bountiful"
+          : receipt.service.format === "regular"
+            ? "Regular"
+            : "Specialist adventure",
+      ],
+      ...(receipt.service.cofferKeys === null
+        ? []
+        : ([["Your Coffer Keys", String(receipt.service.cofferKeys)]] as Array<
+            [string, string]
+          >)),
+      [
+        "Tier access",
+        receipt.service.tier === null
+          ? "Scope to confirm"
+          : receipt.service.tierUnlocked
+            ? "Confirmed by customer"
+            : "To confirm",
+      ],
+      ["Class", receipt.service.playerClass],
+      [
+        "Payment",
+        receipt.quote
+          ? "Gold quote to be agreed before payment"
+          : "In-game gold after team confirmation",
+      ],
+    ]);
+    section("Customer Details", [
+      ["BattleTag", receipt.customer.battleTag],
+      ["Discord", receipt.customer.discord],
+      ["Character", receipt.customer.character],
+      ["Realm", receipt.customer.realm],
+    ]);
+  } else if (isCrestFarming) {
     section("Crest Farming Details", [
       ["Key Level", `+${receipt.service.keyLevel}`],
       ["Total Runs", String(receipt.service.runs)],
