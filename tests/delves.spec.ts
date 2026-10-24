@@ -180,7 +180,7 @@ test("Delve configurator reprices, filters all locations and keeps specialist en
 }, info) => {
   await page.goto("/delves");
   await expect(page).toHaveTitle(
-    "Delves Boost for Gold | Midnight Season 2 | NikoBoost",
+    "WoW Delves Boost for Gold | Midnight Season 2 | NikoBoost",
   );
   await expect(page.getByTestId("delve-total")).toHaveText("190,000 gold");
   await page.getByRole("button", { name: /8 3 Vault choices/ }).click();

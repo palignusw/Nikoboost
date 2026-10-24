@@ -1,20 +1,9 @@
-
 import type { MetadataRoute } from "next";
+import { siteOrigin } from "@/lib/pageSeo";
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl =
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    "https://www.nikoboost.online";
-
   return {
-    rules: [
-      {
-        userAgent: "*",
-        allow: "/",
-        disallow: ["/api/"],
-      },
-    ],
-
-    sitemap: `${baseUrl}/sitemap.xml`,
+    rules: [{ userAgent: "*", allow: "/", disallow: ["/api/"] }],
+    sitemap: `${siteOrigin}/sitemap.xml`,
   };
 }

@@ -178,7 +178,7 @@ test("tools stay separate, compare equal gear tiers and navigate home", async ({
 }, info) => {
   await page.goto("/mythic-plus-rewards");
   await expect(page).toHaveTitle(
-    "Mythic+ Rewards & Weekly Vault Planner | NikoBoost",
+    "Mythic+ Rewards Calculator & Great Vault Planner | NikoBoost",
   );
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
     "href",

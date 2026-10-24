@@ -2,6 +2,7 @@
 import { getBundleSaving } from "@/lib/bundlePricing";
 import {
   wowSeason,
+  serviceContent,
   delveSettings,
   delveFaqs as faqs,
   delveSpecialists,
@@ -10,6 +11,7 @@ import {
 } from "@/data/season";
 
 import Link from "next/link";
+import Breadcrumbs from "@/components/Seo/Breadcrumbs";
 import { useState } from "react";
 import Image from "next/image";
 import DelveReservation from "./DelveReservation";
@@ -91,24 +93,18 @@ export default function Delves() {
           aria-hidden="true"
         />
         <div className={styles.wrap}>
-          <Link href="/" className={styles.back}>
-            NikoBoost / World of Warcraft / Delves
-          </Link>
+          <Breadcrumbs page="delves" />
           <div className={styles.heroGrid}>
             <div>
               <span className={styles.eyebrow}>
                 {DELVES_SEASON} · PATCH {wowSeason.patch}
               </span>
               <h1>
-                Your next Delve.
+                {serviceContent.delves.heading}
                 <br />
-                <span>Done your way.</span>
+                <span> {serviceContent.delves.accent}</span>
               </h1>
-              <p>
-                Delves, on your terms. Pick your Tier, build a weekly bundle,
-                and explore {wowSeason.expansion} with an experienced player by
-                your side.
-              </p>
+              <p>{serviceContent.delves.lead}</p>
               <a href="#delve-builder" className={styles.primary}>
                 Build your expedition <span>↗</span>
               </a>
@@ -154,7 +150,7 @@ export default function Delves() {
         >
           <div className={styles.heading}>
             <span className={styles.eyebrow}>YOUR NEXT EXPEDITION</span>
-            <h2 id="builder-heading">A run that fits your goal.</h2>
+            <h2 id="builder-heading">Build your Delves boost.</h2>
             <p>
               Start with your goal. Your gold price updates as you configure.
             </p>
@@ -468,7 +464,7 @@ export default function Delves() {
         >
           <div className={styles.heading}>
             <span className={styles.eyebrow}>CHOOSE YOUR DESTINATION</span>
-            <h2 id="locations-heading">A whole world beneath the surface.</h2>
+            <h2 id="locations-heading">Choose your Delve destination.</h2>
             <p>
               {delveLocations.length} regular {wowSeason.expansion} Delves, plus
               separate Nemesis and Labyrinth adventures. Bountiful status is
@@ -659,7 +655,7 @@ export default function Delves() {
         >
           <div className={styles.heading}>
             <span className={styles.eyebrow}>KNOW WHAT YOU’RE RUNNING FOR</span>
-            <h2 id="rewards-heading">The treasure. The weekly choice.</h2>
+            <h2 id="rewards-heading">Delve loot and Great Vault rewards.</h2>
             <p>
               Two different rewards, one sensible plan. Higher difficulty is not
               always better value.
@@ -796,6 +792,7 @@ export default function Delves() {
         <footer className={styles.footer}>
           <Link href="/">← Back to NikoBoost</Link>
           <Link href="/#mythic">Looking for Mythic+ instead? ↗</Link>
+          <Link href="/mythic-plus-rewards">Mythic+ rewards calculator ↗</Link>
         </footer>
       </div>
       {open && (

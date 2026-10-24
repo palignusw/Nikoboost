@@ -1,0 +1,86 @@
+@use "../../styles/variables" as *;
+.section {
+  width: min(1240px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 64px 0;
+  color: $text-primary;
+  font:
+    14px/1.8 var(--font-sora),
+    Arial,
+    sans-serif;
+}
+.intro {
+  max-width: 830px;
+  margin-bottom: 26px;
+  > span {
+    color: $season-light;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    font-weight: 600;
+  }
+  h2 {
+    margin: 14px 0;
+    font:
+      700 clamp(32px, 3.7vw, 46px) / 1.1 var(--font-rajdhani),
+      sans-serif;
+    letter-spacing: -0.025em;
+  }
+  p {
+    color: $text-secondary;
+    margin: 0;
+  }
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  article {
+    background: $bg-secondary;
+    border: 1px solid $border;
+    border-radius: $radius-lg;
+    padding: 28px;
+  }
+  h3 {
+    font:
+      700 26px/1.15 var(--font-rajdhani),
+      sans-serif;
+    margin: 0 0 14px;
+  }
+  p {
+    margin: 0;
+    color: $text-secondary;
+  }
+}
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 32px;
+  padding-top: 24px;
+  a {
+    color: $brand-light;
+    font-size: 13px;
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+    &:focus-visible {
+      outline: 2px solid $brand-light;
+      outline-offset: 5px;
+    }
+  }
+  span {
+    margin-left: 8px;
+  }
+}
+@media (max-width: 700px) {
+  .section {
+    width: calc(100% - 32px);
+    padding: 44px 0;
+  }
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .grid article {
+    padding: 22px;
+  }
+}
