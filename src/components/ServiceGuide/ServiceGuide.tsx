@@ -26,6 +26,10 @@ export default function ServiceGuide() {
         <Link href="/delves">
           Explore Delves runs and gold prices <span aria-hidden="true">↗</span>
         </Link>
+        <Link href="/gold-prices">
+          Compare Mythic+ and Delves gold prices{" "}
+          <span aria-hidden="true">↗</span>
+        </Link>
       </nav>
     </section>
   );

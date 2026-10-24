@@ -21,11 +21,19 @@ test("navigation prioritizes services and tools, highlights the page and books t
           "Mythic+↗",
           "Delves↗",
           "Rewards & Tools↗",
+          "Gold Prices↗",
           "How it works↗",
           "FAQ↗",
           "Configure your Delves→",
         ]
-      : ["Mythic+", "Delves", "Rewards & Tools", "How it works", "FAQ"],
+      : [
+          "Mythic+",
+          "Delves",
+          "Rewards & Tools",
+          "Gold Prices",
+          "How it works",
+          "FAQ",
+        ],
   );
   await expect(nav.getByRole("link", { name: /^Delves/ })).toHaveAttribute(
     "aria-current",
