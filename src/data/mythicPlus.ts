@@ -1,3 +1,4 @@
+import { getBundleSaving } from "@/lib/bundlePricing";
 import { servicePricing } from "./season";
 export type Region = "EU" | "NA";
 import { dungeons } from "./wowSeason";
@@ -14,8 +15,7 @@ export type ArmorType = "Cloth" | "Leather" | "Mail" | "Plate";
 /*
  * STARTING PRICES
  *
- * Позже мы просто меняем эти цифры —
- * весь configurator пересчитывается автоматически.
+ * Редактируйте mythicBasePrices в src/data/season.ts.
  */
 
 export { mythicBasePrices as basePrices } from "./season";
@@ -80,27 +80,14 @@ export const SPECIFIC_DUNGEON_SURCHARGE = servicePricing.mythic.specific;
  */
 export const roleSurcharges = servicePricing.mythic.roles;
 
-/*
- * Для Plate / Leather можно собрать
- * полноценную группу из 4 boosters
- * того же armor type.
- *
- * Cloth / Mail ограничиваем тремя.
- */
+/* Лимит traders по броне редактируется в servicePricing.mythic.maxTraders. */
 export function getMaxTraders(armor: ArmorType) {
-  if (armor === "Plate" || armor === "Leather") {
-    return 4;
-  }
-
-  return 3;
+  return servicePricing.mythic.maxTraders[armor];
 }
 
 /*
  * Bundle discount.
  */
 export function getRunsDiscount(runs: number) {
-  return (
-    servicePricing.mythic.bundles.find((bundle) => runs >= bundle.runs)
-      ?.saving ?? 0
-  );
+  return getBundleSaving(runs, servicePricing.mythic.bundles);
 }

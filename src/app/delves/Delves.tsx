@@ -1,4 +1,5 @@
 "use client";
+import { getBundleSaving } from "@/lib/bundlePricing";
 import {
   wowSeason,
   delveSettings,
@@ -251,13 +252,12 @@ export default function Delves() {
                             ? "Single run"
                             : `${delveSettings.vaultThresholds.filter((threshold) => n >= threshold).length} Vault ${delveSettings.vaultThresholds.filter((threshold) => n >= threshold).length === 1 ? "choice" : "choices"}`}
                         </span>
-                        {(servicePricing.delves.bundles.find((b) => n >= b.runs)
-                          ?.saving ?? 0) > 0 && (
+                        {getBundleSaving(n, servicePricing.delves.bundles) >
+                          0 && (
                           <small>
                             Save{" "}
-                            {(servicePricing.delves.bundles.find(
-                              (b) => n >= b.runs,
-                            )?.saving ?? 0) * 100}
+                            {getBundleSaving(n, servicePricing.delves.bundles) *
+                              100}
                             %
                           </small>
                         )}

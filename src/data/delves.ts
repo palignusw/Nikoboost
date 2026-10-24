@@ -1,3 +1,4 @@
+import { getBundleSaving } from "@/lib/bundlePricing";
 import {
   wowSeason,
   delveLocations,
@@ -37,9 +38,10 @@ export function delvePrice(
     config.delveId === "any"
       ? 0
       : Math.round(base * servicePricing.delves.specific);
-  const discountRate =
-    servicePricing.delves.bundles.find((b) => config.runs >= b.runs)?.saving ??
-    0;
+  const discountRate = getBundleSaving(
+    config.runs,
+    servicePricing.delves.bundles,
+  );
   const discount = Math.round((base + specific) * discountRate);
   return {
     unit,

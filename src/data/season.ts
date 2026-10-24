@@ -1,10 +1,117 @@
 /**
- * NIKOBOOST — EDIT THIS FILE WHEN A SEASON CHANGES.
- * Identity → Mythic+ rotation/images/rewards/prices → Delves routes/rewards/prices/art/copy.
- * Both UI and server import these values. Gold tariffs are NikoBoost prices.
- * Never put credentials here: this file is also shipped to browsers.
- * Update id on rollover to invalidate saved plans. See docs/season-update.md.
+ * NIKOBOOST — ГЛАВНЫЙ ФАЙЛ УПРАВЛЕНИЯ УСЛУГАМИ И СЕЗОНОМ.
+ *
+ * Частые изменения — первые разделы: цены, доплаты, скидки, лимиты.
+ * Ниже — сезон, подземелья, награды, картинки и пояснения.
+ * Эти данные одновременно используют сайт и сервер заказов.
+ *
+ * Цены: целое число золота за ОДИН забег, без пробелов и запятых.
+ * Проценты: 0 = 0%, 0.05 = 5%, 0.1 = 10%, 0.15 = 15%.
+ * Скидки не складываются: выбирается пакет с наибольшим подходящим runs.
+ * Порядок строк пакетов не важен. Названия полей слева не переименовывайте.
+ *
+ * После изменения нужен новый deploy; файл не является онлайн-админкой.
+ * Пароли, Discord webhook и другие секреты здесь хранить НЕЛЬЗЯ.
+ * Подробная инструкция: docs/season-update.md.
  */
+
+// ─── 1. ЦЕНЫ MYTHIC+ ───────────────────────────────────────────
+// Слева уровень ключа, справа золото за один забег.
+// Например, 10: 72000 означает +10 за 72 000 gold.
+export const mythicBasePrices: Record<number, number> = {
+  2: 40000,
+  3: 40000,
+  4: 45000,
+  5: 50000,
+  6: 55000,
+  7: 60000,
+  8: 65000,
+  9: 70000,
+  10: 72000,
+  11: 82000,
+  12: 100000,
+  13: 110000,
+  14: 125000,
+  15: 140000,
+  16: 165000,
+  17: 200000,
+  18: 275000,
+  19: 600000,
+  20: 820000,
+};
+
+// ─── 2. ЦЕНЫ DELVES ────────────────────────────────────────────
+// Слева Tier, справа золото за один забег.
+export const delvePrices: Record<number, number> = {
+  1: 25000,
+  2: 25000,
+  3: 25000,
+  4: 30000,
+  5: 35000,
+  6: 40000,
+  7: 45000,
+  8: 50000,
+  9: 65000,
+  10: 85000,
+  11: 110000,
+};
+
+// ─── 3. ДОПЛАТЫ, СКИДКИ И LOOT TRADERS ────────────────────────
+// mythic — ключи; delves — Delves.
+// bundles: runs — от скольких забегов, saving — доля скидки.
+export const servicePricing = {
+  mythic: {
+    // Максимум loot traders для каждой брони.
+    maxTraders: { Cloth: 3, Leather: 4, Mail: 3, Plate: 4 },
+    traders: { 0: 0, 1: 0.05, 2: 0.1, 3: 0.18, 4: 0.25 } as Record<
+      number,
+      number
+    >,
+    afk: 0.1, // +10% за AFK / minimal participation
+    specific: 0.1, // +10% только на назначенные конкретные подземелья
+    // Доплата за роль покупателя: 0.15 = +15%.
+    roles: { dps: 0, tank: 0.15, healer: 0.15 },
+    bundles: [
+      { runs: 8, saving: 0.1 },
+      { runs: 4, saving: 0.05 },
+      { runs: 2, saving: 0.03 },
+    ],
+  },
+  delves: {
+    specific: 0.05, // +5% за конкретный Delve
+    bundles: [
+      { runs: 8, saving: 0.1 },
+      { runs: 4, saving: 0.05 },
+    ],
+  },
+};
+
+// ─── 4. ЛИМИТЫ И ВАРИАНТЫ ВЫБОРА ─────────────────────────────
+// maxRuns — максимум забегов; quickRuns/bundles — быстрые кнопки.
+// crestMaxKey — самый высокий ключ, доступный для Crest Farming.
+export const mythicSettings = {
+  crestMaxKey: 12,
+  maxRuns: 50,
+  quickRuns: [1, 4, 8],
+};
+export const delveSettings = {
+  heroArt: "midnight-delves",
+  heroBackdrop: "/images/hero/midnight-hero.jpg",
+  recommendedTier: 8,
+  defaultRuns: 4,
+  maxRuns: 20,
+  regularLootCap: 272,
+  vaultThresholds: [2, 4, 8],
+  bundles: [1, 2, 4, 8],
+  challengeNote:
+    "Tier 11 Bountiful Delves can award Ascendant Venomstones after the 12.1.5 quest unlock. Bonus rewards depend on your progression.",
+};
+
+// Уровни, которые показаны при первом открытии калькуляторов.
+export const mythicDefaults = { key: 10, compareKey: 12, farmKey: 12 };
+
+// ─── 5. СЕЗОН, ПОДЗЕМЕЛЬЯ, НАГРАДЫ И КАРТИНКИ ───────────────
+// При новом сезоне измените id, чтобы старые планы не загружались.
 export const wowSeason = {
   id: "midnight-s2",
   name: "Midnight Season 2",
@@ -16,6 +123,7 @@ export const wowSeason = {
     "https://news.blizzard.com/en-us/article/24294369/midnight-season-2-is-now-live",
 } as const;
 
+// Ротация ключей. Для каждого имени укажите картинку в dungeonImages.
 export const dungeons = [
   "Altar of Fangs",
   "Murder Row",
@@ -43,6 +151,8 @@ export type MythicReward = {
 
 // Seasonal reward data.
 // Crest quantities are provisional until final verification.
+// Таблица наград: level — ключ, dungeon — добыча, vault — Great Vault.
+// crestAmount — оценка количества Crests, не цена.
 export const mythicRewards: MythicReward[] = [
   {
     level: 2,
@@ -144,63 +254,6 @@ export const dungeonImages: Record<string, string> = {
   "Ruby Life Pools": "ruby-life-pools",
 };
 
-export const mythicBasePrices: Record<number, number> = {
-  2: 40000,
-  3: 40000,
-  4: 45000,
-  5: 50000,
-  6: 55000,
-  7: 60000,
-  8: 65000,
-  9: 70000,
-  10: 72000,
-  11: 82000,
-  12: 100000,
-  13: 110000,
-  14: 125000,
-  15: 140000,
-  16: 165000,
-  17: 200000,
-  18: 275000,
-  19: 600000,
-  20: 820000,
-};
-export const servicePricing = {
-  mythic: {
-    traders: { 0: 0, 1: 0.05, 2: 0.1, 3: 0.18, 4: 0.25 } as Record<
-      number,
-      number
-    >,
-    afk: 0.1,
-    specific: 0.1,
-    roles: { dps: 0, tank: 0.15, healer: 0.15 },
-    bundles: [
-      { runs: 8, saving: 0.1 },
-      { runs: 4, saving: 0.05 },
-      { runs: 2, saving: 0.03 },
-    ],
-  },
-  delves: {
-    specific: 0.05,
-    bundles: [
-      { runs: 8, saving: 0.1 },
-      { runs: 4, saving: 0.05 },
-    ],
-  },
-};
-export const delveSettings = {
-  heroArt: "midnight-delves",
-  heroBackdrop: "/images/hero/midnight-hero.jpg",
-  recommendedTier: 8,
-  defaultRuns: 4,
-  maxRuns: 20,
-  regularLootCap: 272,
-  vaultThresholds: [2, 4, 8],
-  bundles: [1, 2, 4, 8],
-  challengeNote:
-    "Tier 11 Bountiful Delves can award Ascendant Venomstones after the 12.1.5 quest unlock. Bonus rewards depend on your progression.",
-};
-export const mythicDefaults = { key: 10, compareKey: 12, farmKey: 12 };
 export const delveSources = [
   {
     label: "Blizzard: original Midnight locations",
@@ -241,6 +294,7 @@ export const delveSpecialists = [
     action: "Plan a Labyrinth adventure ↗",
   },
 ] as const;
+// Список Delves: id должен быть уникальным и совпадать с ключом картинки.
 export const delveLocations = [
   {
     id: "collegiate-calamity",
@@ -330,21 +384,8 @@ export const delveLocations = [
   },
 ] as const;
 
-export const delvePrices: Record<number, number> = {
-  1: 25000,
-  2: 25000,
-  3: 25000,
-  4: 30000,
-  5: 35000,
-  6: 40000,
-  7: 45000,
-  8: 50000,
-  9: 65000,
-  10: 85000,
-  11: 110000,
-};
-
 // Tier 4 Vault is omitted: public references disagree on that entry.
+// Награды Delves: coffer — Bountiful Coffer, vault — World Vault.
 export const delveRewards: Record<
   number,
   { coffer: number; vault: number | null }
@@ -425,12 +466,6 @@ export const delveFaqs = [
     "Your request goes to the NikoBoost team. We contact you through BattleTag or Discord to confirm the route, tier access, availability, timing and in-game gold payment. Submitting the form does not take payment or guarantee an instant start.",
   ],
 ];
-
-export const mythicSettings = {
-  crestMaxKey: 12,
-  maxRuns: 50,
-  quickRuns: [1, 4, 8],
-};
 
 export const mythicExample = {
   completed: [10, 8, 6, 6],

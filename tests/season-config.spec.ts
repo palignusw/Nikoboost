@@ -24,6 +24,28 @@ import { delvePrice } from "../src/data/delves";
 // These contracts catch incomplete season edits without pinning the next season to today's names or prices.
 test("season data covers every purchasable tier, route and default with local artwork", () => {
   expect(wowSeason.id).toMatch(/^[a-z0-9-]+$/);
+  for (const price of [
+    ...Object.values(mythicBasePrices),
+    ...Object.values(delvePrices),
+  ]) {
+    expect(Number.isSafeInteger(price)).toBe(true);
+    expect(price).toBeGreaterThan(0);
+  }
+  const percentages = [
+    servicePricing.mythic.afk,
+    servicePricing.mythic.specific,
+    servicePricing.delves.specific,
+    ...Object.values(servicePricing.mythic.traders),
+    ...Object.values(servicePricing.mythic.roles),
+    ...servicePricing.mythic.bundles.map((b) => b.saving),
+    ...servicePricing.delves.bundles.map((b) => b.saving),
+  ];
+  for (const rate of percentages) {
+    expect(Number.isFinite(rate)).toBe(true);
+    expect(rate).toBeGreaterThanOrEqual(0);
+    expect(rate).toBeLessThan(1);
+  }
+
   expect(new Set(dungeons).size).toBe(dungeons.length);
   for (const name of dungeons) {
     expect(dungeonImages[name], `Missing image for ${name}`).toBeTruthy();
@@ -80,11 +102,40 @@ test("every configured Delve tariff calculates on the server without a hard-code
     const base = unit * runs;
     const surcharge = Math.round(base * servicePricing.delves.specific);
     const saving =
-      servicePricing.delves.bundles.find((bundle) => runs >= bundle.runs)
-        ?.saving ?? 0;
+      servicePricing.delves.bundles
+        .filter((bundle) => runs >= bundle.runs)
+        .sort((a, b) => b.runs - a.runs)[0]?.saving ?? 0;
     expect(
       delvePrice({ tier: Number(tier), runs, delveId: delveLocations[0].id })
         .total,
     ).toBe(base + surcharge - Math.round((base + surcharge) * saving));
+  }
+});
+
+test("bundle discounts do not depend on the order of configured packages", async () => {
+  const { getBundleSaving } = await import("../src/lib/bundlePricing");
+  for (const service of [servicePricing.mythic, servicePricing.delves]) {
+    for (const runs of [1, 2, 3, 4, 7, 8, 20, 50]) {
+      const eligible = service.bundles
+        .filter((bundle) => bundle.runs <= runs)
+        .sort((a, b) => b.runs - a.runs);
+      const expected = eligible[0]?.saving ?? 0;
+      expect(getBundleSaving(runs, service.bundles)).toBe(expected);
+      expect(getBundleSaving(runs, [...service.bundles].reverse())).toBe(
+        expected,
+      );
+    }
+  }
+  // The highest eligible threshold is authoritative even if its percentage is lower.
+  expect(
+    getBundleSaving(8, [
+      { runs: 8, saving: 0.05 },
+      { runs: 4, saving: 0.1 },
+    ]),
+  ).toBe(0.05);
+  expect(getBundleSaving(8, [])).toBe(0);
+  for (const cap of Object.values(servicePricing.mythic.maxTraders)) {
+    expect(cap).toBeLessThanOrEqual(4);
+    expect(Object.hasOwn(servicePricing.mythic.traders, cap)).toBe(true);
   }
 });
