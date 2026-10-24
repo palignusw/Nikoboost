@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import TacticsPreview from "./TacticsPreview";
+import ChillstormStudy from "./ChillstormStudy";
 
 export const metadata: Metadata = {
   title: "Ruby Life Pools Tactics Lab — Preview",
@@ -9,5 +9,5 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <TacticsPreview />;
+  return <ChillstormStudy />;
 }

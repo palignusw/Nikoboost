@@ -1,0 +1,7 @@
+/** Original teaching storyboard; positions are illustrative, not game distances. */
+export const chillstormFrames = [
+    { label: "Spot the mark", title: "The mark is on you.", text: "You are the gold player. The four blue players are your teammates.", command: "Find yourself before you move.", correct: "Your next move needs space away from the group.", mistake: "Ignoring the mark leaves you beside your teammates." },
+    { label: "Move away", title: "Take Chillstorm away from the group.", text: "Move into clear space while you are targeted. The arrow shows one possible direction.", command: "Move away from the blue players.", correct: "The marked player separates. The group keeps its space.", mistake: "Staying with the group puts the storm beside everyone." },
+    { label: "Fight the pull", title: "The storm is down. Move out.", text: "The storm pulls inward. Move away from it and use a defensive or healing support as needed.", command: "Leave the storm. Resist the pull.", correct: "You move out while the storm stays behind.", mistake: "Standing in the storm leaves you in danger." },
+    { label: "Reset safely", title: "Danger ends. Find your next position.", text: "Return when the danger has ended. Keep clear of any active hazards.", command: "Reset for the next mechanic.", correct: "You can rejoin without crossing an active storm.", mistake: "Returning too early takes you through the active storm." },
+] as const;

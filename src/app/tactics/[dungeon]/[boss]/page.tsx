@@ -8,6 +8,8 @@ import {
 } from "@/data/tactics-catalog";
 import TacticsPreview from "../../ruby-life-pools/TacticsPreview";
 
+import ChillstormStudy from "../../ruby-life-pools/ChillstormStudy";
+
 type Props = { params: Promise<{ dungeon: string; boss: string }> };
 export function generateStaticParams() {
   return tacticsDungeons.flatMap((d) =>
@@ -29,6 +31,7 @@ async function Encounter({ params }: Props) {
   const p = await params;
   const item = findTactic(p.dungeon, p.boss);
   if (!item) notFound();
+  if (p.dungeon === "ruby-life-pools" && p.boss === "melidrussa-chillworn") return <ChillstormStudy />;
   return (
     <TacticsPreview
       key={`${p.dungeon}/${p.boss}`}
