@@ -1,0 +1,885 @@
+@use "../../../styles/variables" as *;
+.shell {
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 48% 24%, rgba($brand, 0.045), transparent 55%),
+    $bg-main;
+  color: $text-primary;
+  font:
+    13px/1.65 var(--font-sora),
+    sans-serif;
+  button,
+  a,
+  input {
+    -webkit-tap-highlight-color: transparent;
+  }
+  button {
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: default;
+    opacity: 0.5;
+  }
+  button:focus-visible,
+  a:focus-visible {
+    outline: 2px solid $brand-light;
+    outline-offset: 4px;
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-rajdhani), sans-serif;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+  }
+}
+.header {
+  height: 82px;
+  padding: 0 38px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid $border;
+  background: rgba($bg-main, 0.9);
+}
+.brand img {
+  width: 150px;
+  height: auto;
+}
+.labLabel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  font-weight: 600;
+  color: $text-secondary;
+  > span {
+    height: 6px;
+    width: 6px;
+    border-radius: 50%;
+    background: $brand-light;
+    box-shadow: 0 0 12px rgba($brand, 0.4);
+  }
+  b {
+    font-size: 8px;
+    letter-spacing: 0.08em;
+    font-weight: 500;
+    color: $text-muted;
+    border: 1px solid $border;
+    border-radius: 4px;
+    padding: 3px 6px;
+    margin-left: 6px;
+  }
+}
+.back {
+  font-size: 12px;
+  color: $text-secondary;
+  span {
+    color: $brand-light;
+    margin-left: 14px;
+  }
+}
+.main {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 26px 30px 38px;
+}
+.breadcrumb {
+  display: flex;
+  gap: 12px;
+  color: $text-muted;
+  font-size: 10px;
+  a {
+    color: $text-secondary;
+  }
+  > span:last-child {
+    color: $text-secondary;
+  }
+}
+.heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 25px;
+  margin: 30px 0 32px;
+  h1 {
+    font-size: clamp(42px, 4.5vw, 64px);
+    margin: 9px 0 13px;
+    font-weight: 700;
+    span {
+      color: $brand-light;
+    }
+  }
+  p {
+    margin: 0;
+    color: $text-secondary;
+    font-size: 12px;
+  }
+}
+.shell .eyebrow {
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  color: $brand-light;
+  font-weight: 600;
+  margin: 0;
+  text-transform: uppercase;
+}
+.dungeon {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  img {
+    border-radius: 12px;
+    object-fit: cover;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
+  }
+  div {
+    display: grid;
+    gap: 3px;
+  }
+  span {
+    font-size: 8px;
+    color: $season-light;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  strong {
+    font:
+      600 25px/1.15 var(--font-rajdhani),
+      sans-serif;
+  }
+  small {
+    font-size: 10px;
+    color: $text-secondary;
+  }
+}
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 306px;
+  gap: 22px;
+  align-items: start;
+}
+.board {
+  background: $bg-secondary;
+  border: 1px solid $border;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.16);
+}
+.boardTop {
+  padding: 17px 22px;
+  border-bottom: 1px solid $border;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  > div {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  strong {
+    font-size: 13px;
+    letter-spacing: -0.02em;
+  }
+}
+.liveDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: $season;
+  box-shadow: 0 0 12px rgba($season, 0.3);
+}
+.lessonType {
+  font-size: 8px;
+  color: $text-muted;
+  letter-spacing: 0.1em;
+  margin-left: 4px;
+  border-left: 1px solid $border;
+  padding-left: 14px;
+}
+.sceneCount {
+  font-size: 8px;
+  color: $text-muted;
+  letter-spacing: 0.1em;
+}
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 0;
+  gap: 12px;
+}
+.segment {
+  display: flex;
+  padding: 3px;
+  background: $bg-main;
+  border: 1px solid $border;
+  border-radius: 8px;
+  button {
+    border-radius: 5px;
+    padding: 8px 13px;
+    font-size: 10px;
+    background: transparent;
+    color: $text-secondary;
+  }
+  button[aria-pressed="true"] {
+    background: #1b2440;
+    color: #c5d0ff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  }
+  button span {
+    padding-left: 8px;
+    color: $text-muted;
+  }
+}
+.viewLabel {
+  font-size: 8px;
+  color: $text-muted;
+  letter-spacing: 0.12em;
+}
+.arena {
+  position: relative;
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    rgba($brand, 0.035),
+    transparent 70%
+  );
+  svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+}
+.arenaTop {
+  position: absolute;
+  top: 25px;
+  left: 24px;
+  right: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+  span {
+    font-size: 8px;
+    letter-spacing: 0.13em;
+    color: $text-secondary;
+  }
+  span:last-child {
+    color: $text-muted;
+  }
+}
+.compass {
+  font:
+    10px var(--font-sora),
+    sans-serif;
+  fill: #68717f;
+}
+.bossLabel {
+  font:
+    600 11px var(--font-sora),
+    sans-serif;
+  fill: #ad949c;
+  letter-spacing: 2px;
+}
+.player {
+  text {
+    font:
+      600 13px var(--font-sora),
+      sans-serif;
+    fill: #d9e0ef;
+  }
+  .playerLabel {
+    font-size: 8px;
+    fill: #929cad;
+    letter-spacing: 1.3px;
+  }
+}
+.target {
+  transition: transform 900ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  text {
+    font:
+      600 13px var(--font-sora),
+      sans-serif;
+    fill: #edf0ff;
+  }
+  .targetLabel {
+    font-size: 8px;
+    fill: $gold-light;
+    letter-spacing: 1.2px;
+  }
+}
+.dangerLabel {
+  font:
+    9px var(--font-sora),
+    sans-serif;
+  fill: #cd8a99;
+  letter-spacing: 1.4px;
+}
+.arenaNote {
+  position: absolute;
+  bottom: 10px;
+  left: 16px;
+  right: 16px;
+  text-align: center;
+  font-size: 9px;
+  color: $text-muted;
+  pointer-events: none;
+  span {
+    color: $brand-light;
+    margin-right: 6px;
+  }
+}
+.destinations {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  button {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    pointer-events: auto;
+    border: 1px solid $brand-light;
+    border-radius: 50%;
+    height: 44px;
+    width: 44px;
+    background: #17233e;
+    box-shadow: 0 0 0 7px rgba($brand, 0.08);
+    color: #d2dcff;
+    font-size: 15px;
+    font-weight: 600;
+    &:hover {
+      background: #2b3e69;
+    }
+  }
+  .wrongChoice {
+    border-color: $danger;
+    background: #4a2430;
+  }
+}
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  padding: 15px 22px;
+  border-top: 1px solid $border;
+  border-bottom: 1px solid $border;
+  font-size: 9px;
+  color: $text-secondary;
+  > span {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  i {
+    display: inline-block;
+    height: 7px;
+    width: 7px;
+    border-radius: 50%;
+  }
+  .legendRight {
+    margin-left: auto;
+    font-size: 7px;
+    letter-spacing: 0.12em;
+    color: $text-muted;
+  }
+}
+.targetDot {
+  border: 1px solid $gold;
+  background: rgba($gold, 0.3);
+}
+.partyDot {
+  background: $brand-light;
+}
+.dangerDot {
+  background: $danger;
+}
+.playback {
+  padding: 18px 22px 20px;
+}
+.playerControls {
+  display: flex;
+  gap: 13px;
+  align-items: center;
+  > div {
+    display: grid;
+    gap: 2px;
+    strong {
+      font-size: 10px;
+      font-weight: 500;
+    }
+    span {
+      font-size: 8px;
+      color: $text-muted;
+    }
+  }
+}
+.playButton {
+  height: 36px;
+  width: 36px;
+  border: 1px solid rgba($brand, 0.35);
+  border-radius: 9px;
+  background: rgba($brand, 0.15);
+  color: $brand-light !important;
+  font-size: 13px !important;
+}
+.restart {
+  margin-left: auto;
+  background: transparent;
+  color: $text-secondary !important;
+  font-size: 23px !important;
+  padding: 4px;
+}
+.progressCount {
+  color: $brand-light;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  small {
+    color: $text-muted;
+    font-size: 9px;
+  }
+}
+.steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-top: 20px;
+  button {
+    position: relative;
+    background: transparent;
+    text-align: left;
+    padding: 0;
+    > span {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      &::after {
+        content: "";
+        height: 2px;
+        flex: 1;
+        background: #222a3a;
+      }
+    }
+    b {
+      font-size: 8px;
+      font-weight: 500;
+      border: 1px solid #2d374c;
+      border-radius: 50%;
+      height: 22px;
+      width: 22px;
+      display: grid;
+      place-items: center;
+      color: $text-muted;
+    }
+    strong {
+      font-size: 9px;
+      font-weight: 400;
+      color: $text-muted;
+    }
+  }
+  button:last-child > span::after {
+    margin-right: 0;
+  }
+  button[aria-current="step"] {
+    b {
+      background: $brand;
+      border-color: $brand;
+      color: white;
+    }
+    strong {
+      color: #c2ceff;
+    }
+  }
+}
+.coach {
+  padding: 8px 0 0;
+}
+.coachIntro {
+  padding: 0 3px;
+  h2 {
+    font-size: 30px;
+    line-height: 1.12;
+    margin: 11px 0 12px;
+    span {
+      color: $text-secondary;
+    }
+  }
+  > p:last-child {
+    font-size: 10px;
+    color: $text-muted;
+    margin: 0;
+  }
+}
+.roles {
+  display: flex;
+  gap: 6px;
+  margin: 22px 0 25px;
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    flex: 1;
+    border: 1px solid $border;
+    border-radius: 8px;
+    padding: 10px 8px;
+    background: $bg-secondary;
+    font-size: 10px;
+    color: $text-secondary;
+    span {
+      font-size: 11px;
+      color: $text-muted;
+    }
+  }
+  button[aria-pressed="true"] {
+    background: rgba($brand, 0.1);
+    border-color: rgba($brand, 0.4);
+    color: #c6d1ff;
+    span {
+      color: $brand-light;
+    }
+  }
+}
+.stepText {
+  padding: 23px;
+  border: 1px solid rgba($brand, 0.18);
+  border-radius: 13px;
+  background: linear-gradient(135deg, rgba($brand, 0.055), rgba($brand, 0.015));
+  h3 {
+    font-size: 29px;
+    margin: 13px 0 15px;
+  }
+  p {
+    font-size: 11px;
+    color: $text-secondary;
+    line-height: 1.9;
+    margin: 0;
+  }
+}
+.action {
+  display: flex;
+  gap: 9px;
+  margin-top: 21px;
+  padding-top: 17px;
+  border-top: 1px solid $border;
+  font-size: 10px;
+  line-height: 1.8;
+  color: #b2bddd;
+  span {
+    color: $brand-light;
+  }
+}
+.roleNote {
+  padding: 25px 7px 23px;
+  border-bottom: 1px solid $border;
+  h3 {
+    font-size: 22px;
+    margin: 11px 0;
+  }
+  p {
+    color: $text-secondary;
+    font-size: 11px;
+    line-height: 1.9;
+    margin: 0;
+  }
+}
+.tryButton {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-top: 22px;
+  padding: 13px 17px;
+  background: #253352;
+  border: 1px solid #3c4d78;
+  border-radius: 9px;
+  font-size: 11px !important;
+  color: #d9e2ff !important;
+  &:hover {
+    background: #304267;
+  }
+}
+.scope {
+  display: flex;
+  gap: 10px;
+  margin: 20px 6px 0;
+  color: $text-muted;
+  > span {
+    border: 1px solid #374155;
+    border-radius: 50%;
+    height: 15px;
+    width: 15px;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    font-size: 9px;
+  }
+  p {
+    font-size: 9px;
+    margin: 0;
+    line-height: 1.8;
+  }
+}
+.feedback {
+  border: 1px solid $border;
+  border-radius: 12px;
+  margin-top: 16px;
+  padding: 18px;
+  strong {
+    font-size: 12px;
+  }
+  p {
+    font-size: 10px;
+    color: $text-secondary;
+    margin: 8px 0 0;
+  }
+}
+.success {
+  border-color: rgba($success, 0.3);
+  background: rgba($success, 0.04);
+  strong {
+    color: $success;
+  }
+}
+.error {
+  border-color: rgba($danger, 0.3);
+  background: rgba($danger, 0.04);
+  strong {
+    color: #e6a0ac;
+  }
+}
+.practiceFooter {
+  padding: 20px 22px;
+  > strong {
+    font-size: 13px;
+  }
+  > div {
+    display: grid;
+    gap: 8px;
+    margin: 13px 0;
+  }
+  button {
+    text-align: left;
+    background: $bg-elevated;
+    border: 1px solid $border;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 11px;
+  }
+  > button {
+    background: transparent;
+    color: $brand-light;
+    border: 0;
+    padding-left: 0;
+  }
+}
+.footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
+  margin-top: 26px;
+  padding-top: 22px;
+  border-top: 1px solid $border;
+  > div:first-child {
+    max-width: 630px;
+  }
+  p {
+    font-size: 10px;
+    color: $text-muted;
+    line-height: 1.8;
+    margin: 9px 0 0;
+  }
+  > div:last-child {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    flex-shrink: 0;
+  }
+  a {
+    color: $text-secondary;
+    font-size: 10px;
+  }
+  span:not(.eyebrow) {
+    color: $text-muted;
+    font-size: 8px;
+  }
+}
+@media (min-width: 1500px) {
+  .main {
+    max-width: 1400px;
+  }
+  .workspace {
+    grid-template-columns: minmax(0, 1fr) 330px;
+  }
+  .coachIntro h2 {
+    font-size: 34px;
+  }
+}
+@media (max-width: 980px) {
+  .main {
+    padding: 24px;
+  }
+  .workspace {
+    grid-template-columns: minmax(0, 1fr) 270px;
+    gap: 16px;
+  }
+  .dungeon img {
+    width: 52px;
+    height: 52px;
+  }
+  .dungeon strong {
+    font-size: 21px;
+  }
+  .dungeon small {
+    font-size: 9px;
+  }
+  .heading h1 {
+    font-size: 48px;
+  }
+  .sceneCount,
+  .legendRight {
+    display: none !important;
+  }
+  .stepText {
+    padding: 18px;
+  }
+  .stepText h3 {
+    font-size: 26px;
+  }
+  .coachIntro h2 {
+    font-size: 28px;
+  }
+}
+@media (max-width: 760px) {
+  .header {
+    height: 68px;
+    padding: 0 20px;
+  }
+  .brand img {
+    width: 125px;
+  }
+  .labLabel {
+    font-size: 9px;
+  }
+  .labLabel b,
+  .back {
+    display: none;
+  }
+  .main {
+    padding: 22px 16px 30px;
+  }
+  .heading {
+    display: block;
+    margin: 24px 0;
+  }
+  .heading h1 {
+    font-size: 48px;
+  }
+  .dungeon {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid $border;
+    gap: 12px;
+  }
+  .dungeon img {
+    height: 48px;
+    width: 48px;
+  }
+  .workspace {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .coach {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 20px;
+  }
+  .coachIntro,
+  .roles,
+  .stepText,
+  .feedback,
+  .tryButton,
+  .scope {
+    grid-column: 1 / -1;
+  }
+  .roleNote {
+    grid-column: 1 / -1;
+    padding: 24px 4px;
+  }
+  .coachIntro h2 br {
+    display: none;
+  }
+  .coachIntro h2 span {
+    margin-left: 5px;
+  }
+  .roles {
+    margin: 18px 0;
+  }
+  .roles button {
+    min-height: 44px;
+  }
+  .footer {
+    display: block;
+    > div:last-child {
+      text-align: left;
+      margin-top: 18px;
+    }
+  }
+  .boardTop {
+    padding: 15px 16px;
+  }
+  .toolbar {
+    padding: 14px 12px 0;
+  }
+  .viewLabel {
+    display: none;
+  }
+  .arenaTop {
+    top: 15px;
+    left: 14px;
+    right: 14px;
+  }
+  .arenaTop span {
+    font-size: 7px;
+  }
+  .arenaNote {
+    font-size: 8px;
+    bottom: 4px;
+  }
+  .legend {
+    padding: 12px 14px;
+    gap: 10px 14px;
+    font-size: 8px;
+  }
+  .playback {
+    padding: 16px 14px;
+  }
+  .steps strong {
+    font-size: 8px !important;
+  }
+  .segment button {
+    min-height: 40px;
+    padding: 7px 12px;
+  }
+  .playerLabel,
+  .bossLabel,
+  .targetLabel,
+  .dangerLabel {
+    display: none;
+  }
+  .practiceFooter {
+    padding: 18px 14px;
+  }
+  .practiceFooter button {
+    min-height: 44px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .target {
+    transition: none;
+  }
+}
