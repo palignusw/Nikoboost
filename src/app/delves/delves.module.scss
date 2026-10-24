@@ -73,7 +73,7 @@
       rgba($bg-main, 0.65)
     ),
     linear-gradient(0deg, $bg-main, transparent 70%),
-    url("/images/hero/midnight-hero.jpg") center 35% / cover;
+    var(--delve-backdrop) center 35% / cover;
   opacity: 0.7;
 }
 .back {

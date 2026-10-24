@@ -1,4 +1,12 @@
 "use client";
+import {
+  wowSeason,
+  delveSettings,
+  delveFaqs as faqs,
+  delveSpecialists,
+  delveSources,
+  servicePricing,
+} from "@/data/season";
 
 import Link from "next/link";
 import { useState } from "react";
@@ -22,39 +30,13 @@ import styles from "./delves.module.scss";
 const initial: DelveConfig = {
   service: "delves",
   kind: "runs",
-  tier: 8,
-  runs: 4,
+  tier: delveSettings.recommendedTier,
+  runs: delveSettings.defaultRuns,
   region: "EU",
   format: "regular",
   delveId: "any",
   playerClass: "Mage",
 };
-const faqs = [
-  [
-    "Which Tier should I choose?",
-    "Tier 8 is the usual gearing target: the standard Bountiful Coffer and Delve-based World Vault item levels stop increasing there. Tiers 9–11 are for challenge and additional progression. Tier 11 Bountiful Delves also participate in the 12.1.5 Ascendant Venomstone system after the required unlock.",
-  ],
-  [
-    "Do you provide Restored Coffer Keys?",
-    "No. Bring one of your own Restored Coffer Keys for every Bountiful Coffer you want to open. We confirm the active Bountiful locations and your remaining eligibility before arranging the run. A regular clear does not include a Bountiful Coffer.",
-  ],
-  [
-    "Does a bundle guarantee three items from the Vault?",
-    "No. Completing 2, 4 or 8 qualifying World activities unlocks up to 1, 2 or 3 choices. You select one item from your entire Great Vault after the weekly reset. Your existing World progress may mean you need fewer runs.",
-  ],
-  [
-    "Will you log into my account?",
-    "No. Every fixed-price Delve run is self-play. You stay on your own character, join our group and follow the objectives. No password, account sharing or account registration is needed.",
-  ],
-  [
-    "Can I order a solo Nemesis achievement?",
-    "A grouped clear does not award solo-only achievements. Nemesis and Labyrinth requests are manual enquiries: tell us your exact goal, and we confirm what can be delivered through self-play and the gold price before any payment.",
-  ],
-  [
-    "What happens after I reserve?",
-    "Your request goes to the NikoBoost team. We contact you through BattleTag or Discord to confirm the route, tier access, availability, timing and in-game gold payment. Submitting the form does not take payment or guarantee an instant start.",
-  ],
-];
 
 export default function Delves() {
   const [config, setConfig] = useState<DelveConfig>(initial);
@@ -71,11 +53,12 @@ export default function Delves() {
       `${d.name} ${d.zone}`.toLowerCase().includes(search.toLowerCase().trim()),
   );
   const title =
-    config.kind === "nemesis"
-      ? "Azta’rec / Venomfall Deeps"
-      : config.kind === "labyrinth"
-        ? "Labyrinth of Kindo’jan"
-        : `Tier ${config.tier} · ${config.runs} ${config.runs === 1 ? "run" : "runs"}`;
+    delveSpecialists.find((entry) => entry.kind === config.kind)?.orderTitle ??
+    `Tier ${config.tier} · ${config.runs} ${config.runs === 1 ? "run" : "runs"}`;
+  const maxTier = Math.max(...Object.keys(delvePrices).map(Number));
+  const recommendedReward = delveRewards[delveSettings.recommendedTier];
+  const surchargePercent = servicePricing.delves.specific * 100;
+
   const patch = (value: Partial<DelveConfig>) => {
     setConfig((c) => ({ ...c, ...value }));
   };
@@ -97,7 +80,15 @@ export default function Delves() {
   return (
     <main className={styles.page}>
       <header className={styles.hero}>
-        <div className={styles.heroArt} aria-hidden="true" />
+        <div
+          className={styles.heroArt}
+          style={
+            {
+              "--delve-backdrop": `url("${delveSettings.heroBackdrop}")`,
+            } as import("react").CSSProperties
+          }
+          aria-hidden="true"
+        />
         <div className={styles.wrap}>
           <Link href="/" className={styles.back}>
             NikoBoost / World of Warcraft / Delves
@@ -105,7 +96,7 @@ export default function Delves() {
           <div className={styles.heroGrid}>
             <div>
               <span className={styles.eyebrow}>
-                {DELVES_SEASON} · PATCH 12.1.5
+                {DELVES_SEASON} · PATCH {wowSeason.patch}
               </span>
               <h1>
                 Your next Delve.
@@ -114,7 +105,8 @@ export default function Delves() {
               </h1>
               <p>
                 Delves, on your terms. Pick your Tier, build a weekly bundle,
-                and explore Midnight with an experienced player by your side.
+                and explore {wowSeason.expansion} with an experienced player by
+                your side.
               </p>
               <a href="#delve-builder" className={styles.primary}>
                 Build your expedition <span>↗</span>
@@ -127,14 +119,14 @@ export default function Delves() {
             </div>
             <figure className={styles.heroVisual}>
               <Image
-                src={delveArt["midnight-delves"].src}
-                alt={delveArt["midnight-delves"].alt}
+                src={delveArt[delveSettings.heroArt].src}
+                alt={delveArt[delveSettings.heroArt].alt}
                 fill
                 sizes="(max-width: 800px) 100vw, 55vw"
                 priority
               />
               <figcaption>
-                <span>MIDNIGHT DELVES</span>
+                <span>{wowSeason.expansion.toUpperCase()} DELVES</span>
                 <strong>
                   Into the unknown.
                   <br />
@@ -219,7 +211,10 @@ export default function Delves() {
                     <span>02</span>
                     <div>
                       <h3>Choose your challenge</h3>
-                      <p>Tier 8 reaches the standard weekly gearing ceiling.</p>
+                      <p>
+                        Tier {delveSettings.recommendedTier} reaches the
+                        standard weekly gearing ceiling.
+                      </p>
                     </div>
                   </div>
                   <DelveSelect
@@ -228,19 +223,20 @@ export default function Delves() {
                     onChange={(v) => patch({ tier: Number(v) })}
                     options={Object.keys(delvePrices).map((t) => ({
                       value: t,
-                      label: `Tier ${t}${t === "8" ? " · Recommended for gear" : ""}`,
+                      label: `Tier ${t}${Number(t) === delveSettings.recommendedTier ? " · Recommended for gear" : ""}`,
                       detail: `${gold(delvePrices[Number(t)])} gold per run`,
                     }))}
                   />
-                  {config.tier > 8 && (
+                  {config.tier > delveSettings.recommendedTier && (
                     <p className={styles.note}>
                       Tier {config.tier} adds challenge and progression; it does
-                      not raise the standard 305 iLvl Delve-based Vault reward.
+                      not raise the standard {recommendedReward.vault} iLvl
+                      Delve-based Vault reward.
                     </p>
                   )}
                   <span className={styles.fieldLabel}>Number of runs</span>
                   <div className={styles.bundles}>
-                    {[1, 2, 4, 8].map((n) => (
+                    {delveSettings.bundles.map((n) => (
                       <button
                         type="button"
                         key={n}
@@ -249,15 +245,22 @@ export default function Delves() {
                       >
                         <strong>{n}</strong>
                         <span>
-                          {n === 1
+                          {delveSettings.vaultThresholds.filter(
+                            (threshold) => n >= threshold,
+                          ).length === 0
                             ? "Single run"
-                            : n === 2
-                              ? "1 Vault choice"
-                              : n === 4
-                                ? "2 Vault choices"
-                                : "3 Vault choices"}
+                            : `${delveSettings.vaultThresholds.filter((threshold) => n >= threshold).length} Vault ${delveSettings.vaultThresholds.filter((threshold) => n >= threshold).length === 1 ? "choice" : "choices"}`}
                         </span>
-                        {n >= 4 && <small>Save {n === 4 ? 5 : 10}%</small>}
+                        {(servicePricing.delves.bundles.find((b) => n >= b.runs)
+                          ?.saving ?? 0) > 0 && (
+                          <small>
+                            Save{" "}
+                            {(servicePricing.delves.bundles.find(
+                              (b) => n >= b.runs,
+                            )?.saving ?? 0) * 100}
+                            %
+                          </small>
+                        )}
                       </button>
                     ))}
                   </div>
@@ -267,11 +270,15 @@ export default function Delves() {
                       aria-label="Custom run count"
                       type="number"
                       min={1}
-                      max={20}
+                      max={delveSettings.maxRuns}
                       value={config.runs}
                       onChange={(e) => {
                         const n = Number(e.target.value);
-                        if (Number.isInteger(n) && n >= 1 && n <= 20)
+                        if (
+                          Number.isInteger(n) &&
+                          n >= 1 &&
+                          n <= delveSettings.maxRuns
+                        )
                           patch({ runs: n });
                       }}
                     />
@@ -286,7 +293,7 @@ export default function Delves() {
                       <h3>Your route, your character</h3>
                       <p>
                         Any route keeps the lowest price. A specific Delve adds
-                        5%.
+                        {surchargePercent}%.
                       </p>
                     </div>
                   </div>
@@ -306,7 +313,7 @@ export default function Delves() {
                       ...delveLocations.map((d) => ({
                         value: d.id,
                         label: d.name,
-                        detail: `${d.zone} · +5%`,
+                        detail: `${d.zone} · +${surchargePercent}%`,
                       })),
                     ]}
                   />
@@ -379,7 +386,10 @@ export default function Delves() {
                       <strong>
                         {config.format === "bountiful"
                           ? reward.coffer
-                          : Math.min(reward.coffer, 272)}{" "}
+                          : Math.min(
+                              reward.coffer,
+                              delveSettings.regularLootCap,
+                            )}{" "}
                         <small>iLvl</small>
                       </strong>
                     </div>
@@ -414,7 +424,7 @@ export default function Delves() {
                     </div>
                     {price.specific > 0 && (
                       <div>
-                        <span>Specific Delve · 5%</span>
+                        <span>Specific Delve · {surchargePercent}%</span>
                         <b>+{gold(price.specific)} g</b>
                       </div>
                     )}
@@ -460,8 +470,9 @@ export default function Delves() {
             <span className={styles.eyebrow}>CHOOSE YOUR DESTINATION</span>
             <h2 id="locations-heading">A whole world beneath the surface.</h2>
             <p>
-              12 regular Midnight Delves, plus separate Nemesis and Labyrinth
-              adventures. Bountiful status is checked in-game, not guessed here.
+              {delveLocations.length} regular {wowSeason.expansion} Delves, plus
+              separate Nemesis and Labyrinth adventures. Bountiful status is
+              checked in-game, not guessed here.
             </p>
           </div>
           <div
@@ -523,7 +534,8 @@ export default function Delves() {
           <div className={styles.directoryHeading}>
             <h3>Have a destination in mind?</h3>
             <p>
-              Browse all 12 Delves. A named route adds 5% before bundle savings.
+              Browse all {delveLocations.length} Delves. A named route adds{" "}
+              {surchargePercent}% before bundle savings.
             </p>
           </div>
           <div className={styles.filters}>
@@ -556,7 +568,7 @@ export default function Delves() {
                   <span className={styles.routeLabel}>
                     <span>
                       {d.zone}
-                      {"fresh" in d ? " · Season 2" : ""}
+                      {"fresh" in d ? ` · Season ${wowSeason.number}` : ""}
                     </span>
                     <strong>{d.name}</strong>
                     <small>{d.theme}</small>
@@ -615,59 +627,29 @@ export default function Delves() {
             <p>These adventures need a separate scope and gold quote.</p>
           </div>
           <div className={styles.specialGrid}>
-            <article>
-              <div className={styles.specialArt}>
-                <Image
-                  src={delveArt["venomfall-deeps"].src}
-                  alt={delveArt["venomfall-deeps"].alt}
-                  fill
-                  sizes="(max-width: 600px) 100vw, 50vw"
-                />
-              </div>
-              <span className={styles.eyebrow}>SEASON 2 NEMESIS</span>
-              <h3>Venomfall Deeps</h3>
-              <p>
-                Face Azta’rec on the Coiled Isle. A dedicated encounter with its
-                own objectives. Grouped completion does not grant solo-only
-                rewards.
-              </p>
-              <button
-                type="button"
-                className={styles.secondary}
-                onClick={() => chooseSpecial("nemesis")}
-              >
-                Discuss a Nemesis run ↗
-              </button>
-            </article>
-            <article>
-              <div className={styles.specialArt}>
-                <Image
-                  src={delveArt["labyrinth"].src}
-                  alt={delveArt["labyrinth"].alt}
-                  fill
-                  sizes="(max-width: 600px) 100vw, 50vw"
-                />
-              </div>
-              <span className={styles.eyebrow}>NEW IN PATCH 12.1.5</span>
-              <h3>Labyrinth of Kindo’jan</h3>
-              <p>
-                A nine-chamber expedition in Zul’Aman. Request a wing or a
-                longer adventure; scope and gold price are confirmed
-                individually.
-              </p>
-              <button
-                type="button"
-                className={styles.secondary}
-                onClick={() => chooseSpecial("labyrinth")}
-              >
-                Plan a Labyrinth adventure ↗
-              </button>
-            </article>
+            {delveSpecialists.map((entry) => (
+              <article key={entry.kind}>
+                <div className={styles.specialArt}>
+                  <Image
+                    src={delveArt[entry.art].src}
+                    alt={delveArt[entry.art].alt}
+                    fill
+                    sizes="(max-width: 600px) 100vw, 50vw"
+                  />
+                </div>
+                <span className={styles.eyebrow}>{entry.badge}</span>
+                <h3>{entry.title}</h3>
+                <p>{entry.description}</p>
+                <button
+                  type="button"
+                  className={styles.secondary}
+                  onClick={() => chooseSpecial(entry.kind)}
+                >
+                  {entry.action}
+                </button>
+              </article>
+            ))}
           </div>
-          <p className={styles.note}>
-            Looking for Torment’s Rise / Nullaeus? That is the previous season’s
-            Nemesis, not the current Season 2 target.
-          </p>
         </section>
 
         <section
@@ -687,19 +669,21 @@ export default function Delves() {
             <article>
               <span>01 / AFTER THE RUN</span>
               <h3>Bountiful Coffer</h3>
-              <strong>Up to 295 iLvl</strong>
+              <strong>Up to {recommendedReward.coffer} iLvl</strong>
               <p>
-                Standard Tier 8+ Coffer reference. Requires an active Bountiful
-                Delve, remaining eligibility and your own Restored Coffer Key.
-                Regular loot stops scaling after Tier 3.
+                Standard Tier {delveSettings.recommendedTier}+ Coffer reference.
+                Requires an active Bountiful Delve, remaining eligibility and
+                your own Restored Coffer Key. Regular end loot is capped at{" "}
+                {delveSettings.regularLootCap} iLvl.
               </p>
             </article>
             <article>
               <span>02 / AFTER THE RESET</span>
               <h3>Your World Vault</h3>
-              <strong>Up to 305 iLvl</strong>
+              <strong>Up to {recommendedReward.vault} iLvl</strong>
               <p>
-                Delve-based reference at Tier 8+. 2 / 4 / 8 qualifying
+                Delve-based reference at Tier {delveSettings.recommendedTier}+.{" "}
+                {delveSettings.vaultThresholds.join(" / ")} qualifying
                 activities unlock up to three choices. Your existing World
                 activities count too. Pick one item from the entire Vault.
               </p>
@@ -707,12 +691,10 @@ export default function Delves() {
             <article>
               <span>03 / BEYOND GEARING</span>
               <h3>A greater challenge</h3>
-              <strong>Tier 9–11</strong>
-              <p>
-                Choose higher tiers for progression and challenge. Tier 11
-                Bountiful Delves can award Ascendant Venomstones after the
-                12.1.5 quest unlock. Bonus rewards depend on your progression.
-              </p>
+              <strong>
+                Tier {delveSettings.recommendedTier + 1}–{maxTier}
+              </strong>
+              <p>{delveSettings.challengeNote}</p>
             </article>
           </div>
           <details className={styles.details}>
@@ -738,7 +720,9 @@ export default function Delves() {
                     <tr key={t}>
                       <th>
                         Tier {t}
-                        {t === "8" ? " · Recommended" : ""}
+                        {Number(t) === delveSettings.recommendedTier
+                          ? " · Recommended"
+                          : ""}
                       </th>
                       <td>{r.coffer} iLvl</td>
                       <td>{r.vault ? `${r.vault} iLvl` : "Verify in-game"}</td>
@@ -792,39 +776,21 @@ export default function Delves() {
               follow Blizzard’s location captions.
             </p>
             <p>
-              Checked 23 October 2026 · Midnight Season 2 / 12.1.5. Prices are
-              NikoBoost’s own gold tariffs, identical for EU and NA. They are
-              not a claimed market average. Daily Bountiful status is confirmed
-              in-game.
+              Checked {wowSeason.checked} · {wowSeason.name} / {wowSeason.patch}
+              . Prices are NikoBoost’s own gold tariffs, identical for EU and
+              NA. They are not a claimed market average. Daily Bountiful status
+              is confirmed in-game.
             </p>
-            <a
-              href="https://news.blizzard.com/en-gb/article/24244644/unleash-your-skills-in-midnight-s-new-delves"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Blizzard: original Midnight locations ↗
-            </a>
-            <a
-              href="https://news.blizzard.com/en-gb/article/24294370/curse-of-ulatek-now-live-journey-to-the-coiled-isle"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Blizzard: Season 2 additions ↗
-            </a>
-            <a
-              href="https://news.blizzard.com/en-us/article/24304162/12-1-5-content-update-notes"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Blizzard: Labyrinth & 12.1.5 rewards ↗
-            </a>
-            <a
-              href="https://www.icy-veins.com/wow/delves-guide"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Delve reward reference ↗
-            </a>
+            {delveSources.map((source) => (
+              <a
+                key={source.href}
+                href={source.href}
+                target="_blank"
+                rel="noreferrer"
+              >
+                {source.label} ↗
+              </a>
+            ))}
           </div>
         </details>
         <footer className={styles.footer}>

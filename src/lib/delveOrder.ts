@@ -1,3 +1,4 @@
+import { delvePrices, delveSettings, delveSpecialists } from "@/data/season";
 import { createHash, randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { classArmor } from "@/data/mythicPlus";
@@ -48,11 +49,10 @@ export async function submitDelveOrder(
     return error("Invalid character class.");
   if (
     !Number.isInteger(tier) ||
-    Number(tier) < 1 ||
-    Number(tier) > 11 ||
+    !Object.hasOwn(delvePrices, String(tier)) ||
     !Number.isInteger(runs) ||
     Number(runs) < 1 ||
-    Number(runs) > 20
+    Number(runs) > delveSettings.maxRuns
   )
     return error("Invalid tier or run count.");
   if (format !== "regular" && format !== "bountiful")
@@ -89,12 +89,11 @@ export async function submitDelveOrder(
   };
   const price = quote ? null : delvePrice(config);
   const total = price?.total ?? null;
-  const serviceName =
-    kind === "nemesis"
-      ? "Azta’rec / Venomfall Deeps enquiry"
-      : kind === "labyrinth"
-        ? "Labyrinth of Kindo’jan enquiry"
-        : `Tier ${tier} Delves × ${runs}`;
+  const specialist = delveSpecialists.find((entry) => entry.kind === kind);
+  const serviceName = specialist
+    ? `${specialist.orderTitle} enquiry`
+    : `Tier ${tier} Delves × ${runs}`;
+
   const normalized = {
     ...config,
     cofferKeys: !quote && format === "bountiful" ? order.cofferKeys : 0,

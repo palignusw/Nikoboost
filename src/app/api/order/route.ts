@@ -1,3 +1,4 @@
+import { mythicSettings } from "@/data/season";
 import { submitDelveOrder } from "@/lib/delveOrder";
 
 import { createHash, randomUUID } from "node:crypto";
@@ -589,21 +590,20 @@ export async function POST(request: Request) {
     const runs = order.runs;
 
     if (
-      !isInteger(
-        keyLevel,
-        2,
-        isCrestFarming ? 12 : 20
-      )
+      typeof keyLevel !== "number" ||
+      !Number.isInteger(keyLevel) ||
+      !Object.hasOwn(basePrices, keyLevel) ||
+      (isCrestFarming && keyLevel > mythicSettings.crestMaxKey)
     ) {
       return jsonError(
         isCrestFarming
-          ? "Crest Farming supports keys +2 to +12."
+          ? `Crest Farming supports keys up to +${mythicSettings.crestMaxKey}.`
           : "Invalid key level.",
         400
       );
     }
 
-    if (!isInteger(runs, 1, 50)) {
+    if (!isInteger(runs, 1, mythicSettings.maxRuns)) {
       return jsonError("Invalid run count.", 400);
     }
 

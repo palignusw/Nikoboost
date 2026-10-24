@@ -1,4 +1,5 @@
 "use client";
+import { delveSpecialists, delveSettings } from "@/data/season";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import Image from "next/image";
@@ -40,20 +41,14 @@ export default function DelveReservation({
   const [keys, setKeys] = useState(config.runs);
   const quote = config.kind !== "runs";
   const price = delvePrice(config);
-  const title =
-    config.kind === "nemesis"
-      ? "Azta’rec / Venomfall Deeps"
-      : config.kind === "labyrinth"
-        ? "Labyrinth of Kindo’jan"
-        : `Delves · Tier ${config.tier}`;
+  const specialist = delveSpecialists.find(
+    (entry) => entry.kind === config.kind,
+  );
+  const title = specialist?.orderTitle ?? `Delves · Tier ${config.tier}`;
   const art =
-    delveArt[
-      config.kind === "nemesis"
-        ? "venomfall-deeps"
-        : config.kind === "labyrinth"
-          ? "labyrinth"
-          : config.delveId
-    ] ?? delveArt["midnight-delves"];
+    delveArt[specialist?.art ?? config.delveId] ??
+    delveArt[delveSettings.heroArt];
+
   useEffect(() => {
     const el = dialog.current;
     if (!el) return;
