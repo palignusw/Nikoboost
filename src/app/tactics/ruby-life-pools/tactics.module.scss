@@ -883,3 +883,19 @@
     transition: none;
   }
 }
+
+@media (max-width: 760px) {
+  .arena {
+    overflow: hidden;
+  }
+  .arena svg {
+    width: 140%;
+    margin-left: -20%;
+    max-width: none;
+  }
+  .destinations {
+    width: 140%;
+    left: -20%;
+    right: auto;
+  }
+}

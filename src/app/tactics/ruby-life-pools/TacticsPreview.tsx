@@ -264,7 +264,11 @@ export default function TacticsPreview() {
                     stroke="#171a27"
                     strokeWidth="3"
                   />
-                  <text y="69" textAnchor="middle" className={styles.bossLabel}>
+                  <text
+                    y="-63"
+                    textAnchor="middle"
+                    className={styles.bossLabel}
+                  >
                     MELIDRUSSA
                   </text>
                 </g>
