@@ -1,24 +1,12 @@
-
 import type { MetadataRoute } from "next";
+import { serviceContent } from "@/data/season";
+import { pageUrl, type SeoPage } from "@/lib/pageSeo";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = (
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    "https://www.nikoboost.online"
-  ).replace(/\/$/, "");
-
-  return [
-    { url: `${baseUrl}/delves`, changeFrequency: "weekly", priority: 0.9 },
-    {
-      url: `${baseUrl}/mythic-plus-rewards`,
-      changeFrequency: "weekly",
-      priority: 0.8,
-    },
-    {
-      url: baseUrl,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 1,
-    },
-  ];
+  return (["home", "delves", "rewards"] as SeoPage[]).map((page) => ({
+    url: pageUrl(page),
+    lastModified: new Date(serviceContent[page].updatedAt),
+    changeFrequency: "weekly",
+    priority: page === "home" ? 1 : page === "delves" ? 0.9 : 0.8,
+  }));
 }

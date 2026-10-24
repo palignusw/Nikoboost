@@ -473,3 +473,60 @@ export const mythicExample = {
   notice:
     "Example loaded: one +10, one +8 and two +6 keys. Try adding three +10s to improve your second choice.",
 };
+
+// ─── ТЕКСТЫ СТРАНИЦ И SEO ─────────────────────────────────────
+// updatedAt меняйте при содержательном обновлении страницы, а не при каждом deploy.
+export const serviceContent = {
+  home: {
+    path: "/",
+    label: "Mythic+ Boost",
+    heading: "WoW Mythic+",
+    accent: "Boost for Gold",
+    seoTitle: "WoW Mythic+ Boost for Gold | EU & NA",
+    metaDescription:
+      "Configure a self-play WoW Mythic+ boost for in-game gold. Choose keys, dungeons and loot traders in EU or NA. Confirm your run before payment.",
+    lead: "Build a self-play Mythic+ run for in-game gold. Choose your key level, dungeon runs and loot traders for EU or NA, then reserve a time with the team.",
+    image: "/images/hero/midnight-hero.jpg",
+    video: "/videos/midnight-hero.mp4",
+    updatedAt: "2026-10-24",
+    overview: {
+      heading: "Your Mythic+ run, from quote to group.",
+      intro:
+        "NikoBoost coordinates World of Warcraft dungeon runs for players who want help with their next key. The configurator lets you review the setup and gold price before leaving your contact details.",
+      cards: [
+        {
+          title: "Choose the run that fits your goal",
+          text: "Select your key level and run count, leave the dungeon flexible or allocate specific routes, and choose matching-armor loot traders where available. Compare dungeon loot and Great Vault rewards in the free planner before deciding which keys to run.",
+        },
+        {
+          title: "Know what happens after booking",
+          text: "You stay on your own character. After your request reaches the team, we contact you through Discord or BattleTag to confirm the group, schedule and in-game gold payment. Save the order reference or download the PDF confirmation. A reservation does not take payment or guarantee an instant start, timed completion or a particular item.",
+        },
+      ],
+    },
+  },
+  delves: {
+    path: "/delves",
+    label: "Delves Boost",
+    heading: "WoW Delves",
+    accent: "Boost for Gold",
+    seoTitle: `WoW Delves Boost for Gold | ${wowSeason.name}`,
+    metaDescription:
+      "Book self-play WoW Delves runs for gold in EU or NA. Choose regular or Bountiful Delves, compare Tier rewards and arrange a weekly bundle.",
+    lead: "Reserve self-play Delves runs for in-game gold in EU or NA. Choose your Tier, regular or Bountiful format and destination; review the gold total before sending your request.",
+    image: delveSettings.heroBackdrop,
+    updatedAt: "2026-10-24",
+  },
+  rewards: {
+    path: "/mythic-plus-rewards",
+    label: "Mythic+ Rewards Calculator",
+    heading: "Mythic+ Rewards",
+    accent: "Calculator",
+    seoTitle: "Mythic+ Rewards Calculator & Great Vault Planner",
+    metaDescription:
+      "Use the free Mythic+ rewards calculator to compare dungeon loot, plan Great Vault choices and estimate Crest runs. Save and share your weekly plan.",
+    lead: "Compare Mythic+ dungeon loot, calculate your Great Vault choices and estimate the runs for your Crest goal.",
+    image: "/images/hero/midnight-hero.jpg",
+    updatedAt: "2026-10-24",
+  },
+} as const;
