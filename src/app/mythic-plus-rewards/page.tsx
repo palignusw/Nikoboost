@@ -1,1329 +1,1018 @@
-
 "use client";
 
+import { useEffect, useState, useSyncExternalStore } from "react";
+import Link from "next/link";
 import {
   mythicRewards as rewards,
-  vaultThresholds as VAULT_THRESHOLDS,
   getMythicReward,
+  vaultThresholds,
+  wowSeason,
   type CrestType,
-  type MythicReward as Reward,
 } from "@/data/wowSeason";
-
-import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import {
+  decodePlan,
+  encodePlan,
+  restoreWeek,
+  vaultFor,
+  WEEK_STORAGE_KEY,
+  MAX_PLANNER_RUNS,
+  type PlannerWeek,
+} from "@/lib/rewardsPlanner";
+import WeeklyGoal from "./components/WeeklyGoal";
+import RewardSelect from "./components/RewardSelect";
 import styles from "./page.module.scss";
 
-
-
-
+type View = "vault" | "compare" | "crests";
 const subscribeHydration = () => () => {};
-
-const STORAGE_KEY = "nikoboost:mythic-plus:vault-planner:v1";
-
+const emptyWeek = (): PlannerWeek => ({ completed: [], planned: [] });
+const keyOptions = rewards.map((row) => ({
+  value: row.level,
+  label: `+${row.level} Keystone`,
+  detail: `${row.dungeon} loot · ${row.vault} Vault`,
+}));
 const crestTypes: CrestType[] = ["Champion", "Hero", "Myth"];
-function rewardFor(level: number): Reward {
-  const reward = getMythicReward(level);
+const rowFor = (key: number) => getMythicReward(key)!;
 
-  if (!reward) {
-    throw new Error(`Unsupported Mythic+ level: ${level}`);
-  }
-
-  return reward;
-}
-
-function readSavedRuns(): number[] {
+function readSavedWeek(): PlannerWeek {
   try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (!saved) return [];
-
-    const parsed: unknown = JSON.parse(saved);
-
+    const saved: unknown = JSON.parse(
+      localStorage.getItem(WEEK_STORAGE_KEY) ?? "null",
+    );
     if (
-      typeof parsed !== "object" ||
-      parsed === null ||
-      !("runs" in parsed) ||
-      !Array.isArray(parsed.runs)
+      saved &&
+      typeof saved === "object" &&
+      "season" in saved &&
+      saved.season !== wowSeason.id
+    )
+      return emptyWeek();
+    const restored = restoreWeek(saved);
+    if (restored) return restored;
+    // Old saves were simulations, so migrate them as planned, never completed.
+    const legacy: unknown = JSON.parse(
+      localStorage.getItem("nikoboost:mythic-plus:vault-planner:v1") ?? "null",
+    );
+    if (
+      legacy &&
+      typeof legacy === "object" &&
+      "runs" in legacy &&
+      Array.isArray(legacy.runs)
     ) {
-      return [];
+      return (
+        restoreWeek({ completed: [], planned: legacy.runs }) ?? emptyWeek()
+      );
     }
-
-    return parsed.runs.filter(
-      (run): run is number =>
-        typeof run === "number" &&
-        Number.isInteger(run) &&
-        run >= 2 &&
-        run <= 20
-    ).slice(0, 200);
   } catch {
-    return [];
+    /* Storage is optional. */
   }
+  return emptyWeek();
 }
-
-function getComparison(level: number) {
-  const current = rewardFor(level);
-  const previous = rewardFor(Math.max(2, level - 1));
-
-  const nextDungeon = rewards.find(
-    (reward) =>
-      reward.level > level &&
-      reward.dungeon > current.dungeon
-  );
-
-  const nextVault = rewards.find(
-    (reward) =>
-      reward.level > level &&
-      reward.vault > current.vault
-  );
-
-  const nextCrest = rewards.find(
-    (reward) =>
-      reward.level > level &&
-      (
-        reward.crest !== current.crest ||
-        reward.crestAmount > current.crestAmount
-      )
-  );
-
-  return {
-    previous,
-    dungeonDifference: current.dungeon - previous.dungeon,
-    vaultDifference: current.vault - previous.vault,
-    crestDifference:
-      current.crest === previous.crest
-        ? current.crestAmount - previous.crestAmount
-        : null,
-    nextDungeon,
-    nextVault,
-    nextCrest,
-  };
-}
-
-function getNextRunAdvice(runs: number[], selectedLevel: number) {
-  const sorted = [...runs].sort((a, b) => b - a);
-  const maxVault = Math.max(...rewards.map((reward) => reward.vault));
-
-  const slots = VAULT_THRESHOLDS.map((required) => {
-    const key = sorted[required - 1];
-    return key === undefined ? null : rewardFor(key);
-  });
-
-  const targetIndex = slots.findIndex(
-    (slot) => slot === null || slot.vault < maxVault
-  );
-
-  if (targetIndex === -1) {
-    return {
-      complete: true as const,
-      maxVault,
-      totalRuns: runs.length,
-    };
-  }
-
-  const current = slots[targetIndex];
-  const previousSlot =
-    targetIndex > 0 ? slots[targetIndex - 1] : null;
-
-  let targetVault: number;
-
-  if (current) {
-    targetVault =
-      rewards.find((reward) => reward.vault > current.vault)?.vault ??
-      maxVault;
-  } else if (previousSlot) {
-    targetVault = previousSlot.vault;
-  } else {
-    targetVault = rewardFor(selectedLevel).vault;
-  }
-
-  const recommended = rewards.find(
-    (reward) => reward.vault >= targetVault
-  )!;
-
-  const requiredRuns = VAULT_THRESHOLDS[targetIndex];
-
-  const qualifyingRuns = runs.filter(
-    (key) => rewardFor(key).vault >= targetVault
-  ).length;
-
-  return {
-    complete: false as const,
-    key: recommended.level,
-    targetSlot: targetIndex + 1,
-    targetVault,
-    currentVault: current?.vault ?? null,
-    runsNeeded: Math.max(0, requiredRuns - qualifyingRuns),
-    isUnlock: current === null,
-    maxVault,
-  };
-}
-
-const faq = [
-  {
-    question: "How many runs unlock all Great Vault slots?",
-    answer:
-      "You need 1, 4 and 8 qualifying dungeon completions to unlock the three dungeon choices. This planner simulates those thresholds.",
-  },
-  {
-    question: "How are Great Vault rewards calculated?",
-    answer:
-      "The first dungeon choice uses your highest qualifying key, the second uses your fourth-highest, and the third uses your eighth-highest.",
-  },
-  {
-    question: "Do higher keys always give better gear?",
-    answer:
-      "No. Gear item levels eventually reach their seasonal cap. Higher keys may still award more Crests or help with other progression goals.",
-  },
-  {
-    question: "What does the Crest Calculator calculate?",
-    answer:
-      "It estimates how many runs you need to reach your selected Crest goal using the listed amount per run. It does not account for failed runs, different completion conditions or other Crest sources.",
-  },
-  {
-    question: "Does this tool connect to my WoW character?",
-    answer:
-      "No. Your runs are entered manually and stored locally in this browser. The planner does not access your Battle.net account.",
-  },
-];
 
 export default function RewardsExplorer() {
+  const [view, setView] = useState<View>("vault");
+  const [week, setWeek] = useState<PlannerWeek>(emptyWeek);
+  const [loaded, setLoaded] = useState(false);
+  const [undo, setUndo] = useState<PlannerWeek | null>(null);
+  const [example, setExample] = useState(false);
+  const [undoExample, setUndoExample] = useState(false);
+  const [shared, setShared] = useState<PlannerWeek | null>(null);
+  const [notice, setNotice] = useState("");
+  const [shareLink, setShareLink] = useState("");
   const [level, setLevel] = useState(10);
-  const [runs, setRuns] = useState<number[]>([]);
-  const [plannerLoaded, setPlannerLoaded] = useState(false);
+  const [quantity, setQuantity] = useState(1);
+  const [compareA, setCompareA] = useState(10);
+  const [compareB, setCompareB] = useState(12);
   const [showTable, setShowTable] = useState(false);
-  const [openFaq, setOpenFaq] = useState<number | null>(0);
-
   const [crestType, setCrestType] = useState<CrestType>("Myth");
   const [crestGoal, setCrestGoal] = useState("120");
   const [currentCrests, setCurrentCrests] = useState("0");
-
-  const goalValue = Number(crestGoal) || 0;
-  const currentValue = Number(currentCrests) || 0;
-  const [calculatorLevel, setCalculatorLevel] = useState(12);
-
-  // Keep the server and first client render identical; restore browser storage
-  // once hydration completes, before the persistence effect can write defaults.
+  const [farmKey, setFarmKey] = useState(12);
+  const [customYield, setCustomYield] = useState("");
   const hydrated = useSyncExternalStore(
     subscribeHydration,
     () => true,
-    () => false
+    () => false,
   );
-  if (hydrated && !plannerLoaded) {
-    setRuns(readSavedRuns());
-    setPlannerLoaded(true);
+  if (hydrated && !loaded) {
+    setWeek(readSavedWeek());
+    const query = new URLSearchParams(window.location.search);
+    if (query.has("plan") || query.has("done")) {
+      const planned = decodePlan(query.get("plan") ?? "");
+      const completed = decodePlan(query.get("done") ?? "");
+      if (
+        planned &&
+        completed &&
+        planned.length + completed.length <= MAX_PLANNER_RUNS
+      )
+        setShared({ planned, completed });
+      else
+        setNotice("This shared link is invalid. Your saved week is unchanged.");
+    }
+    if (window.location.hash === "#crest-calculator") setView("crests");
+    if (
+      ["#reward-explorer", "#reward-reference"].includes(window.location.hash)
+    )
+      setView("compare");
+    if (window.location.hash === "#reward-reference") setShowTable(true);
+    setLoaded(true);
   }
 
   useEffect(() => {
-    if (!plannerLoaded) return;
-
+    if (!loaded || example) return;
     try {
       localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify({
-          runs,
-          savedAt: new Date().toISOString(),
-        })
+        WEEK_STORAGE_KEY,
+        JSON.stringify({ ...week, season: wowSeason.id }),
       );
     } catch {
-      // The planner still works without local storage.
+      /* The tool remains usable without storage. */
     }
-  }, [runs, plannerLoaded]);
+  }, [week, loaded, example]);
 
-  const selected = rewardFor(level);
-  const comparison = getComparison(level);
-  const advice = getNextRunAdvice(runs, level);
-
-  const vault = useMemo(() => {
-    const sorted = [...runs].sort((a, b) => b - a);
-
-    return VAULT_THRESHOLDS.map((required) => {
-      const key = sorted[required - 1];
-      return key === undefined ? null : rewardFor(key);
-    });
-  }, [runs]);
-
-  const crestTotals = useMemo(() => {
-    const totals: Record<CrestType, number> = {
-      Champion: 0,
-      Hero: 0,
-      Myth: 0,
-    };
-
-    runs.forEach((key) => {
-      const reward = rewardFor(key);
-      totals[reward.crest] += reward.crestAmount;
-    });
-
-    return totals;
-  }, [runs]);
-
-  const calculatorOptions = rewards.filter(
-    (reward) => reward.crest === crestType
+  const allRuns = [...week.completed, ...week.planned];
+  const currentVault = vaultFor(week.completed);
+  const plannedVault = vaultFor(allRuns);
+  const candidate = Array<number>(quantity).fill(level);
+  const nextVault = vaultFor([...allRuns, ...candidate]);
+  const changed = nextVault.flatMap((row, index) =>
+    row && (!plannedVault[index] || row.vault > plannedVault[index]!.vault)
+      ? [
+          `choice ${index + 1} ${plannedVault[index] ? "to" : "at"} ${row.vault} iLvl`,
+        ]
+      : [],
   );
+  const selected = rowFor(level);
+  const limitReached = allRuns.length + quantity > MAX_PLANNER_RUNS;
+  const a = rowFor(compareA);
+  const b = rowFor(compareB);
+  const farmOptions = rewards.filter((row) => row.crest === crestType);
+  const farm =
+    farmOptions.find((row) => row.level === farmKey) ?? farmOptions[0];
+  const bounded = (text: string) =>
+    Math.min(100000, Math.max(0, Number(text) || 0));
+  const remaining = Math.max(0, bounded(crestGoal) - bounded(currentCrests));
+  const yieldPerRun =
+    customYield === ""
+      ? farm.crestAmount
+      : Math.min(1000, Math.max(1, Number(customYield) || 1));
+  const farmRuns = Math.ceil(remaining / yieldPerRun);
 
-  const calculatorReward =
-    calculatorOptions.find(
-      (reward) => reward.level === calculatorLevel
-    ) ?? calculatorOptions[0];
-
-  const remainingCrests = Math.max(0, goalValue - currentValue);
-
-  const runsNeeded =
-    remainingCrests === 0
-      ? 0
-      : Math.ceil(remainingCrests / calculatorReward.crestAmount);
-
-  const estimatedTotal =
-    runsNeeded * calculatorReward.crestAmount;
-
-  const bestFarmingReward = calculatorOptions.reduce(
-    (best, current) =>
-      current.crestAmount > best.crestAmount ? current : best
-  );
-  const optimalRunsNeeded =
-    remainingCrests === 0
-      ? 0
-      : Math.ceil(
-        remainingCrests / bestFarmingReward.crestAmount
+  function update(next: PlannerWeek, message = "Your week has been updated.") {
+    setUndo(week);
+    setUndoExample(example);
+    setWeek(next);
+    setNotice(message);
+    setShareLink("");
+  }
+  function addPlanned(keys: number[]) {
+    if (allRuns.length + keys.length > MAX_PLANNER_RUNS) return;
+    update(
+      { ...week, planned: [...week.planned, ...keys] },
+      `${keys.length} ${keys.length === 1 ? "run added" : "runs added"} to your plan. Completed progress is unchanged.`,
+    );
+  }
+  function showWeek() {
+    setView("vault");
+    requestAnimationFrame(() =>
+      document
+        .getElementById("weekly-planner")
+        ?.scrollIntoView({ behavior: "smooth", block: "start" }),
+    );
+  }
+  function closeShared() {
+    setShared(null);
+    const url = new URL(window.location.href);
+    url.searchParams.delete("plan");
+    url.searchParams.delete("done");
+    window.history.replaceState(window.history.state, "", url);
+  }
+  async function shareWeek() {
+    const url = new URL(window.location.pathname, window.location.origin);
+    url.searchParams.set("plan", encodePlan(week.planned));
+    if (week.completed.length)
+      url.searchParams.set("done", encodePlan(week.completed));
+    setShareLink(url.toString());
+    try {
+      await navigator.clipboard.writeText(url.toString());
+      setNotice(
+        "Week link copied. It contains key levels only, no character details.",
       );
-
-  const extraRuns = Math.max(
-    0,
-    runsNeeded - optimalRunsNeeded
-  );
-
-  const firstKeyWithSameGear =
-    rewards.find(
-      (reward) =>
-        reward.dungeon === selected.dungeon &&
-        reward.vault === selected.vault
-    )?.level ?? level;
-
-  const gearImproved =
-    comparison.dungeonDifference > 0 ||
-    comparison.vaultDifference > 0;
-
-  const crestImproved =
-    comparison.crestDifference === null ||
-    comparison.crestDifference > 0;
-
-  function addRun(key: number) {
-    setRuns((previous) =>
-      previous.length >= 200 ? previous : [...previous, key]
-    );
-  }
-
-  function removeRun(index: number) {
-    setRuns((previous) =>
-      previous.filter((_, currentIndex) => currentIndex !== index)
-    );
-  }
-
-  function changeCrestType(type: CrestType) {
-    const available = rewards.filter(
-      (reward) => reward.crest === type
-    );
-
-    const best = available.reduce((currentBest, reward) =>
-      reward.crestAmount > currentBest.crestAmount
-        ? reward
-        : currentBest
-    );
-
-    setCrestType(type);
-    setCalculatorLevel(best.level);
+    } catch {
+      setNotice("Copy your week link below.");
+    }
   }
 
   return (
-    <main className={styles.page}>
+    <main className={`${styles.page} ${styles.rewardsV2}`}>
       <div className={styles.ambient} aria-hidden="true" />
-
       <div className={styles.container}>
-        <div className={styles.breadcrumb}>
-          <span>NIKOBOOST</span>
-          <span className={styles.breadcrumbDivider}>/</span>
-          <span>MYTHIC+ TOOLS</span>
-          <span className={styles.breadcrumbDivider}>/</span>
-          <strong>REWARDS</strong>
-        </div>
-
-        <header className={styles.hero}>
-          <div className={styles.heroCopy}>
-            <div className={styles.kicker}>
-              <span className={styles.statusDot} />
-              MIDNIGHT SEASON 2
-            </div>
-
-            <h1>
-              Mythic+ <span>Rewards</span>
-            </h1>
-
-            <p>
-              Compare dungeon loot, Great Vault rewards and
-              Crests per run. Plan your weekly progression
-              and calculate your Crest farming goals.
-            </p>
+        <header className={styles.newHero}>
+          <div className={styles.kicker}>
+            <span className={styles.statusDot} />
+            {wowSeason.name.toUpperCase()} · FREE PLAYER TOOLS
           </div>
-
-          <div className={styles.heroMeta}>
-            <div className={styles.heroMetaItem}>
-              <span>MAX DUNGEON LOOT</span>
-              <strong>
-                311 <small>iLvl</small>
-              </strong>
-            </div>
-
-            <div className={styles.heroMetaDivider} />
-
-            <div className={styles.heroMetaItem}>
-              <span>MAX VAULT REWARD</span>
-              <strong>
-                318 <small>iLvl</small>
-              </strong>
-            </div>
-          </div>
+          <h1>
+            Mythic+ <span>Rewards</span>
+          </h1>
+          <p>
+            Plan your next Mythic+ run.
+            <br />
+            <strong>See your Vault rewards before you queue.</strong>
+          </p>
+          <span className={styles.heroFootnote}>
+            No login. No booking. Your week stays in this browser.
+          </span>
         </header>
 
-        {/* REWARD EXPLORER */}
-
-        <section
-          className={styles.workspace}
-          aria-labelledby="explorer-heading"
-        >
-          <div className={styles.workspaceHeader}>
-            <div>
-              <span className={styles.overline}>
-                REWARD EXPLORER
+        <nav className={styles.viewTabs} aria-label="Rewards tools">
+          {(
+            [
+              ["vault", "01", "Weekly Vault", "What should I run next?"],
+              ["compare", "02", "Compare rewards", "Is a higher key worth it?"],
+              ["crests", "03", "Crest calculator", "How many runs do I need?"],
+            ] as const
+          ).map(([id, number, title, hint]) => (
+            <button
+              key={id}
+              type="button"
+              aria-pressed={view === id}
+              aria-controls={`tool-${id}`}
+              onClick={() => {
+                setView(id);
+                setNotice("");
+              }}
+            >
+              <span className={styles.tabNumber}>{number}</span>
+              <span>
+                <strong>{title}</strong>
+                <small>{hint}</small>
               </span>
-              <h2 id="explorer-heading">
-                Choose your key level
-              </h2>
+              <b aria-hidden="true">↗</b>
+            </button>
+          ))}
+        </nav>
+        <p className={styles.planStatus} role="status">
+          {notice}
+        </p>
+        {shared && (
+          <section
+            className={styles.sharedBanner}
+            aria-label="Shared plan preview"
+          >
+            <div>
+              <strong>Someone shared their week with you</strong>
+              <p>
+                {shared.completed.length} completed · {shared.planned.length}{" "}
+                planned. Import to explore it. Your current week can be restored
+                with Undo.
+              </p>
             </div>
+            <button
+              type="button"
+              onClick={() => {
+                update(shared, "Shared week imported.");
+                setExample(false);
+                closeShared();
+                setView("vault");
+              }}
+            >
+              Import shared plan
+            </button>
+            <button type="button" onClick={closeShared}>
+              Dismiss
+            </button>
+          </section>
+        )}
 
-            <span className={styles.workspaceHint}>
-              Interactive tool
-            </span>
-          </div>
-
-          <div className={styles.explorerGrid}>
-            <div className={styles.keySection}>
-              <div className={styles.keySectionTop}>
-                <span>KEYSTONE LEVEL</span>
-                <strong>+{level}</strong>
-              </div>
-
-              <div className={styles.keyGrid}>
-                {rewards.map((reward) => (
-                  <button
-                    type="button"
-                    key={reward.level}
-                    aria-pressed={level === reward.level}
-                    className={`${styles.keyButton} ${level === reward.level
-                      ? styles.keyActive
-                      : ""
-                      }`}
-                    onClick={() => setLevel(reward.level)}
-                  >
-                    +{reward.level}
-                  </button>
-                ))}
-              </div>
-
-              <div className={styles.keyTip}>
-                <span className={styles.tipIcon}>i</span>
-                <p>
-                  Higher keys may improve gear or Crest rewards.
-                  Select a level to compare its benefits.
-                </p>
-              </div>
-            </div>
-
-            <div className={styles.previewSection}>
-              <div className={styles.previewTop}>
-                <span>REWARD PREVIEW</span>
-                <span className={styles.previewKey}>
-                  KEY +{level}
-                </span>
-              </div>
-
-              <div className={styles.previewRows}>
-                <div className={styles.previewRow}>
-                  <div className={styles.rewardIdentity}>
-                    <span className={styles.rewardIcon}>◆</span>
-                    <div>
-                      <strong>Dungeon Loot</strong>
-                      <small>{selected.dungeonTrack}</small>
-                    </div>
-                  </div>
-
-                  <div className={styles.rewardValue}>
-                    <strong>{selected.dungeon}</strong>
-                    <span>iLvl</span>
-                  </div>
-                </div>
-
-                <div
-                  className={`${styles.previewRow} ${styles.vaultReward}`}
-                >
-                  <div className={styles.rewardIdentity}>
-                    <span className={styles.vaultIcon}>✦</span>
-                    <div>
-                      <strong>Great Vault</strong>
-                      <small>{selected.vaultTrack}</small>
-                    </div>
-                  </div>
-
-                  <div className={styles.rewardValue}>
-                    <strong>{selected.vault}</strong>
-                    <span>iLvl</span>
-                  </div>
-                </div>
-
-                <div className={styles.crestPreviewRow}>
-                  <div className={styles.rewardIdentity}>
-                    <span className={styles.crestPreviewIcon}>
-                      ✧
-                    </span>
-
-                    <div>
-                      <strong>{selected.crest} Mistcrests</strong>
-                      <small>Estimated per qualifying run</small>
-                    </div>
-                  </div>
-
-                  <div className={styles.rewardValue}>
-                    <strong>{selected.crestAmount}</strong>
-                    <span>Crests / run</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className={styles.previewBottom}>
-                <div>
-                  <span>CREST TIER</span>
-                  <strong>{selected.crest} Mistcrest</strong>
-                </div>
-
-                <button
-                  type="button"
-                  className={styles.addButton}
-                  onClick={() => addRun(level)}
-                  disabled={runs.length >= 200}
-                >
-                  <span>+</span>
-                  Add to Vault Planner
-                </button>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* SMART INSIGHTS */}
-
-        <section
-          className={styles.insightsSection}
-          aria-label="Reward insights"
-        >
-          <div className={styles.insightsHeading}>
-            <span className={styles.overline}>
-              SMART REWARD INSIGHTS
-            </span>
-
-            <h2>Make every run count.</h2>
-
+        <div id="tool-vault" hidden={view !== "vault"}>
+          <div className={styles.workspaceIntro}>
+            <h2>Build your weekly Vault plan.</h2>
             <p>
-              Compare gear and Crest rewards before
-              deciding which key to run next.
+              Add your completed keys, choose a reward goal, then see exactly
+              how many more runs you need. Planned runs count only after you
+              mark them completed.
             </p>
           </div>
-
-          <div className={styles.insightsGrid}>
-            <article className={styles.insightCard}>
-              <div className={styles.insightTop}>
-                <span className={styles.insightIcon}>↗</span>
-                <span className={styles.insightEyebrow}>
-                  KEY LEVEL ANALYSIS
-                </span>
-              </div>
-
-              <h3>Is +{level} worth it?</h3>
-
-              <div className={styles.insightSummary}>
-                <strong>
-                  {level === 2
-                    ? "Starting reward tier"
-                    : gearImproved
-                      ? "Higher gear rewards"
-                      : crestImproved
-                        ? "Better Crest rewards"
-                        : "No listed reward increase"}
-                </strong>
-
-                <p>
-                  {level === 2
-                    ? "Use this key as your baseline."
-                    : gearImproved
-                      ? `Compared with +${level - 1}, at least one gear reward improves.`
-                      : crestImproved
-                        ? `Gear is unchanged from +${level - 1}, but Crest rewards improve.`
-                        : `Gear and Crest rewards are unchanged from +${level - 1}.`}
-                </p>
-              </div>
-
-              <div className={styles.comparisonRows}>
-                <div className={styles.comparisonRow}>
-                  <div>
-                    <span>Dungeon loot</span>
-                    <strong>{selected.dungeon} iLvl</strong>
-                  </div>
-
-                  <span
-                    className={
-                      comparison.dungeonDifference > 0
-                        ? styles.positiveDifference
-                        : styles.neutralDifference
-                    }
-                  >
-                    {comparison.dungeonDifference > 0
-                      ? `+${comparison.dungeonDifference} iLvl`
-                      : "No change"}
-                  </span>
-                </div>
-
-                <div className={styles.comparisonRow}>
-                  <div>
-                    <span>Great Vault</span>
-                    <strong>{selected.vault} iLvl</strong>
-                  </div>
-
-                  <span
-                    className={
-                      comparison.vaultDifference > 0
-                        ? styles.positiveDifference
-                        : styles.neutralDifference
-                    }
-                  >
-                    {comparison.vaultDifference > 0
-                      ? `+${comparison.vaultDifference} iLvl`
-                      : "No change"}
-                  </span>
-                </div>
-
-                <div className={styles.comparisonRow}>
-                  <div>
-                    <span>
-                      {selected.crest} Mistcrests / run
-                    </span>
-                    <strong>{selected.crestAmount}</strong>
-                  </div>
-
-                  <span
-                    className={
-                      crestImproved && level > 2
-                        ? styles.positiveDifference
-                        : styles.neutralDifference
-                    }
-                  >
-                    {level === 2
-                      ? "Base"
-                      : comparison.crestDifference === null
-                        ? "New tier"
-                        : comparison.crestDifference > 0
-                          ? `+${comparison.crestDifference} Crests`
-                          : "No change"}
-                  </span>
-                </div>
-              </div>
-
-              <div className={styles.insightConclusion}>
-                <span className={styles.conclusionLabel}>
-                  NEXT REWARD UPGRADE
-                </span>
-
-                <p>
-                  {comparison.nextDungeon
-                    ? `Dungeon gear: +${comparison.nextDungeon.level}. `
-                    : "Dungeon gear capped. "}
-
-                  {comparison.nextVault
-                    ? `Vault gear: +${comparison.nextVault.level}. `
-                    : "Vault gear capped. "}
-
-                  {comparison.nextCrest
-                    ? `Next Crest increase or tier: +${comparison.nextCrest.level}.`
-                    : "Crest rewards at listed cap."}
-                </p>
-
-                {!gearImproved && level > 2 && (
-                  <p className={styles.gearCapHint}>
-                    +{firstKeyWithSameGear} is the lowest
-                    key with the same listed gear item levels.
-                    Crest rewards may differ.
-                  </p>
-                )}
-              </div>
-            </article>
-
-            <article
-              className={`${styles.insightCard} ${styles.recommendationCard}`}
-            >
-              <div className={styles.insightTop}>
-                <span className={styles.insightIcon}>✦</span>
-                <span className={styles.insightEyebrow}>
-                  YOUR NEXT MOVE
-                </span>
-              </div>
-
-              <h3>What should I run next?</h3>
-
-              <p className={styles.insightDescription}>
-                Based on {runs.length} planned{" "}
-                {runs.length === 1 ? "run" : "runs"}.
-              </p>
-
-              {advice.complete ? (
-                <div className={styles.recommendationResult}>
-                  <span className={styles.recommendationLabel}>
-                    ALL PLANNED VAULT SLOTS MAXED
-                  </span>
-
-                  <strong>3 / 3</strong>
-
-                  <p>
-                    All three simulated dungeon Vault
-                    slots reach {advice.maxVault} iLvl.
-                  </p>
-
-                  <div className={styles.insightDetail}>
-                    Your Vault gear goal is complete.
-                    You can still farm Crests or pursue
-                    other progression goals.
-                  </div>
-                </div>
-              ) : (
-                <div className={styles.recommendationResult}>
-                  <span className={styles.recommendationLabel}>
-                    {advice.isUnlock
-                      ? `UNLOCK VAULT SLOT ${advice.targetSlot}`
-                      : `UPGRADE VAULT SLOT ${advice.targetSlot}`}
-                  </span>
-
-                  <strong>+{advice.key}</strong>
-
-                  <p>
-                    {advice.isUnlock
-                      ? `Aim for ${advice.targetVault} iLvl in Vault slot ${advice.targetSlot}.`
-                      : `Improve Vault slot ${advice.targetSlot} from ${advice.currentVault} to ${advice.targetVault} iLvl.`}
-                  </p>
-
-                  <div className={styles.recommendationStats}>
-                    <div>
-                      <span>ADDITIONAL RUNS</span>
-                      <strong>{advice.runsNeeded}</strong>
-                    </div>
-
-                    <div>
-                      <span>TARGET VAULT</span>
-                      <strong>{advice.targetVault}</strong>
-                    </div>
-                  </div>
-
-                  <div className={styles.insightDetail}>
-                    Add {advice.runsNeeded} more{" "}
-                    {advice.runsNeeded === 1 ? "run" : "runs"}{" "}
-                    at +{advice.key} or higher to reach
-                    this simulated Vault goal.
-                  </div>
-                </div>
-              )}
-
-              <button
-                type="button"
-                className={styles.recommendationButton}
-                disabled={!advice.complete && runs.length >= 200}
-                onClick={() => {
-                  if (advice.complete) {
-                    document
-                      .getElementById("planner-heading")
-                      ?.scrollIntoView({
-                        behavior: "smooth",
-                        block: "start",
-                      });
-                  } else {
-                    addRun(advice.key);
-                  }
-                }}
-              >
-                {advice.complete
-                  ? "View Vault Planner"
-                  : `Add +${advice.key} to Planner`}
-
-                <span aria-hidden="true">
-                  {advice.complete ? "→" : "+"}
-                </span>
-              </button>
-            </article>
-          </div>
-        </section>
-
-        {/* GREAT VAULT PLANNER */}
-
-        <section
-          className={styles.plannerSection}
-          aria-labelledby="planner-heading"
-        >
-          <div className={styles.sectionHeading}>
-            <div>
-              <span className={styles.overline}>
-                WEEKLY PROGRESSION
-              </span>
-
-              <h2 id="planner-heading">
-                Great Vault Planner
-              </h2>
-
-              <p>
-                Simulate your weekly Vault rewards.
-                Planned runs are saved in this browser.
-              </p>
-            </div>
-
-            <div className={styles.runCounter}>
-              <strong>{runs.length}</strong>
-              <span>PLANNED RUNS</span>
-            </div>
-          </div>
-
-          <div className={styles.planner}>
-            <div className={styles.plannerTop}>
+          {example && (
+            <div className={styles.demoBanner} role="note">
               <div>
-                <span className={styles.smallLabel}>
-                  DUNGEON PROGRESS
+                <strong>You’re exploring an example week.</strong>
+                <span>
+                  These are sample keys, not your completed runs. The example
+                  isn’t saved.
                 </span>
-                <strong>
-                  {Math.min(runs.length, 8)} / 8
-                </strong>
               </div>
-
               <button
                 type="button"
-                className={styles.resetButton}
-                disabled={runs.length === 0}
-                onClick={() => setRuns([])}
+                onClick={() => {
+                  update(emptyWeek(), "Ready for your own week.");
+                  setExample(false);
+                }}
               >
-                Reset planner
+                Start my own week →
               </button>
             </div>
-
-            <div
-              className={styles.progressTrack}
-              role="progressbar"
-              aria-label="Great Vault dungeon progress"
-              aria-valuenow={Math.min(runs.length, 8)}
-              aria-valuemin={0}
-              aria-valuemax={8}
+          )}
+          <div className={styles.weekGrid}>
+            <section
+              className={styles.runEntry}
+              aria-labelledby="entry-heading"
             >
-              <div
-                className={styles.progressFill}
-                style={{
-                  width: `${Math.min(
-                    (runs.length / 8) * 100,
-                    100
-                  )}%`,
-                }}
+              <span className={styles.overline}>01 / ADD YOUR KEYS</span>
+              <h3 id="entry-heading">What have you run this week?</h3>
+              <p>
+                Log completed keys to see your current Vault. Use “Plan” for
+                keys you haven’t finished yet.
+              </p>
+              <RewardSelect
+                label="Keystone level"
+                value={level}
+                options={keyOptions}
+                onChange={setLevel}
               />
-            </div>
-
-            <div className={styles.vaultGrid}>
-              {VAULT_THRESHOLDS.map((required, index) => {
-                const reward = vault[index];
-                const unlocked = reward !== null;
-
-                return (
-                  <div
-                    key={required}
-                    className={`${styles.vaultSlot} ${unlocked ? styles.vaultSlotActive : ""
-                      }`}
+              <div className={styles.quantityRow}>
+                <span>Number of runs</span>
+                <div>
+                  <button
+                    type="button"
+                    aria-label="Decrease runs"
+                    disabled={quantity <= 1}
+                    onClick={() => setQuantity(quantity - 1)}
                   >
-                    <div className={styles.slotHeader}>
-                      <span>VAULT SLOT 0{index + 1}</span>
-                      <span className={styles.slotState}>
-                        {unlocked
-                          ? "● PLANNED"
-                          : "○ LOCKED"}
-                      </span>
-                    </div>
+                    −
+                  </button>
+                  <input
+                    aria-label="Run count"
+                    type="number"
+                    min="1"
+                    max="50"
+                    value={quantity}
+                    onChange={(event) =>
+                      setQuantity(
+                        Math.min(
+                          50,
+                          Math.max(1, Number(event.target.value) || 1),
+                        ),
+                      )
+                    }
+                  />
+                  <button
+                    type="button"
+                    aria-label="Increase runs"
+                    disabled={quantity >= 50}
+                    onClick={() => setQuantity(quantity + 1)}
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+              <div className={styles.entryRewards}>
+                <span>
+                  Dungeon loot <b>{selected.dungeon}</b>
+                </span>
+                <span>
+                  Vault reward <b>{selected.vault}</b>
+                </span>
+              </div>
+              <div className={styles.entryActions}>
+                <button
+                  type="button"
+                  className={styles.primaryAction}
+                  disabled={limitReached}
+                  onClick={() =>
+                    update(
+                      { ...week, completed: [...week.completed, ...candidate] },
+                      `${quantity} completed ${quantity === 1 ? "run logged" : "runs logged"}. Current Vault updated.`,
+                    )
+                  }
+                >
+                  Log completed {quantity === 1 ? "run" : "runs"}
+                </button>
+                <button
+                  type="button"
+                  className={styles.secondaryAction}
+                  disabled={limitReached}
+                  onClick={() => addPlanned(candidate)}
+                >
+                  + Plan {quantity === 1 ? "this run" : `${quantity} runs`}
+                </button>
+              </div>
+              <div className={styles.nextImpact}>
+                <span>
+                  IF YOU ADD {quantity === 1 ? "THIS RUN" : "THESE RUNS"} TO
+                  YOUR PLAN
+                </span>
+                <p>
+                  {changed.length
+                    ? `You’ll unlock or improve ${changed.join(" and ")}.`
+                    : "Your Vault item levels stay the same. This key may still help with Crests, loot or rating."}
+                </p>
+              </div>
+              {allRuns.length === 0 && (
+                <button
+                  type="button"
+                  className={styles.exampleButton}
+                  onClick={() => {
+                    setExample(true);
+                    update(
+                      { completed: [10, 8, 6, 6], planned: [] },
+                      "Example loaded: one +10, one +8 and two +6 keys. Try adding three +10s to improve your second choice.",
+                    );
+                  }}
+                >
+                  Not sure? Try a mixed-key example ↗
+                </button>
+              )}
+              {limitReached && (
+                <p className={styles.inlineNote}>
+                  This would exceed the 200-run limit. Remove some runs first.
+                </p>
+              )}
+            </section>
+            <WeeklyGoal
+              runs={allRuns}
+              completed={week.completed}
+              onAdd={addPlanned}
+            />
+          </div>
 
-                    <div className={styles.slotBody}>
-                      {reward ? (
-                        <>
-                          <strong>{reward.vault}</strong>
-                          <span>
-                            iLvl · {reward.vaultTrack}
-                          </span>
-                        </>
-                      ) : (
-                        <>
-                          <strong
-                            className={styles.lockedValue}
-                          >
-                            —
-                          </strong>
-                          <span>
-                            {required - runs.length} more{" "}
-                            {required - runs.length === 1
-                              ? "run"
-                              : "runs"}
-                          </span>
-                        </>
-                      )}
+          <section
+            id="weekly-planner"
+            className={styles.vaultOverview}
+            aria-labelledby="vault-heading"
+          >
+            <div className={styles.overviewHeading}>
+              <div>
+                <span className={styles.overline}>03 / SEE THE DIFFERENCE</span>
+                <h2 id="vault-heading">Your Great Vault</h2>
+              </div>
+              <span>
+                <i /> Completed <i /> With your plan
+              </span>
+            </div>
+            <div className={styles.vaultGrid}>
+              {vaultThresholds.map((required, index) => {
+                const current = currentVault[index];
+                const future = plannedVault[index];
+                const improves =
+                  !!future && (!current || future.vault > current.vault);
+                return (
+                  <article
+                    key={required}
+                    className={`${styles.vaultCompareCard} ${improves ? styles.vaultImproves : ""}`}
+                  >
+                    <div className={styles.vaultCompareTop}>
+                      <span>CHOICE {index + 1}</span>
+                      <small>
+                        {required} {required === 1 ? "run" : "runs"} needed
+                      </small>
                     </div>
-
-                    <div className={styles.slotFooter}>
-                      {reward
-                        ? `Based on +${reward.level}`
-                        : `Requires ${required} planned runs`}
+                    <span className={styles.fieldLabel}>
+                      Earned from completed keys
+                    </span>
+                    <strong data-testid={`vault-current-${index}`}>
+                      {current ? current.vault : "Locked"}
+                      <small>{current ? " iLvl" : ""}</small>
+                    </strong>
+                    <p>
+                      {current
+                        ? `Your ${index === 0 ? "highest" : index === 1 ? "4th-highest" : "8th-highest"} completed key is +${current.level}.`
+                        : `${Math.max(0, required - week.completed.length)} more completed ${required - week.completed.length === 1 ? "run" : "runs"} to unlock.`}
+                    </p>
+                    <div className={styles.futureReward}>
+                      <span>With your plan</span>
+                      <b data-testid={`vault-planned-${index}`}>
+                        {future ? `${future.vault} iLvl` : "Still locked"}
+                        {improves ? " ↗" : ""}
+                      </b>
                     </div>
-                  </div>
+                  </article>
                 );
               })}
             </div>
+            <p className={styles.vaultRule}>
+              Your highest, 4th-highest and 8th-highest keys determine these
+              choices.{" "}
+              <strong>You claim one item after the weekly reset.</strong>
+            </p>
+          </section>
 
-            <div className={styles.runManager}>
-              <div className={styles.runManagerTitle}>
-                <strong>Your weekly runs</strong>
+          <section
+            className={styles.runLedger}
+            aria-labelledby="run-ledger-heading"
+          >
+            <div className={styles.overviewHeading}>
+              <div>
+                <h2 id="run-ledger-heading">The keys behind your week</h2>
+                <p>
+                  Tick a planned run when you finish it. Remove a key if you
+                  entered it by mistake.
+                </p>
+              </div>
+            </div>
+            <div className={styles.ledgerColumns}>
+              <div>
+                <h3>
+                  <span className={styles.completedDot} />
+                  Completed <small>{week.completed.length}</small>
+                </h3>
+                <div className={styles.runChips}>
+                  {week.completed.length ? (
+                    week.completed.map((key, index) => (
+                      <button
+                        type="button"
+                        key={index}
+                        className={styles.completedChip}
+                        aria-label={`Remove completed key +${key} run`}
+                        onClick={() =>
+                          update({
+                            ...week,
+                            completed: week.completed.filter(
+                              (_, i) => i !== index,
+                            ),
+                          })
+                        }
+                      >
+                        +{key}
+                        <span>×</span>
+                      </button>
+                    ))
+                  ) : (
+                    <p className={styles.emptyLedger}>
+                      No completed keys yet. Log them above.
+                    </p>
+                  )}
+                </div>
+              </div>
+              <div>
+                <h3>
+                  <span className={styles.plannedDot} />
+                  Planned <small>{week.planned.length}</small>
+                </h3>
+                <div className={styles.runChips}>
+                  {week.planned.length ? (
+                    week.planned.map((key, index) => (
+                      <div className={styles.plannedChip} key={index}>
+                        <button
+                          type="button"
+                          aria-label={`Mark planned key +${key} completed`}
+                          onClick={() =>
+                            update(
+                              {
+                                completed: [...week.completed, key],
+                                planned: week.planned.filter(
+                                  (_, i) => i !== index,
+                                ),
+                              },
+                              `+${key} marked completed. Current Vault updated.`,
+                            )
+                          }
+                        >
+                          ✓
+                        </button>
+                        <strong>+{key}</strong>
+                        <button
+                          type="button"
+                          aria-label={`Remove key +${key} run`}
+                          onClick={() =>
+                            update({
+                              ...week,
+                              planned: week.planned.filter(
+                                (_, i) => i !== index,
+                              ),
+                            })
+                          }
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))
+                  ) : (
+                    <p className={styles.emptyLedger}>
+                      No planned keys. Choose a goal above.
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className={styles.plannerToolbar}>
+              <span>{allRuns.length} / 200 runs · Saved in this browser</span>
+              <div>
+                <button
+                  type="button"
+                  disabled={!undo}
+                  onClick={() => {
+                    if (undo) {
+                      setWeek(undo);
+                      setExample(undoExample);
+                      setUndo(null);
+                      setShareLink("");
+                      setNotice("Last change undone.");
+                    }
+                  }}
+                >
+                  Undo last change
+                </button>
+                <button type="button" onClick={shareWeek}>
+                  Share plan ↗
+                </button>
+                <button
+                  type="button"
+                  disabled={!allRuns.length}
+                  onClick={() => {
+                    update(
+                      emptyWeek(),
+                      "Week cleared. Use Undo to restore it.",
+                    );
+                    setExample(false);
+                  }}
+                >
+                  Reset planner
+                </button>
+              </div>
+            </div>
+            {shareLink && (
+              <label className={styles.shareField}>
+                Your plan link
+                <input
+                  aria-label="Your plan link"
+                  readOnly
+                  value={shareLink}
+                  onFocus={(event) => event.target.select()}
+                />
+              </label>
+            )}
+            <p className={styles.inlineNote}>
+              Manual entries, not live Battle.net data. Clear your completed
+              keys when a new weekly reset starts.
+            </p>
+          </section>
+        </div>
+
+        <div id="tool-compare" hidden={view !== "compare"}>
+          <div className={styles.workspaceIntro}>
+            <h2>Is the higher key worth it?</h2>
+            <p>
+              Compare two key levels before committing to a harder run. Higher
+              difficulty does not always mean higher item levels.
+            </p>
+          </div>
+          <section
+            className={styles.compareWorkspace}
+            aria-label="Compare key rewards"
+          >
+            <div className={styles.compareSelectors}>
+              <RewardSelect
+                label="First key"
+                value={compareA}
+                options={keyOptions}
+                onChange={setCompareA}
+              />
+              <span>vs</span>
+              <RewardSelect
+                label="Second key"
+                value={compareB}
+                options={keyOptions}
+                onChange={setCompareB}
+              />
+            </div>
+            <div className={styles.comparisonTable}>
+              <div>
+                <span>REWARD</span>
+                <strong>+{a.level}</strong>
+                <strong>+{b.level}</strong>
+              </div>
+              <div>
                 <span>
-                  {runs.length
-                    ? "Select a run to remove it"
-                    : "Use the explorer above to add runs"}
+                  Dungeon loot<small>End-of-run item level</small>
                 </span>
+                <strong>
+                  {a.dungeon}
+                  <small>{a.dungeonTrack}</small>
+                </strong>
+                <strong>
+                  {b.dungeon}
+                  <small>{b.dungeonTrack}</small>
+                </strong>
               </div>
-
-              <div className={styles.runChips}>
-                {runs.length === 0 ? (
-                  <span className={styles.emptyRuns}>
-                    No runs added yet
-                  </span>
-                ) : (
-                  runs.map((run, index) => (
-                    <button
-                      key={index}
-                      type="button"
-                      className={styles.runChip}
-                      onClick={() => removeRun(index)}
-                      aria-label={`Remove key +${run} run`}
-                    >
-                      +{run}
-                      <span>×</span>
-                    </button>
-                  ))
-                )}
+              <div>
+                <span>
+                  Great Vault<small>Weekly reward item level</small>
+                </span>
+                <strong>
+                  {a.vault}
+                  <small>{a.vaultTrack}</small>
+                </strong>
+                <strong>
+                  {b.vault}
+                  <small>{b.vaultTrack}</small>
+                </strong>
               </div>
-
-              <div className={styles.plannedCrests}>
-                <div className={styles.plannedCrestsHeader}>
-                  <strong>Estimated Crests from planned runs</strong>
-                  <span>By reward tier</span>
-                </div>
-
-                <div className={styles.plannedCrestsGrid}>
-                  {crestTypes.map((type) => (
-                    <div key={type}>
-                      <span>{type}</span>
-                      <strong>{crestTotals[type]}</strong>
-                    </div>
-                  ))}
-                </div>
+              <div>
+                <span>
+                  Crests<small>Provisional per-run estimate</small>
+                </span>
+                <strong>
+                  {a.crestAmount}
+                  <small>{a.crest}</small>
+                </strong>
+                <strong>
+                  {b.crestAmount}
+                  <small>{b.crest}</small>
+                </strong>
               </div>
-
-              <p className={styles.plannerNote}>
-                This is a simulation, not live character
-                progress. Crest totals are estimates based
-                on the listed per-run values. Reset your
-                plan after the weekly reset.
-              </p>
             </div>
-          </div>
-        </section>
-
-        {/* CREST FARMING CALCULATOR */}
-
-        <section
-          className={styles.crestCalculatorSection}
-          aria-labelledby="crest-calculator-heading"
-        >
-          <div className={styles.sectionHeading}>
-            <div>
-              <span className={styles.overline}>
-                FARMING TOOLS
-              </span>
-
-              <h2 id="crest-calculator-heading">
-                Crest Farming Calculator
-              </h2>
-
+            <div className={styles.compareConclusion}>
+              <span className={styles.overline}>THE TAKEAWAY</span>
+              <h3>
+                {a.dungeon === b.dungeon && a.vault === b.vault
+                  ? "Same gear item levels. Different challenge."
+                  : `+${Math.max(a.level, b.level)} changes your gear rewards.`}
+              </h3>
               <p>
-                Set your Crest goal and estimate how
-                many Mythic+ runs you need.
+                {a.dungeon === b.dungeon && a.vault === b.vault
+                  ? "Pick the key you can finish reliably for gear. Compare Crest estimates separately; rating and achievements are not modeled here."
+                  : `Dungeon loot: ${a.dungeon} → ${b.dungeon}. Great Vault: ${a.vault} → ${b.vault}. Vault value still depends on your other weekly keys.`}
               </p>
+              <button
+                type="button"
+                className={styles.primaryAction}
+                disabled={allRuns.length >= 200}
+                onClick={() => {
+                  addPlanned([b.level]);
+                  showWeek();
+                }}
+              >
+                Plan one +{b.level} run →
+              </button>
             </div>
-          </div>
-
-          <div className={styles.crestCalculator}>
-            <div className={styles.calculatorControls}>
-              <span className={styles.smallLabel}>
-                SELECT CREST TIER
+          </section>
+          <section id="reward-reference" className={styles.referenceSection}>
+            <button
+              type="button"
+              className={styles.tableToggle}
+              aria-expanded={showTable}
+              onClick={() => setShowTable(!showTable)}
+            >
+              <span>
+                <strong>Full +2–20 reward table</strong>
+                <small>All listed dungeon, Vault and Crest rewards</small>
               </span>
+              <span>{showTable ? "−" : "+"}</span>
+            </button>
+            {showTable && (
+              <div className={styles.tableScroll}>
+                <table className={styles.table}>
+                  <caption className={styles.tableCaption}>
+                    {wowSeason.name}. Crest quantities are provisional
+                    estimates.
+                  </caption>
+                  <thead>
+                    <tr>
+                      <th>KEY</th>
+                      <th>DUNGEON</th>
+                      <th>VAULT</th>
+                      <th>CREST TIER</th>
+                      <th>CRESTS / RUN</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {rewards.map((row) => (
+                      <tr key={row.level}>
+                        <td>+{row.level}</td>
+                        <td>
+                          {row.dungeon}
+                          <small>{row.dungeonTrack}</small>
+                        </td>
+                        <td>
+                          {row.vault}
+                          <small>{row.vaultTrack}</small>
+                        </td>
+                        <td>{row.crest}</td>
+                        <td>{row.crestAmount}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </section>
+        </div>
 
+        <div id="tool-crests" hidden={view !== "crests"}>
+          <div className={styles.workspaceIntro}>
+            <h2>Turn a Crest goal into a run count.</h2>
+            <p>
+              Tell us how many you need and what you already have. Use the yield
+              shown in your game for the most useful estimate.
+            </p>
+          </div>
+          <section
+            id="crest-calculator"
+            className={styles.crestCalculator}
+            aria-label="Crest Farming Calculator"
+          >
+            <div className={styles.calculatorControls}>
+              <span className={styles.fieldLabel}>Crest tier</span>
               <div className={styles.crestTierTabs}>
                 {crestTypes.map((type) => (
                   <button
-                    key={type}
                     type="button"
+                    key={type}
                     aria-pressed={crestType === type}
-                    className={
-                      crestType === type
-                        ? styles.crestTierActive
-                        : ""
-                    }
-                    onClick={() => changeCrestType(type)}
+                    className={crestType === type ? styles.crestTierActive : ""}
+                    onClick={() => {
+                      setCrestType(type);
+                      setFarmKey(
+                        rewards.find((row) => row.crest === type)!.level,
+                      );
+                      setCustomYield("");
+                    }}
                   >
                     {type}
                   </button>
                 ))}
               </div>
-
               <div className={styles.calculatorFields}>
-                <label className={styles.calculatorField}>
-                  <span>CREST GOAL</span>
-
-                  <input
-                    type="number"
-                    min="0"
-                    max="100000"
-                    value={crestGoal}
-                    onChange={(event) => {
-                      const value = event.target.value;
-
-                      if (value === "" || /^\d+$/.test(value)) {
-                        setCrestGoal(value);
+                {[
+                  ["CREST GOAL", crestGoal, setCrestGoal],
+                  ["CURRENT CRESTS", currentCrests, setCurrentCrests],
+                ].map(([label, value, setter]) => (
+                  <label className={styles.calculatorField} key={String(label)}>
+                    <span>{String(label)}</span>
+                    <input
+                      type="number"
+                      min="0"
+                      max="100000"
+                      value={String(value)}
+                      onChange={(event) => {
+                        if (
+                          event.target.value === "" ||
+                          /^\d+$/.test(event.target.value)
+                        )
+                          (setter as typeof setCrestGoal)(event.target.value);
+                      }}
+                      onBlur={() =>
+                        (setter as typeof setCrestGoal)(
+                          String(bounded(String(value))),
+                        )
                       }
-                    }}
-                    onBlur={() => {
-                      setCrestGoal(
-                        String(Math.min(100000, Number(crestGoal) || 0))
-                      );
-                    }}
-                  />
-                </label>
-
-                <label className={styles.calculatorField}>
-                  <span>CURRENT CRESTS</span>
-
-                  <input
-                    type="number"
-                    min="0"
-                    max="100000"
-                    value={currentCrests}
-                    onChange={(event) => {
-                      const value = event.target.value;
-
-                      if (value === "" || /^\d+$/.test(value)) {
-                        setCurrentCrests(value);
-                      }
-                    }}
-                    onBlur={() => {
-                      setCurrentCrests(
-                        String(Math.min(100000, Number(currentCrests) || 0))
-                      );
-                    }}
-                  />
-                </label>
-              </div>
-
-              <div className={styles.calculatorKeyHeader}>
-                <span className={styles.smallLabel}>
-                  SELECT FARMING KEY
-                </span>
-                <strong>+{calculatorReward.level}</strong>
-              </div>
-
-              <div className={styles.calculatorKeyGrid}>
-                {calculatorOptions.map((reward) => (
-                  <button
-                    key={reward.level}
-                    type="button"
-                    aria-pressed={
-                      calculatorReward.level === reward.level
-                    }
-                    className={
-                      calculatorReward.level === reward.level
-                        ? styles.calculatorKeyActive
-                        : ""
-                    }
-                    onClick={() =>
-                      setCalculatorLevel(reward.level)
-                    }
-                  >
-                    +{reward.level}
-                  </button>
+                    />
+                  </label>
                 ))}
               </div>
-
-              <p className={styles.calculatorHint}>
-                +{bestFarmingReward.level} is the lowest
-                listed key awarding the maximum{" "}
-                {bestFarmingReward.crestAmount}{" "}
-                {crestType} Mistcrests per run.
+              <RewardSelect
+                label="Farming key"
+                value={farm.level}
+                options={farmOptions.map((row) => ({
+                  value: row.level,
+                  label: `+${row.level} Keystone`,
+                  detail: `${row.crestAmount} ${row.crest} Crests / run (estimate)`,
+                }))}
+                onChange={(value) => {
+                  setFarmKey(value);
+                  setCustomYield("");
+                }}
+              />
+              <label className={styles.calculatorField}>
+                <span>CRESTS PER RUN · OPTIONAL OVERRIDE</span>
+                <input
+                  type="number"
+                  min="1"
+                  max="1000"
+                  placeholder={String(farm.crestAmount)}
+                  value={customYield}
+                  onChange={(event) => {
+                    if (
+                      event.target.value === "" ||
+                      /^\d+$/.test(event.target.value)
+                    )
+                      setCustomYield(event.target.value);
+                  }}
+                  onBlur={() => {
+                    if (customYield !== "") setCustomYield(String(yieldPerRun));
+                  }}
+                />
+              </label>
+              <p className={styles.inlineNote}>
+                Listed Crest amounts are provisional. Enter your in-game yield
+                above. Caps, other Crest sources and failed runs are not
+                included.
               </p>
             </div>
-
             <div className={styles.calculatorResult}>
-              <span className={styles.smallLabel}>
-                YOUR FARMING PLAN
-              </span>
-
+              <span className={styles.overline}>YOUR FARMING PLAN</span>
               <div className={styles.calculatorResultMain}>
-                <span>ESTIMATED RUNS NEEDED</span>
-                <strong>{runsNeeded}</strong>
+                <span>ADDITIONAL RUNS</span>
+                <strong>{farmRuns}</strong>
                 <small>
-                  at keystone level +{calculatorReward.level}
+                  at +{farm.level} · {yieldPerRun} {crestType} Crests per run
                 </small>
               </div>
-
               <div className={styles.calculatorResultRows}>
                 <div>
-                  <span>Crests per run</span>
-                  <strong>
-                    {calculatorReward.crestAmount}
-                  </strong>
+                  <span>Still needed</span>
+                  <strong>{remaining} Crests</strong>
                 </div>
-
-                <div>
-                  <span>Crests remaining</span>
-                  <strong>{remainingCrests}</strong>
-                </div>
-
-                <div>
-                  <span>Crests from planned farm</span>
-                  <strong>{estimatedTotal}</strong>
-                </div>
-
                 <div>
                   <span>Estimated final balance</span>
                   <strong>
-                    {currentValue + estimatedTotal}
+                    {bounded(currentCrests) + farmRuns * yieldPerRun}
+                  </strong>
+                </div>
+                <div>
+                  <span>Yield source</span>
+                  <strong>
+                    {customYield === ""
+                      ? "Reference estimate"
+                      : "Your custom amount"}
                   </strong>
                 </div>
               </div>
-
-              <div className={styles.calculatorRecommendation}>
-                {runsNeeded === 0 ? (
-                  "You already have enough Crests for this goal."
-                ) : extraRuns > 0 ? (
-                  <>
-                    <strong>
-                      Better farming option: +{bestFarmingReward.level}
-                    </strong>
-                    <p>
-                      Run +{bestFarmingReward.level} instead of
-                      +{calculatorReward.level} to save{" "}
-                      {extraRuns} {extraRuns === 1 ? "run" : "runs"}.
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setCalculatorLevel(bestFarmingReward.level)
-                      }
-                    >
-                      Use recommended key →
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    Your selected key needs {runsNeeded}{" "}
-                    {runsNeeded === 1 ? "run" : "runs"}.
-                    This matches the lowest possible run count
-                    in the current Crest table.
-                  </>
-                )}
-              </div>
-
-              <p className={styles.calculatorDisclaimer}>
-                Estimates use the displayed Crest reward
-                table. Actual rewards may depend on
-                completion conditions and game updates.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* FULL LOOT TABLE */}
-
-        <section className={styles.referenceSection}>
-          <button
-            type="button"
-            className={styles.tableToggle}
-            aria-expanded={showTable}
-            onClick={() => setShowTable((current) => !current)}
-          >
-            <div>
-              <span className={styles.overline}>
-                FULL REFERENCE
-              </span>
-              <h2>Complete Mythic+ Loot Table</h2>
-              <p>
-                Compare gear and Crest rewards from +2 to +20.
-              </p>
-            </div>
-
-            <span className={styles.toggleSymbol}>
-              {showTable ? "−" : "+"}
-            </span>
-          </button>
-
-          {showTable && (
-            <div className={styles.tableScroll}>
-              <table className={styles.table}>
-                <thead>
-                  <tr>
-                    <th>KEY</th>
-                    <th>DUNGEON</th>
-                    <th>DUNGEON TRACK</th>
-                    <th>VAULT</th>
-                    <th>VAULT TRACK</th>
-                    <th>CREST TIER</th>
-                    <th>CRESTS / RUN</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {rewards.map((reward) => (
-                    <tr
-                      key={reward.level}
-                      className={
-                        level === reward.level
-                          ? styles.selectedRow
-                          : ""
-                      }
-                    >
-                      <td>+{reward.level}</td>
-                      <td>{reward.dungeon}</td>
-                      <td>{reward.dungeonTrack}</td>
-                      <td>{reward.vault}</td>
-                      <td>{reward.vaultTrack}</td>
-                      <td>{reward.crest}</td>
-                      <td>{reward.crestAmount}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </section>
-
-        {/* GUIDE */}
-
-        <section className={styles.guideSection}>
-          <div className={styles.sectionHeading}>
-            <div>
-              <span className={styles.overline}>
-                THE ESSENTIALS
-              </span>
-
-              <h2>How the Great Vault Works</h2>
-
-              <p>
-                Everything you need to plan your
-                weekly Mythic+ rewards.
-              </p>
-            </div>
-          </div>
-
-          <div className={styles.guideGrid}>
-            <article className={styles.guideCard}>
-              <span className={styles.guideNumber}>
-                01 / COMPLETE
-              </span>
-              <h3>Run your dungeons</h3>
-              <p>
-                Complete Mythic+ dungeons throughout
-                the week. Your qualifying key levels
-                determine your Vault reward item levels.
-              </p>
-            </article>
-
-            <article className={styles.guideCard}>
-              <span className={styles.guideNumber}>
-                02 / UNLOCK
-              </span>
-              <h3>Earn up to 3 choices</h3>
-              <p>
-                One, four and eight qualifying runs
-                unlock the three dungeon reward choices.
-              </p>
-            </article>
-
-            <article className={styles.guideCard}>
-              <span className={styles.guideNumber}>
-                03 / CLAIM
-              </span>
-              <h3>Choose your reward</h3>
-              <p>
-                After the weekly reset, open your
-                Great Vault and select one reward
-                from your available choices.
-              </p>
-            </article>
-          </div>
-        </section>
-
-        {/* FAQ */}
-
-        <section className={styles.faqSection}>
-          <div className={styles.sectionHeading}>
-            <div>
-              <span className={styles.overline}>
-                COMMON QUESTIONS
-              </span>
-              <h2>Mythic+ Rewards FAQ</h2>
-            </div>
-          </div>
-
-          <div className={styles.faqList}>
-            {faq.map((item, index) => (
-              <div
-                key={item.question}
-                className={styles.faqItem}
-                data-open={openFaq === index}
+              <button
+                type="button"
+                className={styles.primaryAction}
+                disabled={!farmRuns || allRuns.length + farmRuns > 200}
+                onClick={() => {
+                  addPlanned(Array<number>(farmRuns).fill(farm.level));
+                  showWeek();
+                }}
               >
-                <button
-                  type="button"
-                  aria-expanded={openFaq === index}
-                  onClick={() =>
-                    setOpenFaq(
-                      openFaq === index ? null : index
-                    )
-                  }
-                >
-                  <span>{item.question}</span>
-                  <span>
-                    {openFaq === index ? "−" : "+"}
-                  </span>
-                </button>
+                {farmRuns === 0
+                  ? "You already have enough ✓"
+                  : allRuns.length + farmRuns > 200
+                    ? "Exceeds 200-run planner limit"
+                    : "Add farm to weekly plan →"}
+              </button>
+              <p className={styles.inlineNote}>
+                Adding keys does not mark them completed or place a booking.
+                Custom yield affects this estimate only.
+              </p>
+            </div>
+          </section>
+        </div>
 
-                {openFaq === index && (
-                  <p>{item.answer}</p>
-                )}
-              </div>
-            ))}
+        <details className={styles.helpDetails}>
+          <summary>
+            New to the Great Vault? Here’s the short version <span>+</span>
+          </summary>
+          <div className={styles.quickGuide}>
+            <article>
+              <b>01</b>
+              <h3>Finish 1, 4 or 8 keys</h3>
+              <p>
+                These thresholds unlock the first, second and third dungeon
+                choices.
+              </p>
+            </article>
+            <article>
+              <b>02</b>
+              <h3>Your lower keys matter</h3>
+              <p>
+                The second choice uses your 4th-highest key. One high key does
+                not raise every choice.
+              </p>
+            </article>
+            <article>
+              <b>03</b>
+              <h3>Pick one reward</h3>
+              <p>
+                After reset, select one item from your available Vault choices.
+                Three choices are not three items.
+              </p>
+            </article>
           </div>
-        </section>
-
-        <p className={styles.disclaimer}>
-          Seasonal reward values can change with game
-          updates. Crest calculations are estimates
-          and should be checked against current in-game
-          rewards before relying on them.
-        </p>
+        </details>
+        <details id="reward-sources" className={styles.helpDetails}>
+          <summary>
+            Season data &amp; calculation notes <span>+</span>
+          </summary>
+          <div className={styles.dataDetails}>
+            <p>
+              This is a manual simulator using the site’s {wowSeason.name}{" "}
+              reference table. Existing gear values are retained. Crest
+              quantities are provisional; they are not guaranteed rewards. No
+              Battle.net account is connected.
+            </p>
+            <a
+              href="https://worldofwarcraft.blizzard.com/news/24294369/midnight-season-2-is-now-live"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Blizzard season overview ↗
+            </a>
+            <a
+              href="https://worldofwarcraft.blizzard.com/news/24304162/1215-content-update-notes"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Blizzard update notes ↗
+            </a>
+          </div>
+        </details>
+        <div className={styles.toolFooter}>
+          <Link href="/">← Back to NikoBoost</Link>
+          <Link href="/#mythic">Need a team? Explore Mythic+ runs →</Link>
+        </div>
       </div>
     </main>
   );
