@@ -438,7 +438,7 @@ export default function TacticsPreview() {
                     className={styles.playButton}
                     onClick={togglePlay}
                     aria-label={
-                      playing ? "Pause walkthrough" : "Play walkthrough"
+                      active ? "Pause walkthrough" : "Play walkthrough"
                     }
                   >
                     {active ? "Ⅱ" : "▶"}
