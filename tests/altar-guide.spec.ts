@@ -112,7 +112,7 @@ test("boss navigation resets the lesson and keyboard controls preserve the decis
     "aria-current",
     "step",
   );
-  await page.getByText("Before you pull", { exact: false }).click();
+  await page.getByRole("region", { name: "The Writhing Coil", exact: true }).locator("summary").click();
   await expect(
     page.getByText("Interrupt Toxic Atrophy repeatedly.", { exact: true }),
   ).toBeVisible();

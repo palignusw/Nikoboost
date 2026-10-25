@@ -118,14 +118,14 @@ export default function AltarGuide({
             </Link>
           ))}
         </nav>
-        <section className={styles.encounter} aria-labelledby="encounter-name">
+        <section className={styles.encounter} aria-labelledby={`encounter-${bossId}`}>
           <div className={styles.encounterIntro}>
             <div>
               <p className={styles.eyebrow}>
                 ENCOUNTER 0{altarStudies.findIndex((s) => s.id === bossId) + 1}{" "}
                 <span> / {lesson.focus.toUpperCase()}</span>
               </p>
-              <h2 id="encounter-name">{boss.name}</h2>
+              <h2 id={`encounter-${bossId}`}>{boss.name}</h2>
             </div>
             <div className={styles.mechanic}>
               <span>KEY MECHANIC</span>
