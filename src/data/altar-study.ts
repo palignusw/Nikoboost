@@ -75,7 +75,7 @@ export const altarStudies: readonly AltarStudy[] = [
         action: "Cover chunks. Burn the shield.",
         why: "Missed chunks add damage; breaking the shield ends the channel.",
         caption:
-          "Handle the circles while focusing the shield. Do not trade a missed soak for more damage.",
+          "Catch every actual impact while burning the shield. The diagram highlights one example, not the full spawn pattern or verified soak count.",
       },
     ],
     mistakeCue: "The boss feeds beside Fresh Meat.",
@@ -151,7 +151,7 @@ export const altarStudies: readonly AltarStudy[] = [
         action: "Group the adds. Control and cleave.",
         why: "Their remaining health determines the reformed boss’s health.",
         caption:
-          "Use damage here, cover add casts, and avoid the reform lines. Fixates require everyone’s positioning.",
+          "Use damage here, cover add casts, and keep clear of the convergence and ground hazards. Fixates require everyone’s positioning.",
       },
     ],
     mistakeCue: "The gold player’s link has not broken.",
@@ -172,7 +172,7 @@ export const altarStudies: readonly AltarStudy[] = [
       },
       {
         label: "Exit",
-        text: "Keep watching casts and reform lines while dealing damage. A clean burst window still needs mechanics.",
+        text: "Keep watching casts, fixates and ground hazards while dealing damage. A clean burst window still needs mechanics.",
       },
     ],
     options: [
@@ -226,7 +226,7 @@ export const altarStudies: readonly AltarStudy[] = [
         action: "Leave the pools. Recheck your stacks.",
         why: "Keep the centre usable for the next cycle.",
         caption:
-          "Check that venom is gone; do not assume one hit always clears every stack.",
+          "The hit and subsequent bleed clear stacks. Stay near the edge while blood is dropping, then verify your debuff before resetting.",
       },
     ],
     mistakeCue: "The clear leaves blood in the middle.",

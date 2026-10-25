@@ -41,7 +41,11 @@ test("timeline contracts preserve sourced windows, conditional endings and coher
   expect(getPlaybackState("ravi", 8).remaining).toBeNull();
   expect(
     getPlaybackState("ravi", 13).soaks.filter((s) => s.covered).length,
-  ).toBeLessThan(3);
+  ).toBe(0);
+  expect(getPlaybackState("ravi", 17).soaks).toHaveLength(1);
+  expect(getPlaybackState("ravi", 17).current.instruction).toContain(
+    "Only one illustrative impact",
+  );
   expect(getPlaybackState("ravi", 17).soaks.every((s) => s.covered)).toBe(true);
   expect(getPlaybackState("ravi", 21).shield).toBeNull();
   const almost = getPlaybackState("writhing-coil", 17.9);

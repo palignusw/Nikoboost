@@ -102,8 +102,8 @@ export const altarPlayback: Record<
         2,
         "condition",
         "Shield + Messy Eater",
-        "P3, P4 and P5 cover the example chunks. These are group assignments, not player debuffs.",
-        "P3 / P4 / P5",
+        "P3 demonstrates catching one highlighted chunk. This is not the full spawn pattern: the simultaneous soak count has not been verified. Cover every actual impact in game.",
+        "P3 · highlighted example only",
       ),
       cue(
         "shield",
@@ -112,7 +112,7 @@ export const altarPlayback: Record<
         2,
         "condition",
         "Cover chunks. Break the shield.",
-        "Move onto the circles while damaging the shield. The channel ends when the shield breaks, not after a fixed timer.",
+        "Catch every actual chunk while damaging the shield. Only one illustrative impact is highlighted here; neither total count nor impact timing is reproduced. Breaking the shield ends the channel.",
         "Assigned soakers + group damage",
       ),
       cue(
@@ -235,8 +235,8 @@ export const altarPlayback: Record<
         33,
         2,
         "movement",
-        "Reform · avoid the lines",
-        "Leave the illustrated reform paths. The transition timing here is schematic.",
+        "Assimilation · clear the convergence",
+        "Keep clear as the adds converge. Undermining is a separate ground hazard; its exact shape and timing are not reproduced here.",
         "Whole party",
       ),
       cue(
@@ -317,7 +317,7 @@ export const altarPlayback: Record<
         2,
         "event",
         "Physical hit → blood pools",
-        "Leave the blood and inspect your debuff. The illustrated outcome assumes a successful clear; one hit is not guaranteed to clear every stack.",
+        "Leave the blood and inspect your debuff. The initial hit and subsequent bleed can remove stacks. Keep clearing at the edge and avoid blood; do not assume every stack disappears on impact.",
         "All venom players",
       ),
       cue(
@@ -368,11 +368,7 @@ const raviStart: Point[] = [
   { x: 355, y: 345 },
   { x: 450, y: 330 },
 ];
-const raviSoaks: Point[] = [
-  { x: 255, y: 287 },
-  { x: 365, y: 320 },
-  { x: 490, y: 300 },
-];
+const raviSoaks: Point[] = [{ x: 255, y: 287 }];
 const coilStart: Point[] = [
   { x: 175, y: 115 },
   { x: 425, y: 115 },
@@ -425,9 +421,9 @@ const zulStart: Point[] = [
 export const clearStack: Point = { x: 485, y: 335 };
 const clearSlots: Point[] = [clearStack, clearStack, clearStack, clearStack];
 const resetSlots: Point[] = [
-  { x: 410, y: 110 },
-  { x: 555, y: 180 },
-  { x: 330, y: 330 },
+  { x: 510, y: 285 },
+  { x: 555, y: 320 },
+  { x: 440, y: 365 },
   { x: 550, y: 365 },
 ];
 export function getPlaybackState(boss: AltarBossId, value: number) {
@@ -462,8 +458,8 @@ export function getPlaybackState(boss: AltarBossId, value: number) {
             : time < 21
               ? "Shield-phase healing"
               : "Recover";
-      else {
-        p = move(p, raviSoaks[i - 2], time, 12, 16);
+      else if (i === 2) {
+        p = move(p, raviSoaks[0], time, 12, 16);
         status =
           time < 11
             ? "Prepare shield damage"
@@ -472,8 +468,14 @@ export function getPlaybackState(boss: AltarBossId, value: number) {
               : time < 21
                 ? "Cover + shield damage"
                 : "Recover";
-        if (time >= 21) p = move(raviSoaks[i - 2], raviStart[i], time, 21, 25);
-      }
+        if (time >= 21) p = move(raviSoaks[0], raviStart[i], time, 21, 25);
+      } else
+        status =
+          time < 11
+            ? "Prepare shield damage"
+            : time < 21
+              ? "Shield damage · watch all impacts"
+              : "Recover";
     } else if (boss === "writhing-coil") {
       p = move(coilStart[i], coilOut[i], time, 13, 16.2 + i * 0.45);
       if (time >= 18) p = move(coilOut[i], coilStack[i], time, 18, 22);
@@ -489,7 +491,7 @@ export function getPlaybackState(boss: AltarBossId, value: number) {
               : "Move out · linked"
             : time < 29
               ? "Control + cleave"
-              : "Avoid reform paths";
+              : "Clear the convergence";
       marked = time >= 18 && time < 29;
     } else {
       p =
@@ -518,8 +520,8 @@ export function getPlaybackState(boss: AltarBossId, value: number) {
                   : time < 21.65
                     ? "Wait for physical hit"
                     : time < 24
-                      ? "Leave blood · check stacks"
-                      : "Verify venom · next clear if needed";
+                      ? "Bleed active · clear at edge"
+                      : "Verify venom · bleed still active";
     }
     const landed = current.id.match(/^stop([1-3])$/)?.[1];
     if (landed && i === Number(landed) + 1) status = "Interrupt landed";

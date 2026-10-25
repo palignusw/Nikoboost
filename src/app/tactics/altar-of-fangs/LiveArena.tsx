@@ -21,7 +21,7 @@ export default function LiveArena({
     floor = `live-floor-${uid}`;
   const groups: (typeof state.actors)[] = [];
   const remaining =
-    boss === "zuljan" && time >= 13 && time < 24 ? state.actors.slice(1) : [];
+    boss === "zuljan" && time >= 13 ? state.actors.slice(1) : [];
   while (remaining.length) {
     const group = [remaining.pop()!];
     let expanded = true;
@@ -58,6 +58,11 @@ export default function LiveArena({
   });
   return (
     <div className={styles.arenaWrap}>
+      {boss === "ravi" && state.soaks.length > 0 && (
+        <span className={styles.exampleNotice}>
+          One highlighted soak · full spawn count unverified
+        </span>
+      )}
       <svg
         viewBox="0 0 600 420"
         className={styles.arena}
@@ -189,22 +194,6 @@ export default function LiveArena({
             strokeWidth="1.5"
           />
         ))}
-        {state.reform &&
-          [
-            { x: 100, y: 40 },
-            { x: 510, y: 40 },
-            { x: 560, y: 300 },
-            { x: 300, y: 390 },
-            { x: 45, y: 300 },
-          ].map((p, i) => (
-            <path
-              key={i}
-              d={`M300 210L${p.x} ${p.y}`}
-              stroke="#d58ba0"
-              strokeWidth="11"
-              opacity=".18"
-            />
-          ))}
         {state.tethers.map((t) => (
           <path
             key={t.actor.id}

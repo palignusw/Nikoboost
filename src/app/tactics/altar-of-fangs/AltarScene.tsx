@@ -284,11 +284,7 @@ export default function AltarScene({
             )}
             {phase === 2 &&
               !mistake &&
-              [
-                { x: 255, y: 287 },
-                { x: 365, y: 320 },
-                { x: 490, y: 300 },
-              ].map((p) => (
+              [{ x: 255, y: 287 }].map((p) => (
                 <g key={p.x}>
                   <circle
                     cx={p.x}
@@ -317,7 +313,13 @@ export default function AltarScene({
                 ))}
               </>
             )}
-            {phase === 2 && !mistake && <Player x={300} y={365} />}
+            {phase === 2 && !mistake && (
+              <>
+                <Player x={300} y={365} />
+                <Player x={365} y={320} />
+                <Player x={490} y={300} />
+              </>
+            )}
           </>
         )}
         {boss === "writhing-coil" && (

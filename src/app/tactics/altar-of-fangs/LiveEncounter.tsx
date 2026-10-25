@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import type { AltarBossId } from "@/data/altar-study";
 import { altarPlayback, getPlaybackState } from "@/data/altar-playback";
 import LiveArena from "./LiveArena";
+import { altarMechanics } from "@/data/altar-mechanics";
 import styles from "./playback.module.scss";
 const clock = (s: number) =>
   `${Math.floor(s / 60)
@@ -295,6 +296,27 @@ export default function LiveEncounter({ boss }: { boss: AltarBossId }) {
           </article>
         ))}
       </div>
+      <details className={styles.mechanicsAudit}>
+        <summary>Mechanic checks & scene limits · 25 Oct 2026</summary>
+        <ul>
+          {altarMechanics[boss].checked.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+        <p>{altarMechanics[boss].limits}</p>
+        <div>
+          {altarMechanics[boss].sources.map((source) => (
+            <a
+              key={source.url}
+              href={source.url}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {source.label} ↗
+            </a>
+          ))}
+        </div>
+      </details>
       <p className={styles.footnote}>
         At 1×, sourced cast/channel seconds match playback seconds. Other
         movement, gaps and damage outcomes use teaching time. Slow down or pause
