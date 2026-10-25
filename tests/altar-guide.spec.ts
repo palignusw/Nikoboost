@@ -117,6 +117,7 @@ test("boss navigation resets the lesson and keyboard controls preserve the decis
   await page
     .getByRole("region", { name: "The Writhing Coil", exact: true })
     .locator("summary")
+    .filter({ hasText: "Before you pull" })
     .click();
   await expect(
     page.getByText("Interrupt Toxic Atrophy repeatedly.", { exact: true }),
