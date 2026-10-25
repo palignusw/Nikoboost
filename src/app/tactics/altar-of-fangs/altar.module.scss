@@ -1410,3 +1410,32 @@
     }
   }
 }
+.viewTabs {
+  display: flex;
+  gap: 6px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 23px;
+  padding-bottom: 12px;
+  button {
+    padding: 11px 16px;
+    border: 1px solid #35496d;
+    border-radius: 8px;
+    background: #101c2e;
+    color: #a9bedf;
+    font-size: 12px;
+    &[aria-selected="true"] {
+      background: #2b4063;
+      border-color: #93acd8;
+      color: #e4edff;
+    }
+  }
+}
+@media (max-width: 600px) {
+  .viewTabs {
+    gap: 6px;
+    button {
+      padding: 10px 11px;
+      font-size: 10px;
+    }
+  }
+}

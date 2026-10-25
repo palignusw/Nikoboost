@@ -61,3 +61,17 @@ Sources actually consulted:
 The group-call cards are our composition-dependent adaptation of those mechanics, not quotations or claims that every professional group follows identical assignments. No fixed cooldown schedule, blanket instruction to hold all damage, exact timer, guaranteed key level, or recommendation to improvise physical hits is asserted.
 
 Zul'jan's diagram now includes the previously missing venom loop: beams → planned edge Boneslicer → blood-pool exit and stack check. The cone is illustrative. The first Coil frame is interrupt preparation, the second is tether breaking, and the third is the Uncoil damage window. The five adds have player fixates; the guide does not assume a tank can simply collect them with taunts.
+
+## Encounter playback — 25 October 2026
+
+Altar opens in playback mode. Study steps/practice remain available through keyboard-operable view tabs. `src/data/altar-playback.ts` owns cue order, sourced spell durations, authored movement/outcomes, actor statuses, target selection and the pure seekable world state. `LiveEncounter.tsx` owns play/pause, reset/replay, chapter seeking, speed and the scene slider. `LiveArena.tsx` draws the world using the existing silhouettes; it combines overlapping P2–P5 into a clearly labelled four-player stack during the example shared clear. Playback begins paused, stops at the end, pauses on tab visibility loss and cancels its animation frame on unmount.
+
+Numeric cast/channel countdowns are limited to sourced values: Ravenous Stomp 3s (spell 1307894), Toxic Atrophy 4s (1310358), Ritual of the Fang 5s (Blizzard’s 21 August hotfix), its beam channel 8s (1300876 tooltip), and Boneslicer 5s (1301413). Spell data/links are available beside the active cue. These are reviewed source values, not live game telemetry or guaranteed values under every future modifier/hotfix. The cast wrapper marked Instant is not incorrectly used as the Ritual preparation window.
+
+Official hotfix: https://us.forums.blizzard.com/en/wow/t/altar-of-fangs-adjustments-august-21/2339724 . It also removed Feeding Frenzy’s faster Messy Eater/Carrion Burst frequency; no increased-frequency timer is taught.
+
+Every gap, projectile travel time, movement path, interrupt placement inside a cast and damage-dependent shield outcome is authored teaching time, explicitly separated from sourced seconds. Death Rattle ends after all attached links break; the shield ends after damage breaks it. Neither gets a fabricated reaction deadline. Uncoil is compressed for clarity. There is no asserted full boss rotation or precise pull timer.
+
+Boneslicer is illustrated as a path to the selected player, not a broad cone. The example holds the shared edge line through the projectile hit, then exits blood. Its travel time, path width and shared stack are schematic/group-specific. Venom becomes a stack-check instruction after the hit; the UI never automatically promises that one hit has removed all stacks. Party IDs remain stable; a diamond identifies cast targets/fixates, and soak assignments are not presented as real player debuffs.
+
+Tests cover pure timeline contracts, source-window/countdown boundaries, conditional endings, end/replay and pause behavior, playback speed, actor movement, seeking, keyboard tabs, responsive frames and the retained study/practice flow. Screenshots are captured from paused, deterministically seeked states.

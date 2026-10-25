@@ -13,6 +13,7 @@ import {
 import { tacticsPreview } from "@/data/tactics";
 import { wowSeason } from "@/data/season";
 import AltarScene from "./AltarScene";
+import LiveEncounter from "./LiveEncounter";
 import styles from "./altar.module.scss";
 
 export default function AltarGuide({
@@ -22,6 +23,7 @@ export default function AltarGuide({
 }) {
   const lesson = getAltarStudy(bossId)!;
   const boss = altarDungeon.bosses.find((b) => b.id === bossId)!;
+  const [view, setView] = useState<"playback" | "study">("playback");
   const [step, setStep] = useState(0);
   const [mistake, setMistake] = useState(false);
   const [practice, setPractice] = useState(false);
@@ -150,168 +152,159 @@ export default function AltarGuide({
               {practice ? "← Back to lesson" : "Try the situation ↗"}
             </button>
           </div>
-          <div className={styles.workspace}>
-            <div className={styles.visualColumn} ref={visualRef}>
-              <div className={styles.mobileInstruction}>
-                <span>
-                  {practice
-                    ? "YOUR TURN"
-                    : mistake
-                      ? "COMMON MISTAKE"
-                      : `STEP 0${step + 1} · ${frame.label.toUpperCase()}`}
-                </span>
-                <h3>
-                  {practice
-                    ? "Choose the next group call."
-                    : mistake
-                      ? "See what goes wrong."
-                      : frame.action}
-                </h3>
-              </div>
-              <div className={styles.eventBar}>
-                <span>TRIGGER</span>
-                <strong>
-                  {practice ? lesson.practiceContext : frame.event}
-                </strong>
-              </div>
-              {bossId === "writhing-coil" && step === 0 && !practice && (
-                <div
-                  className={styles.kickOrder}
-                  aria-label="Suggested interrupt assignments"
-                >
-                  <span>1 · FIRST KICK</span>
-                  <span>2 · SECOND KICK</span>
-                  <span>3 · THIRD KICK</span>
-                  <small>
-                    Agree a backup · assign actual players before pulling
-                  </small>
-                </div>
-              )}
-              <div className={styles.diagram}>
-                <div className={styles.diagramToolbar}>
-                  <span className={styles.sceneTag}>
-                    <i />
-                    {practice
-                      ? "YOUR DECISION"
-                      : mistake
-                        ? "COMMON MISTAKE"
-                        : "WORKED EXAMPLE"}
-                  </span>
-                  <span>TOP VIEW</span>
-                </div>
-                <AltarScene
-                  boss={bossId}
-                  step={step}
-                  mistake={mistake}
-                  practice={practice}
-                />
-                <div className={styles.legend} aria-label="Diagram key">
-                  <span>
-                    <i className={styles.focusKey} />
-                    {bossId === "ravi" ? "Your tank" : "You"}
-                  </span>
-                  <span>
-                    <i className={styles.allyKey} />
-                    Allies
-                  </span>
-                  <span>
-                    <i className={styles.bossKey} />
-                    Boss / adds
-                  </span>
-                  <span>
-                    <i className={styles.dangerKey} />
-                    {bossId === "ravi"
-                      ? "Wrong pile"
-                      : bossId === "writhing-coil"
-                        ? "Intact tether"
-                        : "Blood pools / danger"}
-                  </span>
-                </div>
-              </div>
-              <div className={styles.sceneCaption} data-callout>
-                <span>{practice ? "?" : `0${step + 1}`}</span>
-                <p>
-                  {practice
-                    ? lesson.practicePrompt
-                    : mistake
-                      ? lesson.mistakeCue
-                      : frame.caption}
-                </p>
-              </div>
-              {practice && choice && (
-                <div
-                  className={`${styles.mobileFeedback} ${styles.feedback} ${choice.correct ? styles.correct : styles.incorrect}`}
-                  role="status"
-                >
-                  <span>
-                    {choice.correct ? "✓ GOOD CALL" : "↶ CHECK AGAIN"}
-                  </span>
-                  <strong>{choice.feedback}</strong>
-                  {choice.correct && <p>{lesson.right}</p>}
-                </div>
-              )}
-              {practice && (
-                <div
-                  className={styles.choices}
-                  aria-label="Choose your response"
-                >
-                  {lesson.options.map((o) => (
-                    <button
-                      key={o.id}
-                      onClick={() => setAnswer(o.id)}
-                      aria-label={`Choose ${o.id.toUpperCase()}: ${o.label}`}
-                      aria-pressed={answer === o.id}
-                    >
-                      <span>{o.id.toUpperCase()}</span>
-                      {o.label}
-                      <b>{answer === o.id ? "●" : "↗"}</b>
-                    </button>
-                  ))}
-                </div>
-              )}
-              {!practice && (
-                <div className={styles.stepNav} aria-label="Lesson steps">
-                  {lesson.frames.map((f, i) => (
-                    <button
-                      key={f.label}
-                      aria-current={step === i ? "step" : undefined}
-                      onClick={() => goTo(i)}
-                    >
-                      <span>0{i + 1}</span>
-                      <strong>{f.label}</strong>
-                      {i < 2 && <b>→</b>}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-            {practice && (
-              <button
-                className={`${styles.reset} ${styles.mobileReset}`}
-                onClick={() => setAnswer(null)}
-              >
-                Reset choice ↺
-              </button>
-            )}
-            <aside
-              className={`${styles.instructions} ${practice ? styles.practiceAside : ""}`}
-              aria-label="Scene explanation"
-              data-callout
+          <div
+            className={styles.viewTabs}
+            role="tablist"
+            aria-label="Lesson view"
+            onKeyDown={(e) => {
+              if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key))
+                return;
+              e.preventDefault();
+              const current = view === "playback" && !practice ? 0 : 1;
+              const next =
+                e.key === "Home" ? 0 : e.key === "End" ? 1 : 1 - current;
+              setView(next === 0 ? "playback" : "study");
+              setPractice(false);
+              setMistake(false);
+              e.currentTarget
+                .querySelectorAll<HTMLButtonElement>('[role="tab"]')
+                [next]?.focus();
+            }}
+          >
+            <button
+              role="tab"
+              id={`playback-tab-${bossId}`}
+              aria-controls={`playback-panel-${bossId}`}
+              aria-selected={view === "playback" && !practice}
+              tabIndex={view === "playback" && !practice ? 0 : -1}
+              onClick={() => {
+                setView("playback");
+                setPractice(false);
+                setMistake(false);
+              }}
             >
-              {practice ? (
-                <>
-                  <p className={styles.eyebrow}>
-                    YOUR TURN <span> / NO TIMER</span>
-                  </p>
-                  <h3>
-                    Read the scene.
-                    <br />
-                    Choose a move.
-                  </h3>
-                  <p className={styles.hint}>{lesson.practiceContext}</p>
-                  {choice ? (
+              ▶ Encounter playback
+            </button>
+            <button
+              role="tab"
+              id={`study-tab-${bossId}`}
+              aria-controls={`study-panel-${bossId}`}
+              aria-selected={view === "study" || practice}
+              tabIndex={view === "study" || practice ? 0 : -1}
+              onClick={() => {
+                setView("study");
+                setPractice(false);
+                setMistake(false);
+              }}
+            >
+              Study steps
+            </button>
+          </div>
+          {view === "playback" && !practice ? (
+            <div
+              role="tabpanel"
+              id={`playback-panel-${bossId}`}
+              aria-labelledby={`playback-tab-${bossId}`}
+            >
+              <LiveEncounter key={bossId} boss={bossId} />
+            </div>
+          ) : (
+            <div
+              role="tabpanel"
+              id={`study-panel-${bossId}`}
+              aria-labelledby={`study-tab-${bossId}`}
+            >
+              <div className={styles.workspace}>
+                <div className={styles.visualColumn} ref={visualRef}>
+                  <div className={styles.mobileInstruction}>
+                    <span>
+                      {practice
+                        ? "YOUR TURN"
+                        : mistake
+                          ? "COMMON MISTAKE"
+                          : `STEP 0${step + 1} · ${frame.label.toUpperCase()}`}
+                    </span>
+                    <h3>
+                      {practice
+                        ? "Choose the next group call."
+                        : mistake
+                          ? "See what goes wrong."
+                          : frame.action}
+                    </h3>
+                  </div>
+                  <div className={styles.eventBar}>
+                    <span>TRIGGER</span>
+                    <strong>
+                      {practice ? lesson.practiceContext : frame.event}
+                    </strong>
+                  </div>
+                  {bossId === "writhing-coil" && step === 0 && !practice && (
                     <div
-                      className={`${styles.feedback} ${choice.correct ? styles.correct : styles.incorrect}`}
+                      className={styles.kickOrder}
+                      aria-label="Suggested interrupt assignments"
+                    >
+                      <span>1 · FIRST KICK</span>
+                      <span>2 · SECOND KICK</span>
+                      <span>3 · THIRD KICK</span>
+                      <small>
+                        Agree a backup · assign actual players before pulling
+                      </small>
+                    </div>
+                  )}
+                  <div className={styles.diagram}>
+                    <div className={styles.diagramToolbar}>
+                      <span className={styles.sceneTag}>
+                        <i />
+                        {practice
+                          ? "YOUR DECISION"
+                          : mistake
+                            ? "COMMON MISTAKE"
+                            : "WORKED EXAMPLE"}
+                      </span>
+                      <span>TOP VIEW</span>
+                    </div>
+                    <AltarScene
+                      boss={bossId}
+                      step={step}
+                      mistake={mistake}
+                      practice={practice}
+                    />
+                    <div className={styles.legend} aria-label="Diagram key">
+                      <span>
+                        <i className={styles.focusKey} />
+                        {bossId === "ravi" ? "Your tank" : "You"}
+                      </span>
+                      <span>
+                        <i className={styles.allyKey} />
+                        Allies
+                      </span>
+                      <span>
+                        <i className={styles.bossKey} />
+                        Boss / adds
+                      </span>
+                      <span>
+                        <i className={styles.dangerKey} />
+                        {bossId === "ravi"
+                          ? "Wrong pile"
+                          : bossId === "writhing-coil"
+                            ? "Intact tether"
+                            : "Blood pools / danger"}
+                      </span>
+                    </div>
+                  </div>
+                  <div className={styles.sceneCaption} data-callout>
+                    <span>{practice ? "?" : `0${step + 1}`}</span>
+                    <p>
+                      {practice
+                        ? lesson.practicePrompt
+                        : mistake
+                          ? lesson.mistakeCue
+                          : frame.caption}
+                    </p>
+                  </div>
+                  {practice && choice && (
+                    <div
+                      className={`${styles.mobileFeedback} ${styles.feedback} ${choice.correct ? styles.correct : styles.incorrect}`}
                       role="status"
                     >
                       <span>
@@ -320,80 +313,156 @@ export default function AltarGuide({
                       <strong>{choice.feedback}</strong>
                       {choice.correct && <p>{lesson.right}</p>}
                     </div>
-                  ) : (
-                    <div className={styles.waiting}>
-                      <span>01</span>
-                      <p>
-                        Read the situation.
-                        <br />
-                        Choose a team response.
-                      </p>
+                  )}
+                  {practice && (
+                    <div
+                      className={styles.choices}
+                      aria-label="Choose your response"
+                    >
+                      {lesson.options.map((o) => (
+                        <button
+                          key={o.id}
+                          onClick={() => setAnswer(o.id)}
+                          aria-label={`Choose ${o.id.toUpperCase()}: ${o.label}`}
+                          aria-pressed={answer === o.id}
+                        >
+                          <span>{o.id.toUpperCase()}</span>
+                          {o.label}
+                          <b>{answer === o.id ? "●" : "↗"}</b>
+                        </button>
+                      ))}
                     </div>
                   )}
+                  {!practice && (
+                    <div className={styles.stepNav} aria-label="Lesson steps">
+                      {lesson.frames.map((f, i) => (
+                        <button
+                          key={f.label}
+                          aria-current={step === i ? "step" : undefined}
+                          onClick={() => goTo(i)}
+                        >
+                          <span>0{i + 1}</span>
+                          <strong>{f.label}</strong>
+                          {i < 2 && <b>→</b>}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                {practice && (
                   <button
-                    className={styles.reset}
+                    className={`${styles.reset} ${styles.mobileReset}`}
                     onClick={() => setAnswer(null)}
                   >
                     Reset choice ↺
                   </button>
-                </>
-              ) : (
-                <>
-                  <p className={styles.eyebrow}>
-                    STEP 0{step + 1} <span> / {frame.label.toUpperCase()}</span>
-                  </p>
-                  <h3>{mistake ? "See what goes wrong." : frame.action}</h3>
-                  <div className={styles.explainBlock}>
-                    <span>WHAT YOU SEE</span>
-                    <p>{mistake ? lesson.mistakeCue : frame.cue}</p>
-                  </div>
-                  <div
-                    className={`${styles.explainBlock} ${mistake ? styles.mistakeBlock : styles.reasonBlock}`}
-                  >
-                    <span>{mistake ? "WHY IT FAILS" : "WHY IT MATTERS"}</span>
-                    <p>{mistake ? lesson.wrong : frame.why}</p>
-                  </div>
-                  {step > 0 && (
-                    <div
-                      className={styles.compare}
-                      aria-label="Compare the situation"
-                    >
+                )}
+                <aside
+                  className={`${styles.instructions} ${practice ? styles.practiceAside : ""}`}
+                  aria-label="Scene explanation"
+                  data-callout
+                >
+                  {practice ? (
+                    <>
+                      <p className={styles.eyebrow}>
+                        YOUR TURN <span> / NO TIMER</span>
+                      </p>
+                      <h3>
+                        Read the scene.
+                        <br />
+                        Choose a move.
+                      </h3>
+                      <p className={styles.hint}>{lesson.practiceContext}</p>
+                      {choice ? (
+                        <div
+                          className={`${styles.feedback} ${choice.correct ? styles.correct : styles.incorrect}`}
+                          role="status"
+                        >
+                          <span>
+                            {choice.correct ? "✓ GOOD CALL" : "↶ CHECK AGAIN"}
+                          </span>
+                          <strong>{choice.feedback}</strong>
+                          {choice.correct && <p>{lesson.right}</p>}
+                        </div>
+                      ) : (
+                        <div className={styles.waiting}>
+                          <span>01</span>
+                          <p>
+                            Read the situation.
+                            <br />
+                            Choose a team response.
+                          </p>
+                        </div>
+                      )}
                       <button
-                        aria-pressed={!mistake}
-                        onClick={() => setMistake(false)}
+                        className={styles.reset}
+                        onClick={() => setAnswer(null)}
                       >
-                        ✓ Correct
+                        Reset choice ↺
                       </button>
-                      <button
-                        aria-pressed={mistake}
-                        onClick={() => setMistake(true)}
+                    </>
+                  ) : (
+                    <>
+                      <p className={styles.eyebrow}>
+                        STEP 0{step + 1}{" "}
+                        <span> / {frame.label.toUpperCase()}</span>
+                      </p>
+                      <h3>{mistake ? "See what goes wrong." : frame.action}</h3>
+                      <div className={styles.explainBlock}>
+                        <span>WHAT YOU SEE</span>
+                        <p>{mistake ? lesson.mistakeCue : frame.cue}</p>
+                      </div>
+                      <div
+                        className={`${styles.explainBlock} ${mistake ? styles.mistakeBlock : styles.reasonBlock}`}
                       >
-                        × Mistake
-                      </button>
-                    </div>
+                        <span>
+                          {mistake ? "WHY IT FAILS" : "WHY IT MATTERS"}
+                        </span>
+                        <p>{mistake ? lesson.wrong : frame.why}</p>
+                      </div>
+                      {step > 0 && (
+                        <div
+                          className={styles.compare}
+                          aria-label="Compare the situation"
+                        >
+                          <button
+                            aria-pressed={!mistake}
+                            onClick={() => setMistake(false)}
+                          >
+                            ✓ Correct
+                          </button>
+                          <button
+                            aria-pressed={mistake}
+                            onClick={() => setMistake(true)}
+                          >
+                            × Mistake
+                          </button>
+                        </div>
+                      )}
+                      <div className={styles.nextRow}>
+                        <button
+                          aria-label="Previous step"
+                          disabled={step === 0}
+                          onClick={() => goTo(step - 1)}
+                        >
+                          ←
+                        </button>
+                        <button
+                          className={styles.next}
+                          onClick={() =>
+                            step < 2 ? goTo(step + 1) : changeMode(true)
+                          }
+                        >
+                          {step < 2 ? "Next step" : "Try it yourself"}
+                          <span aria-hidden="true">→</span>
+                        </button>
+                      </div>
+                    </>
                   )}
-                  <div className={styles.nextRow}>
-                    <button
-                      aria-label="Previous step"
-                      disabled={step === 0}
-                      onClick={() => goTo(step - 1)}
-                    >
-                      ←
-                    </button>
-                    <button
-                      className={styles.next}
-                      onClick={() =>
-                        step < 2 ? goTo(step + 1) : changeMode(true)
-                      }
-                    >
-                      {step < 2 ? "Next step" : "Try it yourself"}
-                      <span aria-hidden="true">→</span>
-                    </button>
-                  </div>
-                </>
-              )}
-            </aside>
-          </div>
+                </aside>
+              </div>
+            </div>
+          )}
           <section
             className={styles.executionPlan}
             aria-label="Group execution plan"

@@ -5,7 +5,7 @@ import type { AltarBossId } from "@/data/altar-study";
 import styles from "./altar.module.scss";
 
 type Point = { x: number; y: number };
-function Player({
+export function Player({
   x,
   y,
   focus = false,
@@ -33,7 +33,7 @@ function Player({
     </g>
   );
 }
-function Serpent({ small = false }: { small?: boolean }) {
+export function Serpent({ small = false }: { small?: boolean }) {
   return (
     <g transform={small ? "scale(.48)" : undefined}>
       <path
@@ -48,7 +48,7 @@ function Serpent({ small = false }: { small?: boolean }) {
     </g>
   );
 }
-function Boss({
+export function Boss({
   id,
   x,
   y,
@@ -94,7 +94,7 @@ function Boss({
     </g>
   );
 }
-function Pile({ x, y, corpse }: Point & { corpse: boolean }) {
+export function Pile({ x, y, corpse }: Point & { corpse: boolean }) {
   return (
     <g transform={`translate(${x} ${y})`}>
       <ellipse
@@ -423,11 +423,11 @@ export default function AltarScene({
               <>
                 {phase === 1 && (
                   <path
-                    d="M300 210L560 290L435 395Z"
-                    fill="#d2b98d"
-                    fillOpacity=".13"
+                    d="M300 210L530 360"
+                    fill="none"
                     stroke="#d2b98d"
-                    strokeWidth="1.5"
+                    strokeOpacity=".28"
+                    strokeWidth="28"
                     strokeDasharray="5 5"
                   />
                 )}

@@ -12,6 +12,7 @@ test("all three bosses have distinct readable scenes, outcomes and practice deci
   });
   for (const study of altarStudies) {
     await page.goto(`${base}/${study.id}`);
+    await page.getByRole("tab", { name: "Study steps", exact: true }).click();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(
       "Altar of Fangs",
     );
@@ -87,9 +88,11 @@ test("boss navigation resets the lesson and keyboard controls preserve the decis
   page,
 }) => {
   await page.goto(base);
+  await page.getByRole("tab", { name: "Study steps", exact: true }).click();
   await page.getByRole("button", { name: "Next step", exact: true }).click();
   await page.getByRole("link", { name: /02.*The Writhing Coil/ }).click();
   await expect(page).toHaveURL(`${base}/writhing-coil`);
+  await page.getByRole("tab", { name: "Study steps", exact: true }).click();
   await expect(
     page.getByRole("button", { name: /01.*Assign/ }),
   ).toHaveAttribute("aria-current", "step");
@@ -127,6 +130,7 @@ test("all scenes fit narrow screens and keep explanatory text outside the illust
   test.setTimeout(90000);
   for (const study of altarStudies) {
     await page.goto(`${base}/${study.id}`);
+    await page.getByRole("tab", { name: "Study steps", exact: true }).click();
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
       "content",
       /noindex/,
