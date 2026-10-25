@@ -46,3 +46,18 @@ Mobile layouts put the current command above the picture and decision feedback d
 The guide is a source-linked key-mechanic teaching aid, not a complete encounter reference. Its stone floor, silhouettes, motion paths and soak locations/count in the Rav’i example are illustrative. The Coil example deliberately shows five adds; the Zul’jan example has four beams. Do not infer exact distances or timers from the art.
 
 Source: Tactyks’ Method Altar of Fangs guide, updated 22 August 2026; reviewed 25 October 2026. The draft is noindex/nofollow and remains outside the public navbar/sitemap.
+
+## Execution research revision — 25 October 2026
+
+The Altar lessons now teach preparation and execution windows, rather than only positioning. The three frames remain manual, but trigger labels explain when the action belongs. Practice tests team decisions (damage availability, add-phase control and venom clearing), not a letter destination.
+
+Sources actually consulted:
+
+- Tactyks / Method, updated 22 August: empty pile, shield burst, three consecutive interrupts, rapid tether breaks, damage/control during Uncoil and the Boneslicer clear.
+- Petko / Icy Veins, updated 12 October: add fixates and remaining-health significance, reform hazards, venom expiry/physical clears and blood pools, healing windows.
+- Skandar Tank's own published +21–23 route (`vviWp8V` on Keystone.guru): explicit four-lane assignment and edge/Boneslicer clearing; it also includes a route-specific funnel-into-boss note. Public route HTML contains the author's descriptions/comments even where the text-only renderer hides the map. Only corroborated boss advice was adapted; unrelated route counts/pull combinations were not copied wholesale.
+- Method's public YoDa Blood DK +20 recording (`z0hO75zq1Vc`): title and description verified from the public watch-page player metadata. Video playback/frames and captions were not successfully retrieved. It is linked as a comparison recording, not cited as observed execution, and no timestamps or player-specific decisions were invented.
+
+The group-call cards are our composition-dependent adaptation of those mechanics, not quotations or claims that every professional group follows identical assignments. No fixed cooldown schedule, blanket instruction to hold all damage, exact timer, guaranteed key level, or recommendation to improvise physical hits is asserted.
+
+Zul'jan's diagram now includes the previously missing venom loop: beams → planned edge Boneslicer → blood-pool exit and stack check. The cone is illustrative. The first Coil frame is interrupt preparation, the second is tether breaking, and the third is the Uncoil damage window. The five adds have player fixates; the guide does not assume a tank can simply collect them with taunts.

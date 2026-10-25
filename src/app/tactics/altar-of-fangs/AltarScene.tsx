@@ -134,27 +134,25 @@ export default function AltarScene({
   step,
   mistake,
   practice,
-  answer,
-  onChoose,
 }: {
   boss: AltarBossId;
   step: number;
   mistake: boolean;
   practice: boolean;
-  answer: string | null;
-  onChoose: (id: string) => void;
 }) {
   const uid = useId().replace(/:/g, "");
   const floor = `floor-${uid}`,
     arrow = `arrow-${uid}`;
   const phase = practice
-    ? boss === "zuljan"
+    ? boss === "ravi"
       ? 1
-      : 0
+      : boss === "zuljan"
+        ? 1
+        : 2
     : mistake && boss === "writhing-coil"
       ? 0
       : step;
-  const raviMoved = !practice && phase > 0;
+  const raviMoved = phase > 0;
   const raviPos = raviMoved
     ? mistake
       ? { x: 180, y: 170 }
@@ -186,20 +184,6 @@ export default function AltarScene({
     { x: 185, y: 285 },
     { x: 415, y: 285 },
   ];
-  const goals =
-    boss === "ravi"
-      ? pilePoints
-      : boss === "writhing-coil"
-        ? [
-            { id: "a", x: 520, y: 330 },
-            { id: "b", x: 385, y: 200 },
-            { id: "c", x: 365, y: 310 },
-          ]
-        : [
-            { id: "a", x: 95, y: 180 },
-            { id: "b", x: 415, y: 285 },
-            { id: "c", x: 390, y: 210 },
-          ];
   return (
     <div className={styles.sceneWrap}>
       <svg
@@ -211,7 +195,7 @@ export default function AltarScene({
             ? "Rav’i scene: bone piles, boss and gold tank. Pile C has no corpse."
             : boss === "writhing-coil"
               ? "Death Rattle scene: players break tethers, then gather the adds."
-              : "Ritual scene: four sources send beams toward Zul’jan; players intercept them."
+              : "Ritual and venom clear scene: cover beams, take a planned edge clear, then leave blood pools."
         }
       >
         <defs>
@@ -344,13 +328,17 @@ export default function AltarScene({
                 const dest = phase === 1 && !mistake ? coilEnd[i] : p;
                 return (
                   <g key={i}>
-                    <path
-                      d={`M300 200L${dest.x} ${dest.y}`}
-                      stroke={phase === 1 && !mistake ? "#607080" : "#c38195"}
-                      strokeWidth="3"
-                      strokeDasharray={phase === 1 && !mistake ? "3 14" : "7 4"}
-                      opacity={phase === 1 && !mistake ? 0.25 : 0.8}
-                    />
+                    {(phase > 0 || mistake) && (
+                      <path
+                        d={`M300 200L${dest.x} ${dest.y}`}
+                        stroke={phase === 1 && !mistake ? "#607080" : "#c38195"}
+                        strokeWidth="3"
+                        strokeDasharray={
+                          phase === 1 && !mistake ? "3 14" : "7 4"
+                        }
+                        opacity={phase === 1 && !mistake ? 0.25 : 0.8}
+                      />
+                    )}
                     <Player {...dest} focus={i === 4} />
                   </g>
                 );
@@ -402,65 +390,89 @@ export default function AltarScene({
         )}
         {boss === "zuljan" && (
           <>
-            {sources.map((p, i) => {
-              const covered = phase > 0 && (i < 3 || (phase === 2 && !mistake));
-              const end = covered ? intercepts[i] : { x: 300, y: 210 };
-              return (
-                <g key={i}>
-                  <path
-                    d={`M${p.x} ${p.y}L${end.x} ${end.y}`}
-                    stroke={covered ? "#a7c2b8" : "#ce879a"}
-                    strokeWidth="7"
-                    strokeOpacity=".12"
-                  />
-                  <path
-                    d={`M${p.x} ${p.y}L${end.x} ${end.y}`}
-                    stroke={covered ? "#a7c2b8" : "#ce879a"}
-                    strokeWidth="2.5"
-                  />
-                  {covered && (
+            {phase === 0 ? (
+              <>
+                {sources.map((p, i) => (
+                  <g key={i}>
                     <path
-                      d={`M${end.x} ${end.y}L300 210`}
+                      d={`M${p.x} ${p.y}L${intercepts[i].x} ${intercepts[i].y}`}
+                      stroke="#a7c2b8"
+                      strokeWidth="3"
+                    />
+                    <path
+                      d={`M${intercepts[i].x} ${intercepts[i].y}L300 210`}
                       stroke="#5b6977"
                       strokeDasharray="3 7"
                       opacity=".35"
                     />
-                  )}
-                  <path
-                    d={`M${p.x - 14} ${p.y + 18}V${p.y - 13}L${p.x} ${p.y - 24}L${p.x + 14} ${p.y - 13}V${p.y + 18}Z`}
-                    fill="#384249"
-                    stroke="#9caeaa"
-                  />
-                  <circle cx={p.x} cy={p.y - 3} r="5" fill="#c7d6c8" />
-                </g>
-              );
-            })}
-            <Boss id={boss} x={300} y={210} />
-            <Player x={300} y={280} tank />
-            {phase === 0 ? (
-              <>
-                {[
-                  { x: 220, y: 225 },
-                  { x: 245, y: 330 },
-                  { x: 375, y: 225 },
-                ].map((p) => (
-                  <Player key={p.x} {...p} />
+                    <path
+                      d={`M${p.x - 14} ${p.y + 18}V${p.y - 13}L${p.x} ${p.y - 24}L${p.x + 14} ${p.y - 13}V${p.y + 18}Z`}
+                      fill="#384249"
+                      stroke="#9caeaa"
+                    />
+                    <circle cx={p.x} cy={p.y - 3} r="5" fill="#c7d6c8" />
+                  </g>
                 ))}
-                <Player x={365} y={340} focus />
+                <Boss id={boss} x={300} y={210} />
+                <Player x={300} y={280} tank />
+                {intercepts.map((p, i) => (
+                  <Player key={i} {...p} focus={i === 3} />
+                ))}
               </>
             ) : (
               <>
-                {intercepts.slice(0, 3).map((p) => (
-                  <Player key={p.x + "-" + p.y} {...p} />
+                {phase === 1 && (
+                  <path
+                    d="M300 210L560 290L435 395Z"
+                    fill="#d2b98d"
+                    fillOpacity=".13"
+                    stroke="#d2b98d"
+                    strokeWidth="1.5"
+                    strokeDasharray="5 5"
+                  />
+                )}
+                {(phase === 2 || mistake) &&
+                  (mistake
+                    ? [
+                        { x: 360, y: 270 },
+                        { x: 375, y: 290 },
+                        { x: 345, y: 295 },
+                      ]
+                    : [
+                        { x: 445, y: 305 },
+                        { x: 467, y: 327 },
+                        { x: 425, y: 328 },
+                      ]
+                  ).map((p, i) => (
+                    <ellipse
+                      key={i}
+                      cx={p.x}
+                      cy={p.y}
+                      rx="29"
+                      ry="21"
+                      fill="#874c60"
+                      fillOpacity=".4"
+                      stroke="#bb788e"
+                      strokeWidth="1.3"
+                    />
+                  ))}
+                <Boss id={boss} x={300} y={210} />
+                <Player x={300} y={280} tank />
+                {[
+                  { x: 165, y: 120 },
+                  { x: 420, y: 110 },
+                  { x: 150, y: 285 },
+                ].map((p) => (
+                  <Player key={p.x} {...p} />
                 ))}
                 <Player
-                  x={phase === 2 && !mistake ? 415 : mistake ? 230 : 365}
-                  y={phase === 2 && !mistake ? 285 : mistake ? 165 : 340}
+                  x={mistake ? 410 : phase === 1 ? 445 : 490}
+                  y={mistake ? 290 : phase === 1 ? 305 : 235}
                   focus
                 />
-                {phase === 1 && !mistake && (
+                {phase === 2 && !mistake && (
                   <path
-                    d="M381 323L405 301"
+                    d="M458 280L480 249"
                     stroke="#b1c5ff"
                     strokeWidth="3"
                     markerEnd={`url(#${arrow})`}
@@ -471,27 +483,15 @@ export default function AltarScene({
           </>
         )}
       </svg>
-      {(boss === "ravi" || practice) &&
-        goals.map((p) => (
+      {boss === "ravi" &&
+        !practice &&
+        pilePoints.map((p) => (
           <div
             key={p.id}
-            style={{
-              left: `${p.x / 6}%`,
-              top: `${(p.y + (boss === "ravi" ? 52 : 0)) / 4.2}%`,
-            }}
-            className={`${styles.hotspot} ${boss === "ravi" ? styles.pileHotspot : ""}`}
+            style={{ left: `${p.x / 6}%`, top: `${(p.y + 52) / 4.2}%` }}
+            className={`${styles.hotspot} ${styles.pileHotspot}`}
           >
-            {practice ? (
-              <button
-                aria-label={`Choose ${p.id.toUpperCase()}`}
-                aria-pressed={answer === p.id}
-                onClick={() => onChoose(p.id)}
-              >
-                {p.id.toUpperCase()}
-              </button>
-            ) : (
-              <span>{p.id.toUpperCase()}</span>
-            )}
+            <span>{p.id.toUpperCase()}</span>
           </div>
         ))}
     </div>

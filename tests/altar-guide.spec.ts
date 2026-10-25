@@ -53,7 +53,7 @@ test("all three bosses have distinct readable scenes, outcomes and practice deci
     const right = study.options.find((o) => o.correct)!;
     await page
       .getByRole("button", {
-        name: `Choose ${wrong.id.toUpperCase()}`,
+        name: `Choose ${wrong.id.toUpperCase()}: ${wrong.label}`,
         exact: true,
       })
       .click();
@@ -62,7 +62,7 @@ test("all three bosses have distinct readable scenes, outcomes and practice deci
     ).toContainText("CHECK AGAIN");
     await page
       .getByRole("button", {
-        name: `Choose ${right.id.toUpperCase()}`,
+        name: `Choose ${right.id.toUpperCase()}: ${right.label}`,
         exact: true,
       })
       .click();
@@ -89,12 +89,11 @@ test("boss navigation resets the lesson and keyboard controls preserve the decis
   await page.getByRole("button", { name: "Next step", exact: true }).click();
   await page.getByRole("link", { name: /02.*The Writhing Coil/ }).click();
   await expect(page).toHaveURL(`${base}/writhing-coil`);
-  await expect(page.getByRole("button", { name: /01.*Look/ })).toHaveAttribute(
-    "aria-current",
-    "step",
-  );
+  await expect(
+    page.getByRole("button", { name: /01.*Assign/ }),
+  ).toHaveAttribute("aria-current", "step");
   await page.getByRole("button", { name: "Try the situation ↗" }).click();
-  const target = page.getByRole("button", { name: "Choose A", exact: true });
+  const target = page.getByRole("button", { name: /^Choose A:/ });
   await target.focus();
   await page.keyboard.press("Enter");
   await expect(
@@ -108,11 +107,13 @@ test("boss navigation resets the lesson and keyboard controls preserve the decis
   await page
     .getByRole("button", { name: "Previous step", exact: true })
     .click();
-  await expect(page.getByRole("button", { name: /01.*Look/ })).toHaveAttribute(
-    "aria-current",
-    "step",
-  );
-  await page.getByRole("region", { name: "The Writhing Coil", exact: true }).locator("summary").click();
+  await expect(
+    page.getByRole("button", { name: /01.*Assign/ }),
+  ).toHaveAttribute("aria-current", "step");
+  await page
+    .getByRole("region", { name: "The Writhing Coil", exact: true })
+    .locator("summary")
+    .click();
   await expect(
     page.getByText("Interrupt Toxic Atrophy repeatedly.", { exact: true }),
   ).toBeVisible();
@@ -157,7 +158,12 @@ test("all scenes fit narrow screens and keep explanatory text outside the illust
     }
   }
   expect(await (await request.get("/sitemap.xml")).text()).not.toContain(base);
-  await expect(page.getByRole("link", { name: /Method/ })).toHaveAttribute(
+  await expect(
+    page.getByRole("link", {
+      name: "Method · Tactyks’ full guide ↗",
+      exact: true,
+    }),
+  ).toHaveAttribute(
     "href",
     "https://www.method.gg/guides/dungeons/altar-of-fangs",
   );

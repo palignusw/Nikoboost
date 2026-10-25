@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import {
   altarDungeon,
+  altarSources,
   altarStudies,
   getAltarStudy,
   type AltarBossId,
@@ -118,7 +119,10 @@ export default function AltarGuide({
             </Link>
           ))}
         </nav>
-        <section className={styles.encounter} aria-labelledby={`encounter-${bossId}`}>
+        <section
+          className={styles.encounter}
+          aria-labelledby={`encounter-${bossId}`}
+        >
           <div className={styles.encounterIntro}>
             <div>
               <p className={styles.eyebrow}>
@@ -158,12 +162,31 @@ export default function AltarGuide({
                 </span>
                 <h3>
                   {practice
-                    ? "Choose a position on the scene."
+                    ? "Choose the next group call."
                     : mistake
                       ? "See what goes wrong."
                       : frame.action}
                 </h3>
               </div>
+              <div className={styles.eventBar}>
+                <span>TRIGGER</span>
+                <strong>
+                  {practice ? lesson.practiceContext : frame.event}
+                </strong>
+              </div>
+              {bossId === "writhing-coil" && step === 0 && !practice && (
+                <div
+                  className={styles.kickOrder}
+                  aria-label="Suggested interrupt assignments"
+                >
+                  <span>1 · FIRST KICK</span>
+                  <span>2 · SECOND KICK</span>
+                  <span>3 · THIRD KICK</span>
+                  <small>
+                    Agree a backup · assign actual players before pulling
+                  </small>
+                </div>
+              )}
               <div className={styles.diagram}>
                 <div className={styles.diagramToolbar}>
                   <span className={styles.sceneTag}>
@@ -181,8 +204,6 @@ export default function AltarGuide({
                   step={step}
                   mistake={mistake}
                   practice={practice}
-                  answer={answer}
-                  onChoose={setAnswer}
                 />
                 <div className={styles.legend} aria-label="Diagram key">
                   <span>
@@ -203,7 +224,7 @@ export default function AltarGuide({
                       ? "Wrong pile"
                       : bossId === "writhing-coil"
                         ? "Intact tether"
-                        : "Uncovered beam"}
+                        : "Blood pools / danger"}
                   </span>
                 </div>
               </div>
@@ -211,11 +232,7 @@ export default function AltarGuide({
                 <span>{practice ? "?" : `0${step + 1}`}</span>
                 <p>
                   {practice
-                    ? bossId === "ravi"
-                      ? "Look at the piles, then choose A, B or C."
-                      : bossId === "writhing-coil"
-                        ? "Follow the gold player’s link. Where should you go?"
-                        : "Three allies have a beam. Which position covers the missing one?"
+                    ? lesson.practicePrompt
                     : mistake
                       ? lesson.mistakeCue
                       : frame.caption}
@@ -242,6 +259,7 @@ export default function AltarGuide({
                     <button
                       key={o.id}
                       onClick={() => setAnswer(o.id)}
+                      aria-label={`Choose ${o.id.toUpperCase()}: ${o.label}`}
                       aria-pressed={answer === o.id}
                     >
                       <span>{o.id.toUpperCase()}</span>
@@ -290,10 +308,7 @@ export default function AltarGuide({
                     <br />
                     Choose a move.
                   </h3>
-                  <p className={styles.hint}>
-                    Use a letter on the diagram or a response below it. You can
-                    change your choice.
-                  </p>
+                  <p className={styles.hint}>{lesson.practiceContext}</p>
                   {choice ? (
                     <div
                       className={`${styles.feedback} ${choice.correct ? styles.correct : styles.incorrect}`}
@@ -309,9 +324,9 @@ export default function AltarGuide({
                     <div className={styles.waiting}>
                       <span>01</span>
                       <p>
-                        Find the gold player.
+                        Read the situation.
                         <br />
-                        Choose where to go next.
+                        Choose a team response.
                       </p>
                     </div>
                   )}
@@ -379,6 +394,30 @@ export default function AltarGuide({
               )}
             </aside>
           </div>
+          <section
+            className={styles.executionPlan}
+            aria-label="Group execution plan"
+          >
+            <div>
+              <span className={styles.sectionLabel}>
+                GROUP PLAN · ADAPT TO YOUR COMPOSITION
+              </span>
+              <h3>Agree the plan before the pull.</h3>
+              <p>
+                Published mechanics and route choices, translated into suggested
+                team calls.
+              </p>
+            </div>
+            <div className={styles.executionCards}>
+              {lesson.calls.map((call, i) => (
+                <article key={call.label}>
+                  <span>0{i + 1}</span>
+                  <h4>{call.label}</h4>
+                  <p>{call.text}</p>
+                </article>
+              ))}
+            </div>
+          </section>
           <div className={styles.roleSection}>
             <div>
               <span className={styles.sectionLabel}>YOUR JOB</span>
@@ -412,10 +451,59 @@ export default function AltarGuide({
               ))}
             </ul>
             <p>
-              The visual lesson covers one mechanic. Use the full guide for the
-              rest of the encounter.
+              This is an execution plan for selected mechanics. Use the linked
+              full guides for all abilities and trash.
             </p>
           </details>
+        </section>
+        <details className={styles.notes}>
+          <summary>
+            Full-key planning{" "}
+            <span>
+              Coordinated route choice <b>+</b>
+            </span>
+          </summary>
+          <p>
+            Skandar’s published +21–23 route includes bringing a funnel pack
+            into a boss pull. That is a route choice, not a requirement of the
+            boss mechanic.
+          </p>
+          <p>
+            Our adaptation: use the source pull only with an agreed group plan,
+            appropriate damage profile and stop coverage. Do not add a pack just
+            because it appears in a title-key route.
+          </p>
+        </details>
+        <section className={styles.evidence} aria-label="Strategy sources">
+          <span className={styles.sectionLabel}>
+            EVIDENCE · REVIEWED 25 OCT 2026
+          </span>
+          <h3>Where this plan comes from.</h3>
+          <p>
+            Player-authored guides establish mechanics. The published high-key
+            route supplies a specific group plan; it is not a universal rule for
+            every team.
+          </p>
+          <div>
+            {altarSources.map((s) => (
+              <a key={s.url} href={s.url} target="_blank" rel="noreferrer">
+                <strong>{s.label} ↗</strong>
+                <small>{s.detail}</small>
+              </a>
+            ))}
+          </div>
+          <a
+            href="https://www.youtube.com/watch?v=z0hO75zq1Vc"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Run reference: Method / YoDa · Blood DK +20 ↗
+          </a>
+          <small>
+            The recording is linked for comparison. These lessons are based on
+            the cited guides and route notes, not a frame-by-frame analysis of
+            that run.
+          </small>
         </section>
         <footer className={styles.footer}>
           <div>
