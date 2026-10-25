@@ -150,7 +150,7 @@ export const altarStudies: readonly AltarStudy[] = [
     ],
     mistakeCue: "Two players share one beam.",
     wrong: "This leaves a beam uncovered. Check the lower-right line.",
-    right: "You cover the fourth beam. All four are intercepted.",
+    right: "Move to B to cover the fourth beam.",
     options: [
       {
         id: "a",
