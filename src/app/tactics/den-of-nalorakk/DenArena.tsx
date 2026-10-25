@@ -79,6 +79,18 @@ export default function DenArena({
     floor = `den-floor-${uid}`;
   const { time: t } = world;
   const winterStack = world.tempest && world.inDrift;
+  const shelterStack =
+    world.shelter &&
+    world.actors.every(
+      (a) => a.y > 310 && Math.abs(a.x - 400) <= 0.95 * (a.y - 300),
+    );
+  const grouped = winterStack || shelterStack;
+  const stackPosition = winterStack
+    ? { x: 235, y: 257 }
+    : {
+        x: world.actors.reduce((sum, a) => sum + a.x, 0) / world.actors.length,
+        y: world.actors.reduce((sum, a) => sum + a.y, 0) / world.actors.length,
+      };
   return (
     <div className={styles.arenaWrap}>
       <svg
@@ -174,7 +186,7 @@ export default function DenArena({
             )}
             {world.frontal && (
               <path
-                d="M175 130L365 380L500 230Z"
+                d="M175 130L365 380L530 250Z"
                 fill="#b47a8c"
                 fillOpacity=".2"
                 stroke="#c08a9c"
@@ -423,7 +435,7 @@ export default function DenArena({
             <path d="M-5 0H5M0-5V5" stroke="#f2dfb8" strokeWidth="2" />
           </g>
         )}
-        {!winterStack &&
+        {!grouped &&
           world.actors.map((a) => (
             <g
               key={a.id}
@@ -447,13 +459,18 @@ export default function DenArena({
               )}
             </g>
           ))}
-        {winterStack && (
+        {grouped && (
           <g>
-            <Person x={235} y={257} focus />
-            <circle cx="255" cy="237" r="12" fill="#bdd0ec" />
+            <Person {...stackPosition} focus />
+            <circle
+              cx={stackPosition.x + 20}
+              cy={stackPosition.y - 20}
+              r="12"
+              fill="#bdd0ec"
+            />
             <text
-              x="255"
-              y="241"
+              x={stackPosition.x + 20}
+              y={stackPosition.y - 16}
               fontSize="12"
               textAnchor="middle"
               fill="#17243a"
@@ -472,15 +489,15 @@ export default function DenArena({
           />
         )}
       </svg>
-      {!winterStack &&
+      {!grouped &&
         world.actors.map((a) => (
           <span key={a.id} className={styles.actorLabel} style={pos(a, 29)}>
             {a.id}
           </span>
         ))}
-      {winterStack && (
-        <span className={styles.actorLabel} style={pos({ x: 235, y: 290 })}>
-          P1–P5 · in snowdrift
+      {grouped && (
+        <span className={styles.actorLabel} style={pos(stackPosition, 33)}>
+          P1–P5 · {winterStack ? "in snowdrift" : "behind shield"}
         </span>
       )}
       {world.npc && (
