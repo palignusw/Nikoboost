@@ -97,7 +97,7 @@ export const altarStudies: readonly AltarStudy[] = [
       },
     ],
     mistakeCue: "The gold player is still linked.",
-    wrong: "Too early to stack. Break your tether first.",
+    wrong: "The link is still intact. Move farther outward.",
     right: "Move outward first; regroup for the adds afterwards.",
     options: [
       {
