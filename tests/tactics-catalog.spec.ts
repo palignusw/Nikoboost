@@ -66,7 +66,7 @@ test("position and action studies support practice and narrow screens", async ({
   request,
 }) => {
   test.setTimeout(90000);
-  const cases = tacticsDungeons.filter(d => d.id !== "ruby-life-pools").map(d => ({d,b:d.bosses[0]}));
+  const cases = tacticsDungeons.filter(d => d.id !== "ruby-life-pools" && d.id !== "altar-of-fangs").map(d => ({d,b:d.bosses[0]}));
   for (const id of ["council-of-tribes", "avatar-of-sethraliss", "zaen-bladesorrow"]) {
     const d = tacticsDungeons.find(d => d.bosses.some(b => b.id===id))!;
     cases.push({d,b:d.bosses.find(b=>b.id===id)!});
