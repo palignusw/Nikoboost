@@ -288,7 +288,7 @@ export default function AltarGuide({
                   <h3>
                     Read the scene.
                     <br />
-                    Make the call.
+                    Choose a move.
                   </h3>
                   <p className={styles.hint}>
                     Use a letter on the diagram or a response below it. You can
