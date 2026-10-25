@@ -88,7 +88,6 @@ export function Boss({
             stroke="#9db5ff"
             strokeWidth="3"
           />
-          <path d="M-16-64H16" stroke="#dce5ff" strokeWidth="4" />
         </>
       )}
     </g>

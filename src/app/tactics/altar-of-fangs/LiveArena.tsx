@@ -110,6 +110,7 @@ export default function LiveArena({
                   <path
                     d={`M${state.actors.find((a) => a.id === s.player)!.x} ${state.actors.find((a) => a.id === s.player)!.y}L${s.x} ${s.y}`}
                     stroke="#a6baff"
+                    className={styles.connector}
                     strokeDasharray="3 5"
                     opacity=".5"
                   />
@@ -146,6 +147,7 @@ export default function LiveArena({
                     : `M${p.x} ${p.y}L300 210`
                 }
                 opacity={state.beams ? 1 : 0.3}
+                className={styles.connector}
                 strokeDasharray={state.beams ? undefined : "5 8"}
                 stroke="#a7c2b8"
                 strokeWidth="3"
@@ -153,6 +155,7 @@ export default function LiveArena({
               <path
                 d={`M${beamSlots[i].x} ${beamSlots[i].y}L300 210`}
                 stroke="#5b6977"
+                className={styles.connector}
                 strokeDasharray="3 7"
                 opacity=".3"
               />
@@ -208,6 +211,7 @@ export default function LiveArena({
             d={`M300 210L${t.actor.x} ${t.actor.y}`}
             stroke={t.broken ? "#64758a" : "#c38195"}
             strokeWidth="3"
+            className={styles.connector}
             strokeDasharray={t.broken ? "3 14" : "7 4"}
             opacity={t.broken ? 0.15 : 0.9}
           />
@@ -218,6 +222,7 @@ export default function LiveArena({
               <path
                 d={`M${p.x} ${p.y}L${state.actors[i].x} ${state.actors[i].y}`}
                 stroke="#c39ab4"
+                className={styles.connector}
                 strokeDasharray="2 7"
                 opacity=".4"
               />
@@ -229,6 +234,7 @@ export default function LiveArena({
                   r="26"
                   stroke="#a9baff"
                   fill="none"
+                  className={styles.connector}
                   strokeDasharray="3 5"
                   opacity=".7"
                 />
@@ -242,6 +248,7 @@ export default function LiveArena({
               d={`M${state.interruptPlayer.x} ${state.interruptPlayer.y}L${state.bossPosition.x} ${state.bossPosition.y}`}
               stroke="#c8d6ff"
               strokeWidth="3"
+              className={styles.connector}
               strokeDasharray="6 4"
             />
             <circle
@@ -262,11 +269,29 @@ export default function LiveArena({
           />
         )}
         {state.shield !== null && (
-          <path
-            d={`M${state.bossPosition.x - 40} ${state.bossPosition.y - 66}h${80 * state.shield}`}
-            stroke="#bed0ff"
-            strokeWidth="5"
-          />
+          <g
+            transform={`translate(${state.bossPosition.x} ${state.bossPosition.y - 74})`}
+            aria-label="Shield strength (illustrative)"
+          >
+            <rect
+              x="-48"
+              y="-5"
+              width="96"
+              height="10"
+              rx="5"
+              fill="#111b2a"
+              stroke="#788fb8"
+              strokeWidth="1.5"
+            />
+            <rect
+              x="-45"
+              y="-2"
+              width={90 * state.shield}
+              height="4"
+              rx="2"
+              fill="#bed0ff"
+            />
+          </g>
         )}
         {visibleActors.map((a) => (
           <g
@@ -338,6 +363,17 @@ export default function LiveArena({
           </g>
         )}
       </svg>
+      {state.shield !== null && (
+        <span
+          className={styles.bossStatus}
+          style={{
+            left: `${state.bossPosition.x / 6}%`,
+            top: `${(state.bossPosition.y - 92) / 4.2}%`,
+          }}
+        >
+          Shield
+        </span>
+      )}
       {visibleActors.map((a) => (
         <span
           key={a.id}

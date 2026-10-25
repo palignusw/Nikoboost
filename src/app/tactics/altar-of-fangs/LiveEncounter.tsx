@@ -38,7 +38,7 @@ export default function LiveEncounter({ boss }: { boss: AltarBossId }) {
       last = performance.now(),
       lastRender = last;
     const tick = (now: number) => {
-      if (now - lastRender >= 32) {
+      if (now - lastRender >= 16) {
         const next = Math.min(
           timeline.duration,
           positionRef.current + ((now - last) / 1000) * speed,

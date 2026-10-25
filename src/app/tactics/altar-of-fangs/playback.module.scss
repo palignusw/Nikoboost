@@ -487,3 +487,115 @@
 .party .venomBadge {
   color: #bfd59b;
 }
+
+// Connectors keep the same readable weight as the arena scales down.
+.connector {
+  fill: none;
+  vector-effect: non-scaling-stroke;
+  stroke-width: 1.5px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.bossStatus {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  color: #cad9f3;
+  background: #111b2a;
+  border: 1px solid #405475;
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 9px;
+  line-height: 1.4;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.cast > div:first-child {
+  min-width: 0;
+}
+.castValue {
+  min-width: 76px;
+}
+.controls .seek input {
+  margin: 0;
+}
+@media (max-width: 600px) {
+  .playbackHeader {
+    align-items: flex-start;
+    gap: 12px;
+    .state {
+      flex: 0 0 auto;
+      margin-top: 5px;
+    }
+  }
+  .cast {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 76px;
+    align-items: start;
+    gap: 12px;
+    min-height: 112px;
+    strong {
+      overflow-wrap: break-word;
+    }
+  }
+  .castValue {
+    padding-top: 4px;
+    > span {
+      max-width: none;
+      line-height: 1.5;
+    }
+  }
+  .bossStatus {
+    font-size: 8px;
+    padding: 0 4px;
+  }
+  .legend {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 8px 10px;
+    span {
+      min-width: 0;
+      align-items: center;
+    }
+    i {
+      flex: 0 0 7px;
+    }
+  }
+  .controls {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+    align-items: stretch;
+    button {
+      min-width: 0;
+      min-height: 44px;
+    }
+    .play {
+      min-width: 0;
+    }
+    > label:not(.seek) {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 5px;
+      select {
+        min-width: 0;
+        width: 100%;
+        padding: 6px 3px;
+        min-height: 44px;
+      }
+    }
+    output,
+    .seek {
+      grid-column: 1 / -1;
+    }
+    output {
+      padding-top: 2px;
+    }
+  }
+  .chapters button {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 4px;
+    min-height: 76px;
+    line-height: 1.5;
+  }
+}
