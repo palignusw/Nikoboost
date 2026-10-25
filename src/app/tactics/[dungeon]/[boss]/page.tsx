@@ -11,6 +11,8 @@ import TacticsPreview from "../../ruby-life-pools/TacticsPreview";
 import ChillstormStudy from "../../ruby-life-pools/ChillstormStudy";
 
 import AltarGuide from "../../altar-of-fangs/AltarGuide";
+import DenGuide from "../../den-of-nalorakk/DenGuide";
+import { getDenLesson } from "@/data/den-guide";
 import { getAltarStudy } from "@/data/altar-study";
 
 type Props = { params: Promise<{ dungeon: string; boss: string }> };
@@ -34,6 +36,9 @@ async function Encounter({ params }: Props) {
   const p = await params;
   const item = findTactic(p.dungeon, p.boss);
   if (!item) notFound();
+  const denStudy =
+    p.dungeon === "den-of-nalorakk" ? getDenLesson(p.boss) : undefined;
+  if (denStudy) return <DenGuide key={p.boss} bossId={denStudy.id} />;
   const altarStudy =
     p.dungeon === "altar-of-fangs" ? getAltarStudy(p.boss) : undefined;
   if (altarStudy) return <AltarGuide key={p.boss} bossId={altarStudy.id} />;
