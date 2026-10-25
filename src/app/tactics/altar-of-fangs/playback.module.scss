@@ -651,3 +651,40 @@
     color: #b8cdf6;
   }
 }
+.nextMove {
+  margin-top: 20px;
+  padding: 15px 0;
+  border-top: 1px solid #3b4f70;
+  border-bottom: 1px solid #3b4f70;
+  > span {
+    display: block;
+    margin: 13px 0 6px;
+    color: #adc6ef;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+  }
+  > span:first-child {
+    margin-top: 0;
+  }
+  p {
+    color: #e0e9f9;
+    font-size: 12px;
+    line-height: 1.75;
+  }
+  strong {
+    display: block;
+    color: #b1c4e2;
+    font-size: 11px;
+    font-weight: 400;
+    margin-top: 9px;
+  }
+}
+.nextMove {
+  background: #132035;
+  border: 1px solid #435b80;
+  border-left: 3px solid #adc2ed;
+  border-radius: 8px;
+  padding: 13px 16px;
+  margin: 0 0 13px;
+  p { font-size: 12px; }
+}

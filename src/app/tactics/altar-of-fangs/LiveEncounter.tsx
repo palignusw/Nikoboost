@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import type { AltarBossId } from "@/data/altar-study";
 import { altarPlayback, getPlaybackState } from "@/data/altar-playback";
 import LiveArena from "./LiveArena";
+import { getBeginnerPrompt, type LearnerRole } from "@/data/altar-beginner";
+import { roleNames } from "./BeginnerGuide";
 import { altarMechanics } from "@/data/altar-mechanics";
 import styles from "./playback.module.scss";
 const clock = (s: number) =>
@@ -12,7 +14,13 @@ const clock = (s: number) =>
     .toString()
     .padStart(2, "0")}`;
 
-export default function LiveEncounter({ boss }: { boss: AltarBossId }) {
+export default function LiveEncounter({
+  boss,
+  role = "damage",
+}: {
+  boss: AltarBossId;
+  role?: LearnerRole;
+}) {
   const timeline = altarPlayback[boss];
   const [position, setPosition] = useState(0),
     [playing, setPlaying] = useState(false),
@@ -20,6 +28,7 @@ export default function LiveEncounter({ boss }: { boss: AltarBossId }) {
   const positionRef = useRef(0);
   const state = getPlaybackState(boss, position),
     cue = state.current;
+  const beginner = getBeginnerPrompt(boss, cue.id);
   function seek(next: number) {
     const p = Math.max(0, Math.min(timeline.duration, next));
     positionRef.current = p;
@@ -80,7 +89,7 @@ export default function LiveEncounter({ boss }: { boss: AltarBossId }) {
       <div className={styles.playbackHeader}>
         <div>
           <span>ENCOUNTER PLAYBACK</span>
-          <h3>Watch the call become movement.</h3>
+          <h3>Watch the mechanic. Know your next move.</h3>
         </div>
         <span className={styles.state}>
           {playing
@@ -150,6 +159,17 @@ export default function LiveEncounter({ boss }: { boss: AltarBossId }) {
               />
             </div>
           </div>
+          {beginner && (
+            <div className={styles.nextMove} aria-label="Your next move">
+              <span>
+                {roleNames[role].toUpperCase()} · {beginner.response}
+              </span>
+              <p>{beginner.action}</p>
+              <strong>{beginner.role[role]}</strong>
+              <span>CONTINUE UNTIL</span>
+              <p>{beginner.done}</p>
+            </div>
+          )}
           <div className={styles.diagram}>
             <LiveArena boss={boss} time={position} />
             <div className={styles.legend}>

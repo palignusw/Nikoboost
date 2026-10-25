@@ -14,6 +14,8 @@ import { tacticsPreview } from "@/data/tactics";
 import { wowSeason } from "@/data/season";
 import AltarScene from "./AltarScene";
 import LiveEncounter from "./LiveEncounter";
+import BeginnerGuide, { RolePicker } from "./BeginnerGuide";
+import type { LearnerRole } from "@/data/altar-beginner";
 import styles from "./altar.module.scss";
 
 export default function AltarGuide({
@@ -24,6 +26,7 @@ export default function AltarGuide({
   const lesson = getAltarStudy(bossId)!;
   const boss = altarDungeon.bosses.find((b) => b.id === bossId)!;
   const [view, setView] = useState<"playback" | "study">("playback");
+  const [learnerRole, setLearnerRole] = useState<LearnerRole>("damage");
   const [step, setStep] = useState(0);
   const [mistake, setMistake] = useState(false);
   const [practice, setPractice] = useState(false);
@@ -152,6 +155,7 @@ export default function AltarGuide({
               {practice ? "← Back to lesson" : "Try the situation ↗"}
             </button>
           </div>
+          <RolePicker role={learnerRole} onChange={setLearnerRole} />
           <div
             className={styles.viewTabs}
             role="tablist"
@@ -206,7 +210,7 @@ export default function AltarGuide({
               id={`playback-panel-${bossId}`}
               aria-labelledby={`playback-tab-${bossId}`}
             >
-              <LiveEncounter key={bossId} boss={bossId} />
+              <LiveEncounter key={bossId} boss={bossId} role={learnerRole} />
             </div>
           ) : (
             <div
@@ -463,6 +467,7 @@ export default function AltarGuide({
               </div>
             </div>
           )}
+          <BeginnerGuide key={bossId} boss={bossId} role={learnerRole} />
           <section
             className={styles.executionPlan}
             aria-label="Group execution plan"
