@@ -1166,3 +1166,90 @@
     }
   }
 }
+
+// Keep the lesson, rather than the cover, at the centre of the first screen.
+@media (min-width: 851px) {
+  .header {
+    height: 70px;
+  }
+  .main {
+    padding-top: 22px;
+  }
+  .breadcrumb {
+    margin-bottom: 18px;
+  }
+  .hero {
+    min-height: 146px;
+    padding: 23px 30px;
+  }
+  .heroCopy {
+    h1 {
+      font-size: 48px;
+      margin: 8px 0;
+    }
+    > p:last-child {
+      font-size: 12px;
+    }
+  }
+  .heroStamp {
+    strong {
+      font-size: 38px;
+      margin-top: 5px;
+    }
+  }
+  .bossNav {
+    margin: 12px 0 28px;
+    a {
+      padding: 13px 16px;
+      strong {
+        font-size: 22px;
+      }
+      small {
+        margin-top: 4px;
+      }
+    }
+  }
+  .encounterIntro {
+    padding-bottom: 18px;
+    h2 {
+      font-size: 36px;
+      margin-top: 7px;
+    }
+  }
+  .lessonHeader {
+    padding: 20px 0 18px;
+    h3 {
+      font-size: 27px;
+      margin-top: 6px;
+    }
+  }
+  .sceneWrap {
+    width: min(650px, calc(100% - 24px));
+    margin: 6px auto 0;
+  }
+}
+@media (max-width: 600px) {
+  .hero {
+    min-height: 146px;
+    padding: 20px;
+  }
+  .heroCopy {
+    h1 {
+      font-size: 38px;
+      margin: 10px 0;
+    }
+  }
+  .bossNav {
+    margin-bottom: 22px;
+  }
+  .lessonHeader {
+    display: flex;
+    padding: 16px 0;
+    > div {
+      display: none;
+    }
+  }
+  .practiceToggle {
+    margin-top: 0;
+  }
+}

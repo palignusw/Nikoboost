@@ -372,7 +372,7 @@ export default function AltarGuide({
                       }
                     >
                       {step < 2 ? "Next step" : "Try it yourself"}
-                      <span>→</span>
+                      <span aria-hidden="true">→</span>
                     </button>
                   </div>
                 </>

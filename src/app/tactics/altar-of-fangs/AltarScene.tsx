@@ -192,7 +192,7 @@ export default function AltarScene({
       : boss === "writhing-coil"
         ? [
             { id: "a", x: 520, y: 330 },
-            { id: "b", x: 300, y: 210 },
+            { id: "b", x: 385, y: 200 },
             { id: "c", x: 365, y: 310 },
           ]
         : [
