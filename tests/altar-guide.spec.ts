@@ -49,17 +49,18 @@ test("all three bosses have distinct readable scenes, outcomes and practice deci
       fullPage: true,
     });
     await page.getByRole("button", { name: "Try the situation ↗" }).click();
-    const wrong = study.options.find((o) => !o.correct)!;
     const right = study.options.find((o) => o.correct)!;
-    await page
-      .getByRole("button", {
-        name: `Choose ${wrong.id.toUpperCase()}: ${wrong.label}`,
-        exact: true,
-      })
-      .click();
-    await expect(
-      page.getByRole("status").filter({ visible: true }),
-    ).toContainText("CHECK AGAIN");
+    for (const wrong of study.options.filter((o) => !o.correct)) {
+      await page
+        .getByRole("button", {
+          name: `Choose ${wrong.id.toUpperCase()}: ${wrong.label}`,
+          exact: true,
+        })
+        .click();
+      const feedback = page.getByRole("status").filter({ visible: true });
+      await expect(feedback).toContainText(wrong.feedback);
+      await expect(feedback).not.toContainText(study.wrong);
+    }
     await page
       .getByRole("button", {
         name: `Choose ${right.id.toUpperCase()}: ${right.label}`,

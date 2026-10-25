@@ -247,7 +247,7 @@ export default function AltarGuide({
                     {choice.correct ? "✓ GOOD CALL" : "↶ CHECK AGAIN"}
                   </span>
                   <strong>{choice.feedback}</strong>
-                  <p>{choice.correct ? lesson.right : lesson.wrong}</p>
+                  {choice.correct && <p>{lesson.right}</p>}
                 </div>
               )}
               {practice && (
@@ -318,7 +318,7 @@ export default function AltarGuide({
                         {choice.correct ? "✓ GOOD CALL" : "↶ CHECK AGAIN"}
                       </span>
                       <strong>{choice.feedback}</strong>
-                      <p>{choice.correct ? lesson.right : lesson.wrong}</p>
+                      {choice.correct && <p>{lesson.right}</p>}
                     </div>
                   ) : (
                     <div className={styles.waiting}>
