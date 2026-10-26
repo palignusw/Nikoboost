@@ -43,9 +43,9 @@ test("catalog filters bosses and navigates to distinct encounter studies", async
   page,
 }) => {
   await page.goto("/tactics");
-  await expect(page.getByRole("status")).toHaveText("14 of 14 encounters");
+  await expect(page.getByRole("status")).toHaveText("17 of 17 encounters");
   await page.getByRole("searchbox").fill("Sentinel");
-  await expect(page.getByRole("status")).toHaveText("1 of 14 encounters");
+  await expect(page.getByRole("status")).toHaveText("1 of 17 encounters");
   await page.getByRole("link", { name: /Sentinel of Winter/ }).click();
   await expect(page).toHaveURL(/\/den-of-nalorakk\/sentinel-of-winter$/);
   await expect(page.getByRole("heading", { level: 2, name: "Sentinel of Winter", exact: true })).toContainText(
@@ -53,13 +53,13 @@ test("catalog filters bosses and navigates to distinct encounter studies", async
   );
   await page.goto("/tactics");
   await page.getByRole("combobox").selectOption("altar-of-fangs");
-  await expect(page.getByRole("status")).toHaveText("3 of 14 encounters");
+  await expect(page.getByRole("status")).toHaveText("3 of 17 encounters");
   await page.getByRole("searchbox").fill("no-such-boss");
   await expect(
     page.getByRole("heading", { name: "No matching encounters." }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Show all encounters" }).click();
-  await expect(page.getByRole("status")).toHaveText("14 of 14 encounters");
+  await expect(page.getByRole("status")).toHaveText("17 of 17 encounters");
 });
 
 test("position and action studies support practice and narrow screens", async ({
@@ -67,7 +67,7 @@ test("position and action studies support practice and narrow screens", async ({
   request,
 }) => {
   test.setTimeout(90000);
-  const cases = tacticsDungeons.filter(d => d.id !== "ruby-life-pools" && d.id !== "altar-of-fangs" && d.id !== "den-of-nalorakk" && d.id !== "murder-row" && d.id !== "the-blinding-vale").map(d => ({d,b:d.bosses[0]}));
+  const cases = tacticsDungeons.filter(d => d.id !== "ruby-life-pools" && d.id !== "altar-of-fangs" && d.id !== "den-of-nalorakk" && d.id !== "murder-row" && d.id !== "the-blinding-vale" && d.id !== "voidscar-arena").map(d => ({d,b:d.bosses[0]}));
   for (const id of ["council-of-tribes", "avatar-of-sethraliss"]) {
     const d = tacticsDungeons.find(d => d.bosses.some(b => b.id===id))!;
     cases.push({d,b:d.bosses.find(b=>b.id===id)!});

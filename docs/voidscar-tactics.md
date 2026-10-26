@@ -1,0 +1,11 @@
+# Voidscar Arena field guide
+
+Three isolated encounter scripts (`src/data/voidscar-guide.ts`), deterministic playback (`voidscar-playback.ts`) and their own UI/arena/styles. The existing shared playback clock is reused. Publication uses the common `published-tactics.ts` list.
+
+Reviewed 27 October 2026 against Tactyks/Method, Petko/Icy Veins, Raider.IO's original role guide, the encounter journal, live Mythic+ spell variants and official hotfixes. Source links live in `voidscarSources`. No frame-by-frame video or combat-log verification is claimed.
+
+- Taz’Rah: five distinct parallel lanes illustrate avoiding overlap. Fissure placement, shade origins, exact orb counts and projectile paths are schematic, not a complete encounter replay. Raid-oriented guidance recommends baiting near an edge and moving away before Dark Bloom.
+- Atroxus: Noxious Breath targets a player; the tank kites the Toxic Creeper and the group switches to it. A Creeper appears from a poison pool only after Monstrous Roar completes. The live Mythic+ roar spell confirms the three-second cast. The remaining chapter timings and damage outcomes are illustrative.
+- Charonus: one highlighted chasing orb demonstrates leading it into a singularity while the player stays outside; three stars and a single orb are a teaching example, not a claim about the exact number of simultaneous targets. Journal text says an orb near each player, while the live Mythic+ target effect reports a maximum of three and Method describes DPS fixates; the guide therefore does not assert a fixed count or require that the healer/tank are always excluded. Successful collision clears the example orb and star as described by Method and Icy Veins. Atomized prevents attacks and abilities for 15 seconds; it is not treated as a root or a stun. Distances and collision radii are diagram units, not in-game yards.
+
+Browser and model tests cover non-overlapping dash lanes, dodging bloom orbs, the roar window, Creeper spawn and tank distance, poison-pool clearance, singularity clearance, orb removal, Atomized ability restriction without inventing movement immobilisation, role advice, controls and 320/393/1440 layouts. CI screenshots use `tactics-voidscar-*`.
