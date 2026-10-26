@@ -3,9 +3,13 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { tacticsDungeons, tacticPath } from "@/data/tactics-catalog";
+import { isPublishedTactic } from "@/data/published-tactics";
 import { tacticsPreview } from "@/data/tactics";
 import { wowSeason } from "@/data/season";
 import styles from "./catalog.module.scss";
+const publishedDungeons = tacticsDungeons.filter((d) =>
+  isPublishedTactic(d.id),
+);
 const normalize = (s: string) =>
   s
     .normalize("NFKD")
@@ -14,8 +18,8 @@ const normalize = (s: string) =>
 export default function TacticsCatalog() {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState("all");
-  const count = tacticsDungeons.reduce((n, d) => n + d.bosses.length, 0);
-  const matches = tacticsDungeons
+  const count = publishedDungeons.reduce((n, d) => n + d.bosses.length, 0);
+  const matches = publishedDungeons
     .filter((d) => filter === "all" || d.id === filter)
     .map((d) => ({
       ...d,
@@ -37,9 +41,7 @@ export default function TacticsCatalog() {
             alt="NikoBoost"
           />
         </Link>
-        <span>
-          TACTICS LAB <b>REVIEW BUILD</b>
-        </span>
+        <span>DUNGEON TACTICS</span>
         <Link href="/mythic-plus-rewards">Rewards & Tools ↗</Link>
       </header>
       <main className={styles.main}>
@@ -64,7 +66,7 @@ export default function TacticsCatalog() {
           </div>
           <div className={styles.counts}>
             <div>
-              <strong>{tacticsDungeons.length}</strong>
+              <strong>{publishedDungeons.length}</strong>
               <span>DUNGEONS</span>
             </div>
             <div>
@@ -91,8 +93,8 @@ export default function TacticsCatalog() {
           <label>
             Dungeon
             <select value={filter} onChange={(e) => setFilter(e.target.value)}>
-              <option value="all">All current dungeons</option>
-              {tacticsDungeons.map((d) => (
+              <option value="all">All published dungeons</option>
+              {publishedDungeons.map((d) => (
                 <option key={d.id} value={d.id}>
                   {d.name}
                 </option>
@@ -125,7 +127,7 @@ export default function TacticsCatalog() {
                 <div>
                   <span>
                     {String(
-                      tacticsDungeons.findIndex((x) => x.id === d.id) + 1,
+                      publishedDungeons.findIndex((x) => x.id === d.id) + 1,
                     ).padStart(2, "0")}{" "}
                     / DUNGEON
                   </span>
@@ -177,9 +179,8 @@ export default function TacticsCatalog() {
         )}
         <footer className={styles.footer}>
           <p>
-            8-dungeon rotation checked against Blizzard’s season announcement
-            and the linked current dungeon guides. Paired bosses and councils
-            count as one encounter.
+            {publishedDungeons.length} published dungeon guides. More guides will appear here after
+            review. Paired bosses and councils count as one encounter.
           </p>
           <a
             href="https://worldofwarcraft.blizzard.com/news/24294369/midnight-season-2-is-now-live"
@@ -189,8 +190,7 @@ export default function TacticsCatalog() {
             Blizzard season announcement ↗
           </a>
           <span>
-            Review build · diagrams are illustrative · lesson data checked 25
-            October 2026
+            Diagrams are illustrative · follow the live encounter cues
           </span>
         </footer>
       </main>

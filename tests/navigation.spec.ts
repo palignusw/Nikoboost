@@ -21,6 +21,7 @@ test("navigation prioritizes services and tools, highlights the page and books t
           "Mythic+↗",
           "Delves↗",
           "Rewards & Tools↗",
+          "Dungeon Tactics↗",
           "Gold Prices↗",
           "How it works↗",
           "FAQ↗",
@@ -30,6 +31,7 @@ test("navigation prioritizes services and tools, highlights the page and books t
           "Mythic+",
           "Delves",
           "Rewards & Tools",
+          "Dungeon Tactics",
           "Gold Prices",
           "How it works",
           "FAQ",
@@ -48,6 +50,14 @@ test("navigation prioritizes services and tools, highlights the page and books t
     await expect(nav).not.toBeVisible();
     await page.getByRole("button", { name: "Open menu", exact: true }).click();
   }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.screenshot({
+    path: info.outputPath(
+      `tactics-navigation-${mobile ? "mobile" : "desktop"}.png`,
+    ),
+  });
+  const tacticsLink = nav.getByRole("link", { name: /Dungeon Tactics/ });
+  await expect(tacticsLink).toHaveAttribute("href", "/tactics");
   await nav.getByRole("link", { name: /Rewards & Tools/ }).click();
   await expect(page).toHaveURL(/mythic-plus-rewards/);
   if (mobile)

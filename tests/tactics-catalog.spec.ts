@@ -5,6 +5,7 @@ import {
   tacticPath,
 } from "../src/data/tactics-catalog";
 import { dungeons } from "../src/data/season";
+import { isPublishedTactic } from "../src/data/published-tactics";
 import fs from "node:fs";
 
 test("catalog covers all eight seasonal dungeons and all 28 encounters with usable lessons", async ({
@@ -32,7 +33,7 @@ test("catalog covers all eight seasonal dungeons and all 28 encounters with usab
       const response = await request.get(url);
       expect(response.status(), url).toBe(200);
       const html = await response.text();
-      expect(html, url).toContain("noindex");
+      expect(html.includes("noindex"), url).toBe(!isPublishedTactic(d.id));
       expect(html, url).toContain(b.name.replace(/&/g, "&amp;"));
     }
   }
@@ -42,23 +43,23 @@ test("catalog filters bosses and navigates to distinct encounter studies", async
   page,
 }) => {
   await page.goto("/tactics");
-  await expect(page.getByRole("status")).toHaveText("28 of 28 encounters");
-  await page.getByRole("searchbox").fill("Kyrakka");
-  await expect(page.getByRole("status")).toHaveText("1 of 28 encounters");
-  await page.getByRole("link", { name: /Kyrakka and Erkhart/ }).click();
-  await expect(page).toHaveURL(/\/ruby-life-pools\/kyrakka-and-erkhart$/);
-  await expect(page.getByRole("heading", { level: 1 })).toContainText(
-    "Kyrakka and Erkhart",
+  await expect(page.getByRole("status")).toHaveText("6 of 6 encounters");
+  await page.getByRole("searchbox").fill("Sentinel");
+  await expect(page.getByRole("status")).toHaveText("1 of 6 encounters");
+  await page.getByRole("link", { name: /Sentinel of Winter/ }).click();
+  await expect(page).toHaveURL(/\/den-of-nalorakk\/sentinel-of-winter$/);
+  await expect(page.getByRole("heading", { level: 2, name: "Sentinel of Winter", exact: true })).toContainText(
+    "Sentinel of Winter",
   );
   await page.goto("/tactics");
-  await page.getByRole("combobox").selectOption("temple-of-sethraliss");
-  await expect(page.getByRole("status")).toHaveText("4 of 28 encounters");
+  await page.getByRole("combobox").selectOption("altar-of-fangs");
+  await expect(page.getByRole("status")).toHaveText("3 of 6 encounters");
   await page.getByRole("searchbox").fill("no-such-boss");
   await expect(
     page.getByRole("heading", { name: "No matching encounters." }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Show all encounters" }).click();
-  await expect(page.getByRole("status")).toHaveText("28 of 28 encounters");
+  await expect(page.getByRole("status")).toHaveText("6 of 6 encounters");
 });
 
 test("position and action studies support practice and narrow screens", async ({
@@ -118,6 +119,6 @@ test("position and action studies support practice and narrow screens", async ({
     }
   }
   expect(await (await request.get("/sitemap.xml")).text()).not.toContain(
-    "/tactics",
+    "/tactics/temple-of-sethraliss",
   );
 });

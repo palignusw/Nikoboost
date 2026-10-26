@@ -597,7 +597,7 @@ export default function AltarGuide({
             </a>
             <p>Guide updated 22 Aug 2026 · Reviewed 25 Oct 2026</p>
             <span className={styles.reviewBadge}>
-              DESIGN REVIEW · NOT INDEXED
+              INTERACTIVE FIELD GUIDE
             </span>
           </div>
         </footer>

@@ -478,7 +478,7 @@ export default function DenGuide({
         <footer className={styles.footer}>
           <Link href="/tactics">← All dungeons</Link>
           <span>
-            Preview field guide · gold-only services are separate from this
+            Interactive field guide · gold-only services are separate from this
             lesson
           </span>
           <Link href="/tactics/altar-of-fangs">Altar of Fangs ↗</Link>
