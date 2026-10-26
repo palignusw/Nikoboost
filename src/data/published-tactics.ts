@@ -3,8 +3,9 @@ export const publishedTactics = [
   "altar-of-fangs",
   "murder-row",
   "den-of-nalorakk",
+  "the-blinding-vale",
 ] as const;
-export const tacticsPublishedAt = "2026-10-26";
+export const tacticsPublishedAt = "2026-10-27";
 export function isPublishedTactic(dungeon: string) {
   return publishedTactics.some((id) => id === dungeon);
 }
