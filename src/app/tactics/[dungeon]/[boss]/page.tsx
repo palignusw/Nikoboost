@@ -12,6 +12,8 @@ import TacticsPreview from "../../ruby-life-pools/TacticsPreview";
 
 import ChillstormStudy from "../../ruby-life-pools/ChillstormStudy";
 
+import ValeGuide from "../../the-blinding-vale/ValeGuide";
+import { getValeLesson } from "@/data/vale-guide";
 import MurderGuide from "../../murder-row/MurderGuide";
 import { getMurderLesson } from "@/data/murder-guide";
 import AltarGuide from "../../altar-of-fangs/AltarGuide";
@@ -46,6 +48,9 @@ async function Encounter({ params }: Props) {
   const p = await params;
   const item = findTactic(p.dungeon, p.boss);
   if (!item) notFound();
+  const valeStudy =
+    p.dungeon === "the-blinding-vale" ? getValeLesson(p.boss) : undefined;
+  if (valeStudy) return <ValeGuide key={p.boss} bossId={valeStudy.id} />;
   const murderStudy =
     p.dungeon === "murder-row" ? getMurderLesson(p.boss) : undefined;
   if (murderStudy) return <MurderGuide key={p.boss} bossId={murderStudy.id} />;
