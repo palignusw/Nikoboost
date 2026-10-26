@@ -12,6 +12,8 @@ import TacticsPreview from "../../ruby-life-pools/TacticsPreview";
 
 import ChillstormStudy from "../../ruby-life-pools/ChillstormStudy";
 
+import MurderGuide from "../../murder-row/MurderGuide";
+import { getMurderLesson } from "@/data/murder-guide";
 import AltarGuide from "../../altar-of-fangs/AltarGuide";
 import DenGuide from "../../den-of-nalorakk/DenGuide";
 import { getDenLesson } from "@/data/den-guide";
@@ -44,6 +46,9 @@ async function Encounter({ params }: Props) {
   const p = await params;
   const item = findTactic(p.dungeon, p.boss);
   if (!item) notFound();
+  const murderStudy =
+    p.dungeon === "murder-row" ? getMurderLesson(p.boss) : undefined;
+  if (murderStudy) return <MurderGuide key={p.boss} bossId={murderStudy.id} />;
   const denStudy =
     p.dungeon === "den-of-nalorakk" ? getDenLesson(p.boss) : undefined;
   if (denStudy) return <DenGuide key={p.boss} bossId={denStudy.id} />;
