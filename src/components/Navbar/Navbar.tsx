@@ -14,6 +14,7 @@ const links = [
     label: "Rewards & Tools",
     page: "/mythic-plus-rewards",
   },
+  { href: "/tactics", label: "Dungeon Tactics", page: "/tactics" },
   { href: "/gold-prices", label: "Gold Prices", page: "/gold-prices" },
   { href: "/#how", label: "How it works", page: null },
   { href: "/#faq", label: "FAQ", page: null },
@@ -55,7 +56,7 @@ export default function Navbar() {
         }
       }
     };
-    const desktop = window.matchMedia("(min-width: 1051px)");
+    const desktop = window.matchMedia("(min-width: 1201px)");
     const resize = () => {
       if (desktop.matches) setMenuOpen(false);
     };

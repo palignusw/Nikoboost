@@ -134,7 +134,7 @@ test("all scenes fit narrow screens and keep explanatory text outside the illust
     await page.getByRole("tab", { name: "Study steps", exact: true }).click();
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
       "content",
-      /noindex/,
+      /^index, follow$/,
     );
     for (const width of [320, 360, 393, 600, 768, 850, 1024, 1440]) {
       await page.setViewportSize({ width, height: 1000 });
@@ -163,7 +163,7 @@ test("all scenes fit narrow screens and keep explanatory text outside the illust
       ).toHaveCount(0);
     }
   }
-  expect(await (await request.get("/sitemap.xml")).text()).not.toContain(base);
+  expect(await (await request.get("/sitemap.xml")).text()).toContain(base);
   await expect(
     page.getByRole("link", {
       name: "Method · Tactyks’ full guide ↗",

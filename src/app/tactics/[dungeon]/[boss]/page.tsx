@@ -1,3 +1,5 @@
+import { isPublishedTactic } from "@/data/published-tactics";
+import { siteOrigin } from "@/lib/pageSeo";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -29,7 +31,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       ? `${item.boss.name} Tactics | ${item.dungeon.name}`
       : "Tactics not found",
     description: item?.boss.summary,
-    robots: { index: false, follow: false },
+    robots: {
+      index: Boolean(item) && isPublishedTactic(p.dungeon),
+      follow: true,
+    },
+    alternates: item
+      ? { canonical: `${siteOrigin}/tactics/${p.dungeon}/${p.boss}` }
+      : undefined,
   };
 }
 async function Encounter({ params }: Props) {

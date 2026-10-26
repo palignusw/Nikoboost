@@ -79,13 +79,19 @@ test("sitemap uses real configured update dates and the public origin", async ({
   request,
 }) => {
   const entries = sitemap();
-  expect(entries).toHaveLength(Object.keys(serviceContent).length);
+  expect(entries).toHaveLength(Object.keys(serviceContent).length + 9);
   for (const content of Object.values(serviceContent)) {
     const url = content.path === "/" ? origin : `${origin}${content.path}`;
     expect(entries.find((entry) => entry.url === url)?.lastModified).toEqual(
       new Date(content.updatedAt),
     );
   }
+  expect(
+    entries.filter((entry) => entry.url.includes("/tactics")),
+  ).toHaveLength(9);
+  expect(entries.some((entry) => entry.url.includes("ruby-life-pools"))).toBe(
+    false,
+  );
   const response = await request.get("/sitemap.xml");
   expect(response.status()).toBe(200);
   const xml = await response.text();
@@ -112,5 +118,7 @@ test("service guide links visitors to the matching tools and Delves page", async
   ).toHaveAttribute("href", "/mythic-plus-rewards");
   await related.getByRole("link", { name: /Delves runs/ }).click();
   await expect(page).toHaveURL(/\/delves$/);
-  await expect(page.locator("h1:visible")).toHaveText("WoW Delves Boost for Gold");
+  await expect(page.locator("h1:visible")).toHaveText(
+    "WoW Delves Boost for Gold",
+  );
 });
