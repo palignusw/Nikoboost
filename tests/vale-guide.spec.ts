@@ -102,6 +102,23 @@ test("Vale model preserves flower coverage, delayed roots, tracking cones and bo
       (p.x - aim.boss.x) * (aim.beamTarget!.y - aim.boss.y) -
         (p.y - aim.boss.y) * (aim.beamTarget!.x - aim.boss.x),
     ).toBeCloseTo(0);
+  const activeBeam = getValeState("ziekket", 11);
+  const p5 = activeBeam.actors[4];
+  const beamAngle = Math.atan2(
+    activeBeam.beamTarget!.y - activeBeam.boss.y,
+    activeBeam.beamTarget!.x - activeBeam.boss.x,
+  );
+  const playerAngle = Math.atan2(
+    p5.y - activeBeam.boss.y,
+    p5.x - activeBeam.boss.x,
+  );
+  const distance = Math.hypot(
+    p5.x - activeBeam.boss.x,
+    p5.y - activeBeam.boss.y,
+  );
+  expect(
+    Math.abs(playerAngle - beamAngle) - Math.asin(16 / distance),
+  ).toBeGreaterThan(0.17);
   expect(getValeState("ziekket", 11).adds).toBe("cleared");
   expect(getValeState("ziekket", 11, true).adds).toBe("dormant");
   expect(getValeState("ziekket", 20, true).adds).toBe("regrown");

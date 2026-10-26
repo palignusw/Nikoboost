@@ -329,7 +329,7 @@ export function getValeState(id: ValeBossId, value: number, mistake = false) {
     move(0, { x: 100, y: 110 });
     move(1, { x: 105, y: 260 });
     move(3, { x: 440, y: 90 });
-    move(4, { x: 500, y: 340 });
+    move(4, { x: 500, y: 370 });
     adds =
       time < 5
         ? "active"
