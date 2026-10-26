@@ -66,6 +66,9 @@ test("Voidscar model preserves separated dash lanes, tank kite and safe orb inte
   const cleared = getVoidscarState("charonus", 9);
   expect(cleared.orb).toBeNull();
   expect(cleared.singularities).toHaveLength(2);
+  const contact = getVoidscarState("charonus", 7.5, true);
+  expect(contact.actors[2].disabled).toBe(true);
+  expect(distance(contact.actors[2], stars[0])).toBeLessThan(30);
   const struck = getVoidscarState("charonus", 8.2, true);
   expect(struck.actors[2].disabled).toBe(true);
   expect(struck.failure).toBe(true);

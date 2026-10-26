@@ -273,7 +273,7 @@ export default function VoidscarArena({
           className={styles.actorLabel}
           style={pos(
             a,
-            a.id === "P1" && boss === "atroxus" ? -27 : a.y >= 350 ? -27 : 27,
+            a.id === "P1" && boss === "atroxus" ? -27 : a.y >= 380 ? -27 : 27,
           )}
         >
           {a.id}

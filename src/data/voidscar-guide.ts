@@ -245,7 +245,7 @@ export const voidscarLessons: VoidscarLesson[] = [
     duration: 28,
     focus:
       "One highlighted orb and three example singularities teach the route; actual assignments depend on the encounter.",
-    failureTime: 8.2,
+    failureTime: 7.5,
     mistake:
       "P3 enters the singularity and becomes Atomized and cannot attack or use abilities.",
     question:
