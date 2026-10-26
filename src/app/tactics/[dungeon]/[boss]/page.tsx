@@ -1,0 +1,62 @@
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { Suspense } from "react";
+import {
+  tacticsDungeons,
+  findTactic,
+  createCatalogLesson,
+} from "@/data/tactics-catalog";
+import TacticsPreview from "../../ruby-life-pools/TacticsPreview";
+
+import ChillstormStudy from "../../ruby-life-pools/ChillstormStudy";
+
+import AltarGuide from "../../altar-of-fangs/AltarGuide";
+import DenGuide from "../../den-of-nalorakk/DenGuide";
+import { getDenLesson } from "@/data/den-guide";
+import { getAltarStudy } from "@/data/altar-study";
+
+type Props = { params: Promise<{ dungeon: string; boss: string }> };
+export function generateStaticParams() {
+  return tacticsDungeons.flatMap((d) =>
+    d.bosses.map((b) => ({ dungeon: d.id, boss: b.id })),
+  );
+}
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const p = await params;
+  const item = findTactic(p.dungeon, p.boss);
+  return {
+    title: item
+      ? `${item.boss.name} Tactics | ${item.dungeon.name}`
+      : "Tactics not found",
+    description: item?.boss.summary,
+    robots: { index: false, follow: false },
+  };
+}
+async function Encounter({ params }: Props) {
+  const p = await params;
+  const item = findTactic(p.dungeon, p.boss);
+  if (!item) notFound();
+  const denStudy =
+    p.dungeon === "den-of-nalorakk" ? getDenLesson(p.boss) : undefined;
+  if (denStudy) return <DenGuide key={p.boss} bossId={denStudy.id} />;
+  const altarStudy =
+    p.dungeon === "altar-of-fangs" ? getAltarStudy(p.boss) : undefined;
+  if (altarStudy) return <AltarGuide key={p.boss} bossId={altarStudy.id} />;
+  if (p.dungeon === "ruby-life-pools" && p.boss === "melidrussa-chillworn")
+    return <ChillstormStudy />;
+  return (
+    <TacticsPreview
+      key={`${p.dungeon}/${p.boss}`}
+      initialLesson={createCatalogLesson(item.dungeon, item.boss)}
+    />
+  );
+}
+export default function Page(props: Props) {
+  return (
+    <Suspense
+      fallback={<main style={{ padding: 40 }}>Loading encounter…</main>}
+    >
+      <Encounter {...props} />
+    </Suspense>
+  );
+}
