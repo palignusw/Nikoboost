@@ -4,6 +4,7 @@ export const publishedTactics = [
   "murder-row",
   "den-of-nalorakk",
   "the-blinding-vale",
+  "voidscar-arena",
 ] as const;
 export const tacticsPublishedAt = "2026-10-27";
 export function isPublishedTactic(dungeon: string) {
