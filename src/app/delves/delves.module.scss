@@ -1277,3 +1277,18 @@
     width: 100%;
   }
 }
+
+.priceExample {
+  display: grid;
+  gap: 3px;
+  width: fit-content;
+  max-width: 100%;
+  margin: 20px 0 16px;
+  padding: 13px 17px;
+  border: 1px solid $border;
+  border-radius: 10px;
+  background: rgba($bg-secondary, .92);
+  span { color: $season-light; font-size: 10px; font-weight: 700; letter-spacing: .1em; }
+  strong { color: $text-primary; font: 700 25px/1.1 var(--font-display); }
+  small { color: $text-secondary; font-size: 11px; }
+}
