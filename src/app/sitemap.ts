@@ -28,6 +28,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ];
   return [
     ...services,
+    {
+      url: `${siteOrigin}/mythic-plus-guide`,
+      lastModified: new Date("2026-10-27"),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
     ...paths.map((path) => ({
       url: `${siteOrigin}${path}`,
       lastModified: new Date(tacticsPublishedAt),

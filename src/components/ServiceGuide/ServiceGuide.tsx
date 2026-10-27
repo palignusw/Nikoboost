@@ -20,6 +20,10 @@ export default function ServiceGuide() {
         ))}
       </div>
       <nav className={styles.links} aria-label="Related WoW services and tools">
+        <Link href="/mythic-plus-guide">
+          New to Mythic+? Read the beginner guide{" "}
+          <span aria-hidden="true">↗</span>
+        </Link>
         <Link href="/mythic-plus-rewards">
           Plan your Mythic+ Vault rewards <span aria-hidden="true">↗</span>
         </Link>
