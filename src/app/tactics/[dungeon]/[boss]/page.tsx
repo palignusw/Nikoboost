@@ -12,6 +12,8 @@ import TacticsPreview from "../../ruby-life-pools/TacticsPreview";
 
 import ChillstormStudy from "../../ruby-life-pools/ChillstormStudy";
 
+import TempleGuide from "../../temple-of-sethraliss/TempleGuide";
+import { getTempleLesson } from "@/data/temple-guide";
 import KingsGuide from "../../kings-rest/KingsGuide";
 import { getKingsLesson } from "@/data/kings-guide";
 import VoidscarGuide from "../../voidscar-arena/VoidscarGuide";
@@ -52,6 +54,9 @@ async function Encounter({ params }: Props) {
   const p = await params;
   const item = findTactic(p.dungeon, p.boss);
   if (!item) notFound();
+  const templeStudy =
+    p.dungeon === "temple-of-sethraliss" ? getTempleLesson(p.boss) : undefined;
+  if (templeStudy) return <TempleGuide key={p.boss} bossId={templeStudy.id} />;
   const kingsStudy =
     p.dungeon === "kings-rest" ? getKingsLesson(p.boss) : undefined;
   if (kingsStudy) return <KingsGuide key={p.boss} bossId={kingsStudy.id} />;
