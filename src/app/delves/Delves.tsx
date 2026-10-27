@@ -60,6 +60,7 @@ export default function Delves() {
     `Tier ${config.tier} · ${config.runs} ${config.runs === 1 ? "run" : "runs"}`;
   const maxTier = Math.max(...Object.keys(delvePrices).map(Number));
   const recommendedReward = delveRewards[delveSettings.recommendedTier];
+  const singleRunExample = delvePrice({ tier: delveSettings.recommendedTier, runs: 1, delveId: "any" });
   const surchargePercent = servicePricing.delves.specific * 100;
 
   const patch = (value: Partial<DelveConfig>) => {
@@ -105,8 +106,13 @@ export default function Delves() {
                 <span> {serviceContent.delves.accent}</span>
               </h1>
               <p>{serviceContent.delves.lead}</p>
+              <div className={styles.priceExample} aria-label="Example gold price">
+                <span>EXAMPLE · TIER {delveSettings.recommendedTier}</span>
+                <strong>{gold(singleRunExample.total)} gold</strong>
+                <small>1 regular run · any available Delve</small>
+              </div>
               <a href="#delve-builder" className={styles.primary}>
-                Build your expedition <span>↗</span>
+                Choose your run <span>↗</span>
               </a>
               <div className={styles.heroTrust}>
                 <span>Gold only</span>
@@ -152,7 +158,7 @@ export default function Delves() {
             <span className={styles.eyebrow}>YOUR NEXT EXPEDITION</span>
             <h2 id="builder-heading">Build your Delves boost.</h2>
             <p>
-              Start with your goal. Your gold price updates as you configure.
+              Choose a goal and number of runs. The total updates for your tier, location and bundle savings.
             </p>
           </div>
           <div className={styles.builderGrid}>
@@ -162,7 +168,7 @@ export default function Delves() {
                 <div>
                   <h3>What brings you here?</h3>
                   <p>
-                    Weekly progress, treasure, or something more challenging.
+                    Choose regular clears for weekly progress, or Bountiful runs if you have Coffer Keys.
                   </p>
                 </div>
               </div>
@@ -173,7 +179,7 @@ export default function Delves() {
                   onClick={() => patch({ kind: "runs", format: "regular" })}
                 >
                   <b>Weekly Vault</b>
-                  <span>Qualifying clears, no Coffer Key needed</span>
+                  <span>Regular clears · no Coffer Key needed</span>
                 </button>
                 <button
                   type="button"
@@ -181,7 +187,7 @@ export default function Delves() {
                   onClick={() => patch({ kind: "runs", format: "bountiful" })}
                 >
                   <b>Bountiful runs</b>
-                  <span>Use your own keys for extra treasure</span>
+                  <span>Vault progress and a Coffer with your own key</span>
                 </button>
               </div>
               {quote && (
