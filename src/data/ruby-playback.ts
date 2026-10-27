@@ -69,6 +69,7 @@ export function getRubyState(id: RubyBossId, value: number, mistake = false) {
     }
     if (time >= 5 && time < 10) {
       message = "Place the storm away · move out";
+      move(4, blend(start[4], { x: 470, y: 200 }, (time - 5) / 1.5));
       actors[2].marked = true;
       const destination = mistake ? { x: 195, y: 265 } : { x: 490, y: 320 };
       move(2, blend({ x: 205, y: 320 }, destination, (time - 5) / 2));
@@ -132,6 +133,7 @@ export function getRubyState(id: RubyBossId, value: number, mistake = false) {
     if (time >= 10 && time < 15) {
       message = "Leave the dragon’s frontal";
       breath = true;
+      move(3, blend(start[3], { x: 260, y: 300 }, (time - 10) / 1.5));
       actors[2].marked = true;
       move(
         2,

@@ -17,8 +17,7 @@ async function seek(page: Page, time: number) {
 test("Ruby model preserves storm separation, add placement and breath avoidance", () => {
   const good = getRubyState("melidrussa-chillworn", 8);
   expect(good.storm).not.toBeNull();
-  expect(distance(good.actors[2], good.storm!)).toBeGreaterThan(86);
-  expect(distance(good.actors[1], good.storm!)).toBeGreaterThan(86);
+  for (const actor of good.actors) expect(distance(actor, good.storm!)).toBeGreaterThan(86);
   expect(getRubyState("melidrussa-chillworn", 8, true).failure).toBe(true);
   expect(getRubyState("melidrussa-chillworn", 12).shield).toBe(true);
   const ritual = getRubyState("kokia-blazehoof", 3.5);
@@ -29,7 +28,13 @@ test("Ruby model preserves storm separation, add placement and breath avoidance"
   const wind = getRubyState("kyrakka-and-erkhart", 8);
   expect(wind.wind).toBe(true);
   expect(wind.pools[0].x).toBeLessThan(480);
-  expect(getRubyState("kyrakka-and-erkhart", 13).actors[2].x).toBeLessThan(340);
+  const breath = getRubyState("kyrakka-and-erkhart", 13);
+  for (const actor of breath.actors) {
+    if (actor.y >= 100 && actor.y <= 325) {
+      const halfWidth = (actor.y - 100) * 0.4;
+      expect(actor.x < 430 - halfWidth - 16 || actor.x > 430 + halfWidth + 16).toBe(true);
+    }
+  }
   expect(getRubyState("kyrakka-and-erkhart", 13, true).actors[2].hurt).toBe(
     true,
   );
