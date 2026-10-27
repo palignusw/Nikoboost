@@ -12,6 +12,8 @@ import TacticsPreview from "../../ruby-life-pools/TacticsPreview";
 
 import ChillstormStudy from "../../ruby-life-pools/ChillstormStudy";
 
+import KingsGuide from "../../kings-rest/KingsGuide";
+import { getKingsLesson } from "@/data/kings-guide";
 import VoidscarGuide from "../../voidscar-arena/VoidscarGuide";
 import { getVoidscarLesson } from "@/data/voidscar-guide";
 import ValeGuide from "../../the-blinding-vale/ValeGuide";
@@ -50,6 +52,9 @@ async function Encounter({ params }: Props) {
   const p = await params;
   const item = findTactic(p.dungeon, p.boss);
   if (!item) notFound();
+  const kingsStudy =
+    p.dungeon === "kings-rest" ? getKingsLesson(p.boss) : undefined;
+  if (kingsStudy) return <KingsGuide key={p.boss} bossId={kingsStudy.id} />;
   const voidscarStudy =
     p.dungeon === "voidscar-arena" ? getVoidscarLesson(p.boss) : undefined;
   if (voidscarStudy)
