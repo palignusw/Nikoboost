@@ -7,14 +7,10 @@ import { isPublishedTactic } from "@/data/published-tactics";
 import { tacticsPreview } from "@/data/tactics";
 import { wowSeason } from "@/data/season";
 import styles from "./catalog.module.scss";
+import { matchesTacticsSearch } from "@/lib/tacticsSearch";
 const publishedDungeons = tacticsDungeons.filter((d) =>
   isPublishedTactic(d.id),
 );
-const normalize = (s: string) =>
-  s
-    .normalize("NFKD")
-    .replace(/[\u0300-\u036f’']/g, "")
-    .toLowerCase();
 export default function TacticsCatalog() {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState("all");
@@ -24,8 +20,9 @@ export default function TacticsCatalog() {
     .map((d) => ({
       ...d,
       bosses: d.bosses.filter((b) =>
-        normalize(`${d.name} ${b.name} ${b.mechanic} ${b.kind}`).includes(
-          normalize(query.trim()),
+        matchesTacticsSearch(
+          `${d.name} ${b.name} ${b.mechanic} ${b.kind} ${b.summary} ${b.checks.join(" ")} ${b.roles.join(" ")}`,
+          query,
         ),
       ),
     }))
