@@ -32,18 +32,6 @@ export default function TacticsCatalog() {
     .filter((d) => d.bosses.length);
   return (
     <div className={styles.shell}>
-      <header className={styles.header}>
-        <Link href="/" aria-label="NikoBoost home">
-          <Image
-            src="/images/branding/nikoboost-logo-v2.png"
-            width={150}
-            height={42}
-            alt="NikoBoost"
-          />
-        </Link>
-        <span>DUNGEON TACTICS</span>
-        <Link href="/mythic-plus-rewards">Rewards & Tools ↗</Link>
-      </header>
       <main className={styles.main}>
         <p className={styles.eyebrow}>
           {wowSeason.id === tacticsPreview.seasonId
