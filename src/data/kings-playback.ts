@@ -58,6 +58,7 @@ export function getKingsState(id: KingsBossId, value: number, mistake = false) {
     if (time >= 10) label = "Group healing";
   }
   if (id === "mchimba") {
+    move(4, { x: 400, y: 360 });
     coffins = [
       { x: 90, y: 90 },
       { x: 500, y: 90 },
