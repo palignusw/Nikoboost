@@ -35,6 +35,8 @@ test("catalog covers all eight seasonal dungeons and all 28 encounters with usab
       const html = await response.text();
       expect(html.includes("noindex"), url).toBe(!isPublishedTactic(d.id));
       expect(html, url).toContain(b.name.replace(/&/g, "&amp;"));
+      expect(html, url).toContain("Mythic+ Guide");
+      expect(html, url).toContain("Mythic+ tactics in");
     }
   }
 });

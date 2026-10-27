@@ -39,9 +39,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const item = findTactic(p.dungeon, p.boss);
   return {
     title: item
-      ? `${item.boss.name} Tactics | ${item.dungeon.name}`
+      ? `${item.boss.name} Mythic+ Guide | ${item.dungeon.name}`
       : "Tactics not found",
-    description: item?.boss.summary,
+    description: item
+      ? `${item.boss.name} Mythic+ tactics in ${item.dungeon.name}. ${item.boss.summary}`
+      : undefined,
     robots: {
       index: Boolean(item) && isPublishedTactic(p.dungeon),
       follow: true,
