@@ -84,22 +84,6 @@ export default function TacticsPreview({
 
   return (
     <div className={styles.shell}>
-      <header className={styles.header}>
-        <Link href="/" className={styles.brand} aria-label="NikoBoost home">
-          <Image
-            src="/images/branding/nikoboost-logo-v2.png"
-            alt="NikoBoost"
-            width={160}
-            height={44}
-          />
-        </Link>
-        <div className={styles.labLabel}>
-          <span /> TACTICS LAB <b>DESIGN PREVIEW</b>
-        </div>
-        <Link href="/mythic-plus-rewards" className={styles.back}>
-          Rewards & Tools <span>↗</span>
-        </Link>
-      </header>
       <main className={styles.main}>
         <nav className={styles.breadcrumb} aria-label="Breadcrumb">
           <Link href="/">NikoBoost</Link>

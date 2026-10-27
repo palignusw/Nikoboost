@@ -101,7 +101,7 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                aria-current={pathname === link.page ? "page" : undefined}
+                aria-current={(pathname === link.page || (link.page === "/tactics" && pathname.startsWith("/tactics/"))) ? "page" : undefined}
               >
                 {link.label}
               </Link>
@@ -141,7 +141,7 @@ export default function Navbar() {
             <Link
               key={link.href}
               href={link.href}
-              aria-current={pathname === link.page ? "page" : undefined}
+              aria-current={(pathname === link.page || (link.page === "/tactics" && pathname.startsWith("/tactics/"))) ? "page" : undefined}
               onClick={closeMenu}
             >
               {link.label}
