@@ -10,7 +10,8 @@ import {
 } from "@/data/tactics-catalog";
 import TacticsPreview from "../../ruby-life-pools/TacticsPreview";
 
-import ChillstormStudy from "../../ruby-life-pools/ChillstormStudy";
+import RubyGuide from "../../ruby-life-pools/RubyGuide";
+import { getRubyLesson } from "@/data/ruby-guide";
 
 import TempleGuide from "../../temple-of-sethraliss/TempleGuide";
 import { getTempleLesson } from "@/data/temple-guide";
@@ -54,6 +55,9 @@ async function Encounter({ params }: Props) {
   const p = await params;
   const item = findTactic(p.dungeon, p.boss);
   if (!item) notFound();
+  const rubyStudy =
+    p.dungeon === "ruby-life-pools" ? getRubyLesson(p.boss) : undefined;
+  if (rubyStudy) return <RubyGuide key={p.boss} bossId={rubyStudy.id} />;
   const templeStudy =
     p.dungeon === "temple-of-sethraliss" ? getTempleLesson(p.boss) : undefined;
   if (templeStudy) return <TempleGuide key={p.boss} bossId={templeStudy.id} />;
@@ -76,8 +80,6 @@ async function Encounter({ params }: Props) {
   const altarStudy =
     p.dungeon === "altar-of-fangs" ? getAltarStudy(p.boss) : undefined;
   if (altarStudy) return <AltarGuide key={p.boss} bossId={altarStudy.id} />;
-  if (p.dungeon === "ruby-life-pools" && p.boss === "melidrussa-chillworn")
-    return <ChillstormStudy />;
   return (
     <TacticsPreview
       key={`${p.dungeon}/${p.boss}`}
