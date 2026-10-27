@@ -48,6 +48,7 @@ test("Temple model preserves shield swaps, beam interception and Avatar roles", 
   expect(missed.beams[0].covered).toBe(false);
   expect(missed.beams[0].to).toEqual(missed.boss);
   expect(missed.failure).toBe(true);
+  expect(distance(getTempleState("avatar-of-sethraliss", 8).actors[0], getTempleState("avatar-of-sethraliss", 8).boss)).toBeGreaterThan(48);
   expect(getTempleState("avatar-of-sethraliss", 5).orbs).toHaveLength(3);
   expect(getTempleState("avatar-of-sethraliss", 8).orbs).toHaveLength(0);
   expect(getTempleState("avatar-of-sethraliss", 8, true).orbs).toHaveLength(1);

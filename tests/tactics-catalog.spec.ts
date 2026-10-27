@@ -137,6 +137,6 @@ test("position and action studies support practice and narrow screens", async ({
     }
   }
   expect(await (await request.get("/sitemap.xml")).text()).not.toContain(
-    "/tactics/temple-of-sethraliss",
+    "/tactics/ruby-life-pools",
   );
 });

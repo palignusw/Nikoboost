@@ -211,6 +211,7 @@ export function getTempleState(
   }
   if (id === "avatar-of-sethraliss") {
     boss = { x: 300, y: 100 };
+    move(0, { x: 300, y: 175 });
     if (time < 5) {
       message = "Defeat the Defiler · unlock healing";
       adds = [{ p: { x: 300, y: 240 }, label: "Defiler" }];
