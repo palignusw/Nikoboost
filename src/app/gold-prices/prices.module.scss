@@ -119,6 +119,9 @@
     color: $brand-light;
   }
 }
+.scrollHint {
+  display: none;
+}
 .page .button {
   display: inline-flex;
   margin: 22px 0;
@@ -197,6 +200,13 @@
   }
   .tableWrap caption {
     padding: 14px 10px;
+  }
+  .scrollHint {
+    display: block;
+    margin-top: 5px;
+    color: $text-secondary;
+    font-size: 11px;
+    line-height: 1.4;
   }
   .cards article {
     padding: 20px;

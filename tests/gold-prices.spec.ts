@@ -83,3 +83,19 @@ test("gold prices page has no horizontal overflow at phone and compact desktop w
       .getByRole("link", { name: "Gold Prices", exact: true }),
   ).toHaveAttribute("aria-current", "page");
 });
+
+
+test("price tables offer a mobile scrolling hint", async ({ page }, testInfo) => {
+  await page.goto("/gold-prices");
+  await page.setViewportSize({ width: 320, height: 900 });
+  for (const service of ["Mythic+", "Delves"]) {
+    const table = page.getByRole("region", { name: `${service} gold price table`, exact: true });
+    await expect(table.getByText(/Swipe sideways/)).toBeVisible();
+    await table.scrollIntoViewIfNeeded();
+    await page.screenshot({ path: testInfo.outputPath(`tactics-price-${service === "Mythic+" ? "mythic" : "delves"}-mobile.png`) });
+  }
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await expect(page.getByText(/Swipe sideways/).first()).toBeHidden();
+  await page.getByRole("region", { name: "Mythic+ gold price table", exact: true }).scrollIntoViewIfNeeded();
+  await page.screenshot({ path: testInfo.outputPath("tactics-price-desktop.png") });
+});
