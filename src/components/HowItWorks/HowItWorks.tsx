@@ -20,7 +20,7 @@ const steps: {
       number: "02",
       icon: "send",
       title: "Send your details",
-      text: "Enter your BattleTag, realm and preferred contact method. No account registration required.",
+      text: "Enter your BattleTag, character details and Discord username. No account registration required.",
     },
     {
       number: "03",
@@ -32,7 +32,7 @@ const steps: {
       number: "04",
       icon: "swords",
       title: "Join & complete",
-      text: "Join the group, complete your Mythic+ runs and receive eligible tradable loot from your selected traders.",
+      text: "Join the group and complete your runs. Selected traders may offer eligible items; drops are not guaranteed.",
     },
   ];
 
