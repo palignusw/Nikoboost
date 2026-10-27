@@ -29,6 +29,7 @@ function PriceTable({ service }: { service: "mythic" | "delves" }) {
       <table>
         <caption>
           {mythic ? "Mythic+" : "Delves"} package totals · in-game gold
+          <span className={styles.scrollHint}>Swipe sideways to see all prices, if needed <span aria-hidden="true">↔</span></span>
         </caption>
         <thead>
           <tr>
