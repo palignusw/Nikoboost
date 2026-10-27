@@ -79,7 +79,7 @@ test("sitemap uses real configured update dates and the public origin", async ({
   request,
 }) => {
   const entries = sitemap();
-  expect(entries).toHaveLength(Object.keys(serviceContent).length + 37);
+  expect(entries).toHaveLength(Object.keys(serviceContent).length + 38);
   for (const content of Object.values(serviceContent)) {
     const url = content.path === "/" ? origin : `${origin}${content.path}`;
     expect(entries.find((entry) => entry.url === url)?.lastModified).toEqual(

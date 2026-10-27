@@ -1,0 +1,336 @@
+@use "../../styles/variables" as *;
+.page {
+  width: min(1240px, calc(100% - 48px));
+  margin: 0 auto;
+  color: $text-primary;
+  padding: 28px 0 80px;
+  font:
+    14px/1.75 var(--font-sora),
+    sans-serif;
+}
+.breadcrumb {
+  display: flex;
+  gap: 12px;
+  color: $text-secondary;
+  font-size: 12px;
+  margin-bottom: 22px;
+  a {
+    color: $text-secondary;
+  }
+}
+.hero {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  background:
+    linear-gradient(110deg, rgba(9, 15, 27, 0.98), rgba(12, 24, 41, 0.88)),
+    url("/images/hero/midnight-hero.jpg") center/cover;
+  padding: clamp(28px, 5vw, 64px);
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(250px, 0.7fr);
+  align-items: end;
+  gap: 42px;
+}
+.heroCopy {
+  max-width: 720px;
+}
+.eyebrow {
+  color: $season-light;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  margin: 0 0 12px;
+}
+.hero h1 {
+  font:
+    700 clamp(44px, 6vw, 76px)/0.98 var(--font-rajdhani),
+    sans-serif;
+  letter-spacing: -0.025em;
+  margin: 0 0 20px;
+  span {
+    color: $brand-light;
+  }
+}
+.lead {
+  color: $text-secondary;
+  max-width: 650px;
+  font-size: 15px;
+  margin: 0;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 25px;
+  a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 46px;
+    padding: 10px 18px;
+    border: 1px solid $border;
+    border-radius: 8px;
+    color: $text-primary;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 700;
+    background: $bg-secondary;
+    &:first-child {
+      background: #374f75;
+      border-color: #607da5;
+    }
+    &:hover {
+      border-color: $brand-light;
+    }
+    &:focus-visible {
+      outline: 2px solid $brand-light;
+      outline-offset: 3px;
+    }
+  }
+}
+.heroCard {
+  border: 1px solid $border;
+  border-radius: 12px;
+  padding: 24px;
+  background: rgba(15, 27, 43, 0.88);
+  > span {
+    color: $season-light;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+  }
+  strong {
+    display: block;
+    font:
+      700 28px/1.15 var(--font-rajdhani),
+      sans-serif;
+    margin: 12px 0;
+  }
+  p {
+    color: $text-secondary;
+    margin: 0;
+    font-size: 12px;
+  }
+  div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 18px;
+    span {
+      border: 1px solid $border;
+      border-radius: 5px;
+      padding: 4px 8px;
+      font-size: 10px;
+      color: $text-secondary;
+    }
+  }
+}
+.section {
+  padding-top: 64px;
+  scroll-margin-top: 90px;
+}
+.sectionHeading {
+  max-width: 700px;
+  margin-bottom: 24px;
+  h2 {
+    margin: 0;
+  }
+  > p:last-child:not(.eyebrow) {
+    color: $text-secondary;
+    margin: 10px 0 0;
+  }
+}
+.page h2 {
+  font:
+    700 clamp(30px, 3vw, 42px)/1.1 var(--font-rajdhani),
+    sans-serif;
+  letter-spacing: -0.02em;
+}
+.steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  article {
+    border: 1px solid $border;
+    border-radius: 12px;
+    background: $bg-secondary;
+    padding: 23px;
+  }
+  span {
+    color: $season-light;
+    font:
+      700 24px/1 var(--font-rajdhani),
+      sans-serif;
+  }
+  h3 {
+    font:
+      700 23px/1.1 var(--font-rajdhani),
+      sans-serif;
+    margin: 16px 0 10px;
+  }
+  p {
+    color: $text-secondary;
+    font-size: 12px;
+    margin: 0;
+  }
+}
+.split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  padding-top: 64px;
+  article {
+    border-top: 1px solid $border;
+    padding: 24px 4px 0;
+  }
+  h2 {
+    margin: 0 0 16px;
+  }
+  p:not(.eyebrow) {
+    color: $text-secondary;
+  }
+  a {
+    color: $brand-light;
+  }
+}
+.checklist {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  > div {
+    border: 1px solid $border;
+    border-radius: 10px;
+    padding: 20px;
+    background: $bg-secondary;
+  }
+  strong {
+    font:
+      700 23px/1.2 var(--font-rajdhani),
+      sans-serif;
+  }
+  p {
+    color: $text-secondary;
+    margin: 9px 0 0;
+    font-size: 12px;
+  }
+}
+.dungeons {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  a {
+    display: grid;
+    grid-template-columns: 25px 1fr auto;
+    gap: 3px 8px;
+    padding: 18px;
+    color: $text-primary;
+    border: 1px solid $border;
+    border-radius: 10px;
+    background: $bg-secondary;
+    text-decoration: none;
+    &:hover {
+      border-color: $brand-light;
+    }
+    &:focus-visible {
+      outline: 2px solid $brand-light;
+      outline-offset: 3px;
+    }
+  }
+  span {
+    color: $season-light;
+    font-size: 11px;
+  }
+  strong {
+    font:
+      700 19px/1.15 var(--font-rajdhani),
+      sans-serif;
+  }
+  small {
+    grid-column: 2;
+    color: $text-secondary;
+    font-size: 10px;
+  }
+  b {
+    grid-column: 3;
+    grid-row: 1;
+    color: $brand-light;
+  }
+}
+.next {
+  margin-top: 64px;
+  border: 1px solid $border;
+  border-radius: 12px;
+  background: $bg-secondary;
+  padding: clamp(24px, 4vw, 40px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  h2 {
+    margin: 0 0 10px;
+  }
+  p:not(.eyebrow) {
+    color: $text-secondary;
+    max-width: 600px;
+    margin: 0;
+  }
+  .actions {
+    margin: 0;
+  }
+}
+.sources {
+  margin-top: 34px;
+  border-top: 1px solid $border;
+  padding-top: 20px;
+  color: $text-secondary;
+  font-size: 11px;
+  a {
+    color: $brand-light;
+  }
+}
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+  .steps,
+  .dungeons {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .next {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+@media (max-width: 600px) {
+  .page {
+    width: calc(100% - 32px);
+    padding-top: 18px;
+  }
+  .hero {
+    gap: 24px;
+  }
+  .section,
+  .split {
+    padding-top: 45px;
+  }
+  .split,
+  .checklist {
+    grid-template-columns: 1fr;
+  }
+  .steps {
+    grid-template-columns: 1fr;
+  }
+  .dungeons a {
+    padding: 14px 10px;
+    grid-template-columns: 20px minmax(0, 1fr) auto;
+  }
+  .dungeons strong {
+    font-size: 17px;
+    overflow-wrap: anywhere;
+  }
+  .next {
+    margin-top: 45px;
+  }
+}
