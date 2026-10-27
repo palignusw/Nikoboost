@@ -43,9 +43,9 @@ test("catalog filters bosses and navigates to distinct encounter studies", async
   page,
 }) => {
   await page.goto("/tactics");
-  await expect(page.getByRole("status")).toHaveText("21 of 21 encounters");
+  await expect(page.getByRole("status")).toHaveText("25 of 25 encounters");
   await page.getByRole("searchbox").fill("Sentinel");
-  await expect(page.getByRole("status")).toHaveText("1 of 21 encounters");
+  await expect(page.getByRole("status")).toHaveText("1 of 25 encounters");
   await page.getByRole("link", { name: /Sentinel of Winter/ }).click();
   await expect(page).toHaveURL(/\/den-of-nalorakk\/sentinel-of-winter$/);
   await expect(
@@ -57,13 +57,13 @@ test("catalog filters bosses and navigates to distinct encounter studies", async
   ).toContainText("Sentinel of Winter");
   await page.goto("/tactics");
   await page.getByRole("combobox").selectOption("altar-of-fangs");
-  await expect(page.getByRole("status")).toHaveText("3 of 21 encounters");
+  await expect(page.getByRole("status")).toHaveText("3 of 25 encounters");
   await page.getByRole("searchbox").fill("no-such-boss");
   await expect(
     page.getByRole("heading", { name: "No matching encounters." }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Show all encounters" }).click();
-  await expect(page.getByRole("status")).toHaveText("21 of 21 encounters");
+  await expect(page.getByRole("status")).toHaveText("25 of 25 encounters");
 });
 
 test("position and action studies support practice and narrow screens", async ({
@@ -80,10 +80,11 @@ test("position and action studies support practice and narrow screens", async ({
         d.id !== "murder-row" &&
         d.id !== "the-blinding-vale" &&
         d.id !== "voidscar-arena" &&
-        d.id !== "kings-rest",
+        d.id !== "kings-rest" &&
+        d.id !== "temple-of-sethraliss",
     )
     .map((d) => ({ d, b: d.bosses[0] }));
-  for (const id of ["avatar-of-sethraliss"]) {
+  for (const id of ["kokia-blazehoof"]) {
     const d = tacticsDungeons.find((d) => d.bosses.some((b) => b.id === id))!;
     cases.push({ d, b: d.bosses.find((b) => b.id === id)! });
   }

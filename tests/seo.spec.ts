@@ -79,7 +79,7 @@ test("sitemap uses real configured update dates and the public origin", async ({
   request,
 }) => {
   const entries = sitemap();
-  expect(entries).toHaveLength(Object.keys(serviceContent).length + 28);
+  expect(entries).toHaveLength(Object.keys(serviceContent).length + 33);
   for (const content of Object.values(serviceContent)) {
     const url = content.path === "/" ? origin : `${origin}${content.path}`;
     expect(entries.find((entry) => entry.url === url)?.lastModified).toEqual(
@@ -88,7 +88,7 @@ test("sitemap uses real configured update dates and the public origin", async ({
   }
   expect(
     entries.filter((entry) => entry.url.includes("/tactics")),
-  ).toHaveLength(28);
+  ).toHaveLength(33);
   expect(entries.some((entry) => entry.url.includes("ruby-life-pools"))).toBe(
     false,
   );
