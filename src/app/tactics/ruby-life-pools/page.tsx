@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
-import ChillstormStudy from "./ChillstormStudy";
-
+import { siteOrigin } from "@/lib/pageSeo";
+import RubyGuide from "./RubyGuide";
 export const metadata: Metadata = {
-  title: "Ruby Life Pools Tactics Lab — Preview",
+  title: "Ruby Life Pools — Animated Mythic+ Boss Tactics",
   description:
-    "Explore a visual Chillstorm positioning lesson for Melidrussa Chillworn. A NikoBoost design preview with role notes and an interactive practice scene.",
-  robots: { index: false, follow: false },
+    "Learn all three Ruby Life Pools bosses with animated mechanics, role advice and practice decisions.",
+  robots: { index: true, follow: true },
+  alternates: { canonical: `${siteOrigin}/tactics/ruby-life-pools` },
 };
-
 export default function Page() {
-  return <ChillstormStudy />;
+  return <RubyGuide />;
 }

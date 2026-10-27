@@ -87,7 +87,7 @@ export default function ChillstormStudy() {
         </aside>
       </div>
       <nav className={styles.storyboard} aria-label="Lesson steps">{frames.map((f, i) => <button key={f.label} aria-current={!practice && step === i ? "step" : undefined} onClick={() => { setPractice(false); navigate(i); }}><span>0{i + 1}</span><div>{f.label}<small>{i === 0 ? "Notice it" : i === 1 ? "Place it" : i === 2 ? "Escape it" : "Get ready again"}</small></div><b>→</b></button>)}</nav>
-      <footer className={styles.footer}><div><strong>One mechanic, explained visually.</strong><p>This example follows one targeted DPS. Other roles can be targeted. Learn the full encounter before your run.</p></div><a href={tacticsPreview.source.url} target="_blank" rel="noreferrer">Method · full dungeon guide ↗</a></footer>
+      <footer className={styles.footer}><div><Link href="/tactics/ruby-life-pools/melidrussa-chillworn">← Full Melidrussa guide</Link><strong>One mechanic, explained visually.</strong><p>This example follows one targeted DPS. Other roles can be targeted. Learn the full encounter before your run.</p></div><a href={tacticsPreview.source.url} target="_blank" rel="noreferrer">Method · full dungeon guide ↗</a></footer>
     </main>
   </div>;
 }

@@ -7,6 +7,7 @@ export const publishedTactics = [
   "voidscar-arena",
   "kings-rest",
   "temple-of-sethraliss",
+  "ruby-life-pools",
 ] as const;
 export const tacticsPublishedAt = "2026-10-27";
 export function isPublishedTactic(dungeon: string) {
