@@ -65,13 +65,13 @@ export function parseDelveDraft(value: unknown): DelveConfig | null {
     format: v.format, delveId: v.delveId, playerClass: v.playerClass };
 }
 
-export function readBookingDraft<T>(raw: string | null | undefined, parse: (value: unknown) => T | null, now = Date.now()): T | null {
+export function readBookingDraft<T>(raw: string | null | undefined, parse: (value: unknown) => T | null, now?: number): T | null {
   if (!raw) return null;
   try {
     const data: unknown = JSON.parse(raw);
     if (!record(data) || data.version !== 1 || data.season !== wowSeason.id ||
         typeof data.updatedAt !== "number" || !Number.isFinite(data.updatedAt) ||
-        data.updatedAt > now || now - data.updatedAt >= DRAFT_TTL) return null;
+        data.updatedAt > (now ?? Date.now()) || (now ?? Date.now()) - data.updatedAt >= DRAFT_TTL) return null;
     return parse(data.value);
   } catch { return null; }
 }
