@@ -90,7 +90,12 @@ test("homepage exposes a compact updates block and links to the full index", asy
   const section = page.getByRole("region", { name: "Latest WoW updates", exact: true });
   await expect(section.locator("article")).toHaveCount(3);
   await expect(section.getByRole("link", { name: /All patch notes/ })).toHaveAttribute("href", "/wow-updates");
+  if (info.project.name === "Mobile Chrome") {
+    await page.locator("#mythic-steps").scrollIntoViewIfNeeded();
+    await expect(page.getByRole("region", { name: "Live order price", exact: true })).toBeVisible();
+  }
   await section.scrollIntoViewIfNeeded();
+  await expect(page.getByRole("region", { name: "Live order price", exact: true })).toBeHidden();
   await page.screenshot({ path: info.outputPath("tactics-wow-updates-home.png") });
   await section.getByRole("link", { name: /All patch notes/ }).click();
   await expect(page).toHaveURL(/\/wow-updates$/);
