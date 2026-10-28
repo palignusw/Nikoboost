@@ -263,3 +263,26 @@ test("a shared plan from another season cannot overwrite the current week", asyn
     page.getByRole("button", { name: "Remove key +2 run", exact: true }),
   ).toHaveCount(1);
 });
+
+
+test("tool selection survives refresh and browser navigation", async ({ page }) => {
+  await page.goto("/mythic-plus-rewards");
+  const tabs = page.getByRole("navigation", { name: "Rewards tools" });
+  const crests = tabs.getByRole("button", { name: /Crest calculator/ });
+  const compare = tabs.getByRole("button", { name: /Compare rewards/ });
+  await crests.click();
+  await expect(page).toHaveURL(/#tool-crests$/);
+  await page.reload();
+  await expect(crests).toHaveAttribute("aria-pressed", "true");
+  await compare.click();
+  await expect(page).toHaveURL(/#tool-compare$/);
+  await page.goBack();
+  await expect(crests).toHaveAttribute("aria-pressed", "true");
+  await page.goForward();
+  await expect(compare).toHaveAttribute("aria-pressed", "true");
+  await page.evaluate(() => { window.location.hash = "crest-calculator"; });
+  await expect(crests).toHaveAttribute("aria-pressed", "true");
+  await page.evaluate(() => { window.location.hash = "reward-reference"; });
+  await expect(compare).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByRole("table")).toBeVisible();
+});

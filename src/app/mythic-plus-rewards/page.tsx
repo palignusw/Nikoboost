@@ -31,6 +31,11 @@ import RewardSelect from "./components/RewardSelect";
 import styles from "./page.module.scss";
 
 type View = "vault" | "compare" | "crests";
+function viewForHash(hash: string): View {
+  if (["#crest-calculator", "#tool-crests"].includes(hash)) return "crests";
+  if (["#reward-explorer", "#reward-reference", "#tool-compare"].includes(hash)) return "compare";
+  return "vault";
+}
 const subscribeHydration = () => () => {};
 const emptyWeek = (): PlannerWeek => ({ completed: [], planned: [] });
 const keyOptions = rewards.map((row) => ({
@@ -119,11 +124,7 @@ export default function RewardsExplorer() {
       else
         setNotice("This shared link is invalid. Your saved week is unchanged.");
     }
-    if (window.location.hash === "#crest-calculator") setView("crests");
-    if (
-      ["#reward-explorer", "#reward-reference"].includes(window.location.hash)
-    )
-      setView("compare");
+    setView(viewForHash(window.location.hash));
     if (window.location.hash === "#reward-reference") setShowTable(true);
     setLoaded(true);
   }
@@ -139,6 +140,30 @@ export default function RewardsExplorer() {
       /* The tool remains usable without storage. */
     }
   }, [week, loaded, example]);
+
+  useEffect(() => {
+    const restoreView = () => {
+      setView(viewForHash(window.location.hash));
+      if (window.location.hash === "#reward-reference") setShowTable(true);
+    };
+    window.addEventListener("hashchange", restoreView);
+    window.addEventListener("popstate", restoreView);
+    return () => {
+      window.removeEventListener("hashchange", restoreView);
+      window.removeEventListener("popstate", restoreView);
+    };
+  }, []);
+
+  function selectView(next: View, replace = false) {
+    setView(next);
+    const url = new URL(window.location.href);
+    const hash = `#tool-${next}`;
+    if (url.hash === hash) return;
+    url.hash = hash;
+    window.history[replace ? "replaceState" : "pushState"](
+      window.history.state, "", url,
+    );
+  }
 
   const allRuns = [...week.completed, ...week.planned];
   const currentVault = vaultFor(week.completed);
@@ -183,7 +208,7 @@ export default function RewardsExplorer() {
     );
   }
   function showWeek() {
-    setView("vault");
+    selectView("vault", true);
     requestAnimationFrame(() =>
       document
         .getElementById("weekly-planner")
@@ -249,7 +274,7 @@ export default function RewardsExplorer() {
               aria-pressed={view === id}
               aria-controls={`tool-${id}`}
               onClick={() => {
-                setView(id);
+                selectView(id);
                 setNotice("");
               }}
             >
@@ -284,7 +309,7 @@ export default function RewardsExplorer() {
                 update(shared, "Shared week imported.");
                 setExample(false);
                 closeShared();
-                setView("vault");
+                selectView("vault", true);
               }}
             >
               Import shared plan
