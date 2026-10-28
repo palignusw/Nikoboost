@@ -1,0 +1,77 @@
+{
+  "checkedAt": "2026-10-28T11:43:28.283967Z",
+  "items": [
+    {
+      "id": 24307310,
+      "title": "Hotfixes: October 27, 2026",
+      "url": "https://worldofwarcraft.blizzard.com/en-us/news/24307310/hotfixes-october-27-2026",
+      "kind": "hotfix",
+      "publishedAt": "2026-10-28T00:42:32.672Z",
+      "updatedAt": "2026-10-28T00:42:32.578Z",
+      "scope": "shared"
+    },
+    {
+      "id": 24304162,
+      "title": "12.1.5 Content Update Notes",
+      "url": "https://worldofwarcraft.blizzard.com/en-us/news/24304162/1215-content-update-notes",
+      "kind": "patch",
+      "publishedAt": "2026-10-13T21:50:00.000Z",
+      "updatedAt": "2026-10-13T22:12:37.993Z",
+      "scope": "retail"
+    },
+    {
+      "id": 24296142,
+      "title": "Hotfixes: October 6, 2026",
+      "url": "https://worldofwarcraft.blizzard.com/en-us/news/24296142/hotfixes-october-6-2026",
+      "kind": "hotfix",
+      "publishedAt": "2026-10-07T02:12:00.000Z",
+      "updatedAt": "2026-10-17T01:37:21.966Z",
+      "scope": "shared"
+    },
+    {
+      "id": 24293281,
+      "title": "Curse of Ula'tek Content Update Notes",
+      "url": "https://worldofwarcraft.blizzard.com/en-us/news/24293281/curse-of-ulatek-content-update-notes",
+      "kind": "patch",
+      "publishedAt": "2026-08-06T17:11:00.000Z",
+      "updatedAt": "2026-09-02T17:46:31.661Z",
+      "scope": "retail"
+    },
+    {
+      "id": 24287397,
+      "title": "Hotfixes: July 28, 2026",
+      "url": "https://worldofwarcraft.blizzard.com/en-us/news/24287397/hotfixes-july-28-2026",
+      "kind": "hotfix",
+      "publishedAt": "2026-07-29T01:38:00.000Z",
+      "updatedAt": "2026-09-02T18:46:59.018Z",
+      "scope": "shared"
+    },
+    {
+      "id": 24244888,
+      "title": "Revelations Content Update Notes",
+      "url": "https://worldofwarcraft.blizzard.com/en-us/news/24244888/revelations-content-update-notes",
+      "kind": "patch",
+      "publishedAt": "2026-06-16T16:59:00.000Z",
+      "updatedAt": "2026-09-02T18:49:20.179Z",
+      "scope": "retail"
+    },
+    {
+      "id": 24271855,
+      "title": "12.0.5 Content Update Notes",
+      "url": "https://worldofwarcraft.blizzard.com/en-us/news/24271855/1205-content-update-notes",
+      "kind": "patch",
+      "publishedAt": "2026-04-21T21:59:00.000Z",
+      "updatedAt": "2026-09-02T18:49:28.252Z",
+      "scope": "retail"
+    },
+    {
+      "id": 24244646,
+      "title": "Midnight Content Update Notes",
+      "url": "https://worldofwarcraft.blizzard.com/en-us/news/24244646/midnight-content-update-notes",
+      "kind": "patch",
+      "publishedAt": "2026-03-03T00:09:00.000Z",
+      "updatedAt": "2026-09-02T18:49:36.000Z",
+      "scope": "retail"
+    }
+  ]
+}

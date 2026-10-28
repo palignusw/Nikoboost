@@ -1,3 +1,8 @@
+import { Suspense } from "react";
+import LatestUpdatesView from "@/components/WowUpdates/LatestUpdatesView";
+import savedUpdates from "@/data/wow-updates-snapshot.json";
+import type { UpdatesSnapshot } from "@/lib/wowUpdates";
+import LatestUpdates from "@/components/WowUpdates/LatestUpdates";
 import { pageMetadata } from "@/lib/pageSeo";
 import StructuredData from "@/components/Seo/StructuredData";
 import ServiceGuide from "@/components/ServiceGuide/ServiceGuide";
@@ -21,6 +26,10 @@ export default function Home() {
         <MythicPlus />
 
         <ServiceGuide />
+
+        <Suspense fallback={<LatestUpdatesView feed={{ ...(savedUpdates as UpdatesSnapshot), mode: "checking" }} />}>
+          <LatestUpdates />
+        </Suspense>
 
         <HowItWorks />
 

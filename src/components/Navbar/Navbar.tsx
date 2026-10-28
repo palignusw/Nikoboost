@@ -16,6 +16,7 @@ const links = [
   },
   { href: "/tactics", label: "Dungeon Tactics", page: "/tactics" },
   { href: "/gold-prices", label: "Gold Prices", page: "/gold-prices" },
+  { href: "/wow-updates", label: "WoW Updates", page: "/wow-updates" },
   { href: "/#how", label: "How it works", page: null },
   { href: "/#faq", label: "FAQ", page: null },
 ];

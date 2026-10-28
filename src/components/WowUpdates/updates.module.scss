@@ -1,0 +1,89 @@
+@use "../../styles/variables" as *;
+@use "../../styles/layout" as layout;
+
+.page {
+  @include layout.site-container;
+  padding-block: 118px 72px;
+  color: $text-primary;
+  font: 14px/1.7 var(--font-sora), sans-serif;
+  :is(a, button):focus-visible { outline: 2px solid $brand-light; outline-offset: 4px; }
+}
+.breadcrumb { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 32px; color: $text-secondary; font-size: 12px; a { color: $brand-light; } }
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(260px, 0.8fr);
+  align-items: start;
+  gap: 44px;
+  padding-bottom: 38px;
+  h1 { margin: 12px 0 20px; font: 700 clamp(44px, 5vw, 72px)/1.04 var(--font-rajdhani), sans-serif; letter-spacing: -0.025em; span { color: $brand-light; } }
+  > div > p:last-child { max-width: 680px; color: $text-secondary; font-size: 16px; }
+}
+.eyebrow { margin: 0; color: $season-light; font: 600 10px/1.6 var(--font-sora), sans-serif; letter-spacing: 0.12em; }
+.quickLinks {
+  padding: 22px;
+  border: 1px solid $border;
+  border-radius: 16px;
+  background: $bg-elevated;
+  strong { display: block; margin: 10px 0 15px; font: 700 25px/1.1 var(--font-rajdhani), sans-serif; }
+  a { display: flex; justify-content: space-between; gap: 10px; padding: 12px 0; border-top: 1px solid $border; color: $text-secondary; font-size: 12px; &:hover { color: $brand-light; } }
+}
+.status {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 18px;
+  border: 1px solid $border;
+  border-radius: 12px;
+  background: $bg-secondary;
+  strong { font-size: 12px; font-weight: 600; }
+  p { margin: 4px 0 0; font-size: 11px; line-height: 1.7; color: $text-secondary; }
+}
+.statusDot { flex-shrink: 0; width: 6px; height: 6px; margin-top: 8px; border-radius: 50%; background: $brand-light; }
+.listHeading { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 20px; margin: 34px 0 16px; h2 { margin: 7px 0 0; font: 700 clamp(28px, 3vw, 38px)/1.1 var(--font-rajdhani), sans-serif; } }
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  button { min-height: 44px; padding: 10px 15px; border: 1px solid $border; border-radius: 9px; background: $bg-elevated; color: $text-secondary; cursor: pointer; font: 600 12px/1.3 var(--font-sora), sans-serif;
+    &[aria-pressed="true"] { color: $text-primary; background: rgba($brand, 0.14); border-color: rgba($brand-light, 0.6); }
+    &:hover { color: $brand-light; }
+    &:disabled { opacity: 0.6; cursor: wait; }
+  }
+}
+.result { margin: 0 0 20px; color: $text-secondary; font-size: 11px; }
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.card {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  border: 1px solid $border;
+  border-radius: 16px;
+  background: $bg-secondary;
+  h3 { margin: 20px 0 12px; font: 700 clamp(24px, 2.3vw, 31px)/1.15 var(--font-rajdhani), sans-serif; overflow-wrap: anywhere; a { display: flex; gap: 16px; justify-content: space-between; &:hover { color: $brand-light; } span { flex-shrink: 0; color: $brand-light; font-size: 18px; } } }
+  > p { margin: 0 0 22px; max-width: 650px; color: $text-secondary; font-size: 13px; line-height: 1.75; }
+}
+.cardMeta { display: flex; align-items: center; flex-wrap: wrap; justify-content: space-between; gap: 10px; font-size: 10px; color: $text-secondary; > span { padding: 5px 9px; border-radius: 6px; font-size: 9px; font-weight: 600; letter-spacing: 0.06em; } }
+.hotfix { color: $season-light; background: rgba($season, 0.09); border: 1px solid rgba($season-light, 0.18); }
+.patch { color: $brand-light; background: rgba($brand, 0.1); border: 1px solid rgba($brand-light, 0.18); }
+.cardFooter { margin-top: auto; padding-top: 15px; border-top: 1px solid $border; display: flex; flex-wrap: wrap; gap: 8px 18px; justify-content: space-between; color: $text-secondary; font-size: 10px; > span:last-child { letter-spacing: 0.06em; } }
+.edited { margin-top: 10px; color: $text-secondary; font-size: 10px; }
+.homeSection { @include layout.site-container; padding-block: 40px 64px; color: $text-primary; font: 14px/1.7 var(--font-sora), sans-serif; .listHeading { margin-top: 0; } .status { margin-top: 20px; } :is(a, button):focus-visible { outline: 2px solid $brand-light; outline-offset: 4px; } }
+.homeGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); .card { padding: 22px; } .card h3 { font-size: 27px; } }
+.intro { margin: 0 0 24px; color: $text-secondary; font-size: 14px; }
+.textLink { display: inline-flex; align-items: center; gap: 14px; color: $brand-light; font-size: 12px; &:hover { text-decoration: underline; } }
+.explainer { margin-top: 38px; padding: 24px 0; border-top: 1px solid $border; color: $text-secondary; h2 { color: $text-primary; font: 700 28px/1.2 var(--font-rajdhani), sans-serif; } p { max-width: 850px; font-size: 13px; } a { color: $brand-light; text-decoration: underline; text-underline-offset: 4px; } }
+.empty { padding: 30px; border: 1px solid $border; border-radius: 14px; background: $bg-secondary; p { color: $text-secondary; } button { min-height: 44px; color: $brand-light; background: transparent; cursor: pointer; } }
+
+@media (max-width: 900px) { .hero { grid-template-columns: 1fr; gap: 24px; } .quickLinks { max-width: none; } .homeGrid { grid-template-columns: 1fr; } }
+@media (max-width: 600px) {
+  .page { padding-block: 100px 44px; }
+  .breadcrumb { margin-bottom: 24px; }
+  .hero { gap: 20px; padding-bottom: 28px; h1 { font-size: 44px; } > div > p:last-child { font-size: 14px; } }
+  .grid { grid-template-columns: 1fr; }
+  .card { padding: 20px; }
+  .listHeading { align-items: stretch; flex-direction: column; }
+  .filters { button { flex: 1; padding-inline: 10px; } }
+  .homeSection { padding-block: 30px 44px; }
+  .status { padding: 14px; }
+}
