@@ -79,6 +79,9 @@ test("updates page reads Midnight notes locally, supports search, filters and sh
   await notes.getByRole("searchbox").fill("Feral");
   await expect(notes).toContainText("Feral");
   await expect(notes.locator("li")).not.toHaveCount(0);
+  await expect(notes.locator('[data-change="buff"]').first()).toBeVisible();
+  await notes.locator("section").first().scrollIntoViewIfNeeded();
+  await page.screenshot({ path: info.outputPath(`tactics-midnight-badges-${info.project.name.replaceAll(" ", "-")}.png`) });
   await notes.getByRole("searchbox").fill("not-a-real-ability-xyz");
   await expect(notes).toContainText("No changes match");
   await notes.getByRole("button", { name: "Clear search" }).click();

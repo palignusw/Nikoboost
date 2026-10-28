@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import type { WowUpdate } from "@/lib/wowUpdates";
+import ChangeBadge from "./ChangeBadge";
 import styles from "./updates.module.scss";
 
 export default function NotesReader({ item }: { item: WowUpdate }) {
@@ -12,13 +13,14 @@ export default function NotesReader({ item }: { item: WowUpdate }) {
       <label htmlFor={`search-${item.id}`}>Find a class, dungeon or change<input id={`search-${item.id}`} type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Try Druid, Delves, PvP…" maxLength={150} /></label>
       <p role="status">{sections.length} {sections.length === 1 ? "section" : "sections"}{needle ? " matching your search" : " · Midnight only"}</p>
     </div>
+    <p className={styles.changeLegend}>Buff = stronger · Nerf = weaker · Balance = mixed or unclear tuning · Fix = bug correction. Automatic labels; unclassified changes stay unlabelled.</p>
     {item.contentMode === "summary" && <p className={styles.summaryNotice} role="note">Saved NikoBoost summary. The complete notes will appear after a successful source refresh. This is not the full changelog.</p>}
     <div className={styles.readingLayout}>
       <nav className={styles.contents} aria-label="In these notes"><strong>IN THESE NOTES</strong>{sections.map((section) => <a key={section.index} href={`#note-${item.id}-${section.index}`}>{section.date && <small>{section.date}</small>}{section.title}</a>)}</nav>
       <div className={styles.notesBody}>
         {sections.map((section) => <section className={styles.noteSection} key={section.index} id={`note-${item.id}-${section.index}`}>
           {section.date && <p className={styles.noteDate}>{section.date}</p>}<h3>{section.title}</h3>
-          <ul>{section.lines.map((line, index) => <li key={index}>{line.path.length > 0 && <strong className={styles.context}>{line.path.join(" › ")}</strong>}<span>{line.text}</span></li>)}</ul>
+          <ul>{section.lines.map((line, index) => <li key={index}><div className={styles.changeHeading}>{line.path.length > 0 && <strong className={styles.context}>{line.path.join(" › ")}</strong>}<ChangeBadge text={line.text} section={section.title} /></div><span>{line.text}</span></li>)}</ul>
         </section>)}
         {!sections.length && <div className={styles.empty}><h3>No changes match “{query}”.</h3><p>Try an ability name or a shorter search.</p><button type="button" onClick={() => setQuery("")}>Clear search</button></div>}
       </div>

@@ -27,3 +27,7 @@ Cache refresh errors throw so the last successful snapshot remains available. On
 - `src/components/WowUpdates`: reader, search, homepage cards and styles.
 
 Only the reader index is in the sitemap; article selection uses shareable fragment links. After deployment check the actual source-check status. Persistent saved-summary warnings need investigation, not removal.
+
+## Change labels
+
+`src/lib/wowChangeKind.ts` contains conservative, deterministic Buff/Nerf/Balance/Fix wording rules. Directional labels apply only to explicit class/PvP tuning from the player perspective; lower cooldown/resource cost and less damage taken count as improvements. Opposing adjustments, enemy tuning and unclear numerical changes use Balance. Clear bug corrections use Fix; ordinary announcements remain unlabelled. Labels are explanatory hints, not class rankings. They update automatically with the text and require no paid model. Tests cover reversed metrics, mixed tuning, unknown adjustments and negations.
