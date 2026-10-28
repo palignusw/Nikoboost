@@ -101,3 +101,19 @@ test("position and action studies support practice and narrow screens", async ({
     "/tactics/ruby-life-pools",
   );
 });
+
+
+test("catalog search accepts reordered words and mechanic descriptions", async ({ page }) => {
+  await page.goto("/tactics");
+  const search = page.getByRole("searchbox");
+  for (const query of ["ravi altar", "  ALTAR   RAV’I  ", "ravi bone"]) {
+    await search.fill(query);
+    await expect(page.getByRole("status")).toHaveText("1 of 28 encounters");
+    await expect(page.getByRole("link", { name: /Rav’i/ })).toBeVisible();
+  }
+  await page.getByRole("combobox").selectOption("murder-row");
+  await expect(page.getByRole("heading", { name: "No matching encounters." })).toBeVisible();
+  await page.getByRole("button", { name: "Show all encounters" }).click();
+  await expect(search).toHaveValue("");
+  await expect(page.getByRole("status")).toHaveText("28 of 28 encounters");
+});
