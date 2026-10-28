@@ -58,10 +58,11 @@ test("updates page has metadata, safe source links, filters and shared page alig
   await page.goto("/wow-updates");
   await expect(page).toHaveTitle(/WoW Patch Notes & Hotfixes/);
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", /\/wow-updates$/);
-  const list = page.getByLabel("Official updates list");
+  const region = page.getByRole("region", { name: "Latest published updates", exact: true });
+  const list = region.getByLabel("Official updates list");
   await expect(list.locator("article").first()).toBeVisible();
-  await expect(page.getByLabel("Update source status")).toContainText("Last successful source check");
-  const patches = page.getByRole("button", { name: "Patch notes", exact: true });
+  await expect(region.getByRole("note", { name: "Update source status", exact: true })).toContainText("Last successful source check");
+  const patches = region.getByRole("button", { name: "Patch notes", exact: true });
   await expect(patches).toBeEnabled({ timeout: 15000 });
   await patches.click();
   await expect(list.locator('article[data-kind="hotfix"]')).toHaveCount(0);
