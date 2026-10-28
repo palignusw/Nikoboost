@@ -2,9 +2,9 @@ import { expect, test, type Page } from "@playwright/test";
 
 const routes = ["/", "/delves", "/mythic-plus-rewards", "/gold-prices", "/mythic-plus-guide", "/tactics"];
 async function checkGrid(page: Page, path: string) {
-  const nav = page.locator("header .container").first();
-  const content = path === "/" ? page.locator("#mythic > .container")
-    : path === "/tactics" ? page.locator("main")
+  const nav = page.locator("header .container:visible").first();
+  const content = path === "/" ? page.locator("#mythic > .container:visible")
+    : path === "/tactics" ? page.locator("main:visible")
     : page.getByRole("navigation", { name: "Breadcrumb", exact: true }).locator("..");
   const navigation = await nav.boundingBox();
   const body = await content.boundingBox();
@@ -14,7 +14,7 @@ async function checkGrid(page: Page, path: string) {
   expect(Math.abs(body!.width - navigation!.width), `${path} width`).toBeLessThan(1);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), `${path} overflow`).toBe(true);
   if (path === "/delves") {
-    const builder = await page.locator("#delve-builder").boundingBox();
+    const builder = await page.locator("#delve-builder:visible").boundingBox();
     expect(Math.abs(builder!.x - navigation!.x)).toBeLessThan(1);
     expect(Math.abs(builder!.width - navigation!.width)).toBeLessThan(1);
   }
