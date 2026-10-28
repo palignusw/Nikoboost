@@ -14,6 +14,9 @@ import Link from "next/link";
 import Breadcrumbs from "@/components/Seo/Breadcrumbs";
 import { useState } from "react";
 import Image from "next/image";
+import BookingDraftNotice from "@/components/BookingDraft/BookingDraftNotice";
+import { useBookingDraft } from "@/components/BookingDraft/useBookingDraft";
+import { parseDelveDraft } from "@/lib/bookingDrafts";
 import DelveReservation from "./DelveReservation";
 import { delveArt, featuredDelves } from "@/data/delveArt";
 import { classArmor } from "@/data/mythicPlus";
@@ -46,6 +49,10 @@ export default function Delves() {
   const [search, setSearch] = useState("");
   const [zone, setZone] = useState("All zones");
   const [open, setOpen] = useState(false);
+  const draft = useBookingDraft({
+    service: "delves", value: config, dirty: JSON.stringify(config) !== JSON.stringify(initial),
+    parse: parseDelveDraft, restore: setConfig, reset: () => setConfig(initial),
+  });
   const price = delvePrice(config);
   const reward = delveRewards[config.tier];
   const quote = config.kind !== "runs";
@@ -64,9 +71,11 @@ export default function Delves() {
   const surchargePercent = servicePricing.delves.specific * 100;
 
   const patch = (value: Partial<DelveConfig>) => {
+    if (draft.pending) return;
     setConfig((c) => ({ ...c, ...value }));
   };
   function chooseSpecial(kind: "nemesis" | "labyrinth") {
+    if (draft.pending) return;
     setConfig((c) => ({
       ...c,
       kind,
@@ -161,7 +170,8 @@ export default function Delves() {
               Choose a goal and number of runs. The total updates for your tier, location and bundle savings.
             </p>
           </div>
-          <div className={styles.builderGrid}>
+          <BookingDraftNotice {...draft} />
+          <div className={styles.builderGrid} inert={draft.pending ? true : undefined}>
             <div className={styles.configurator}>
               <div className={styles.stepHeading}>
                 <span>01</span>
@@ -803,7 +813,7 @@ export default function Delves() {
         </footer>
       </div>
       {open && (
-        <DelveReservation config={config} onClose={() => setOpen(false)} />
+        <DelveReservation config={config} onSuccess={draft.clear} onClose={() => setOpen(false)} />
       )}
     </main>
   );

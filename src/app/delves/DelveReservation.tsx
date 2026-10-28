@@ -16,9 +16,11 @@ const timezones = ["UTC", ...Intl.supportedValuesOf("timeZone")];
 export default function DelveReservation({
   config,
   onClose,
+  onSuccess,
 }: {
   config: DelveConfig;
   onClose: () => void;
+  onSuccess?: () => void;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const [busy, setBusy] = useState(false);
@@ -119,6 +121,7 @@ export default function DelveReservation({
           "Unexpected confirmation. Contact support before retrying.",
         );
       setReceipt(result);
+      onSuccess?.();
       dialog.current?.scrollTo({ top: 0 });
     } catch (err) {
       setError(

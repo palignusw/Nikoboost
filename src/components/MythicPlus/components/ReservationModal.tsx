@@ -26,6 +26,7 @@ import {
 type Props = {
   open: boolean;
   onClose: () => void;
+  onSuccess?: () => void;
   config: MythicPlusConfig;
 };
 
@@ -64,6 +65,7 @@ if (!timezones.some((zone) => zone.value === "UTC")) {
 export default function ReservationModal({
   open,
   onClose,
+  onSuccess,
   config,
 }: Props) {
   const [form, setForm] = useState<CustomerForm>(emptyForm);
@@ -279,6 +281,7 @@ export default function ReservationModal({
       setReceipt(data.receipt as OrderReceipt);
       setOrderId(data.orderId);
       setFinalTotal(data.total);
+      onSuccess?.();
 
       // Clear the submitted customer form.
       setForm({ ...emptyForm });

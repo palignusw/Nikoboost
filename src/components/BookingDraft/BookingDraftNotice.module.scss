@@ -1,0 +1,39 @@
+@use "../../styles/variables" as *;
+.notice {
+  margin: 0 0 24px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border: 1px solid $border;
+  border-radius: 12px;
+  background: $bg-secondary;
+  font-family: var(--font-sora), sans-serif;
+  color: $text-primary;
+  strong { font-size: 13px; }
+  p { margin: 6px 0 0; font-size: 12px; line-height: 1.6; color: $text-secondary; }
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  flex-shrink: 0;
+  button {
+    min-height: 44px;
+    padding: 10px 14px;
+    border: 1px solid rgba($brand-light, 0.35);
+    border-radius: 9px;
+    background: $bg-elevated;
+    color: $text-primary;
+    font: 600 12px/1.3 var(--font-sora), sans-serif;
+    cursor: pointer;
+    &:first-child:not(:last-child) { background: $brand-dark; }
+    &:hover { border-color: $brand-light; }
+    &:focus-visible { outline: 2px solid $brand-light; outline-offset: 3px; }
+  }
+}
+@media (max-width: 700px) {
+  .notice { align-items: stretch; flex-direction: column; }
+  .actions { button { flex: 1; } &:empty { display: none; } }
+}
