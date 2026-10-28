@@ -1,4 +1,5 @@
 "use client";
+import { useBookingSetupTracking } from "@/components/Analytics/useBookingSetupTracking";
 import { type ConfirmedChoices, type MythicDraft } from "@/lib/bookingDrafts";
 import { mythicDefaults, mythicSettings } from "@/data/season";
 
@@ -79,6 +80,8 @@ export function useMythicPlusConfig() {
     traders: false,
     region: false,
   });
+
+  useBookingSetupTracking("mythic", Object.values(confirmed).some(Boolean) || runGoal !== "standard");
 
   const draftValue: MythicDraft = {
     keyLevel, runs, runGoal, participation, region, role, playerClass,

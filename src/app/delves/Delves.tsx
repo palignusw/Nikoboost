@@ -17,6 +17,8 @@ import Image from "next/image";
 import BookingDraftNotice from "@/components/BookingDraft/BookingDraftNotice";
 import { useBookingDraft } from "@/components/BookingDraft/useBookingDraft";
 import { parseDelveDraft } from "@/lib/bookingDrafts";
+import { reportBookingEvent } from "@/lib/bookingAnalytics";
+import { useBookingSetupTracking } from "@/components/Analytics/useBookingSetupTracking";
 import DelveReservation from "./DelveReservation";
 import { delveArt, featuredDelves } from "@/data/delveArt";
 import { classArmor } from "@/data/mythicPlus";
@@ -53,6 +55,7 @@ export default function Delves() {
     service: "delves", value: config, dirty: JSON.stringify(config) !== JSON.stringify(initial),
     parse: parseDelveDraft, restore: setConfig, reset: () => setConfig(initial),
   });
+  const startSetup = useBookingSetupTracking("delves", JSON.stringify(config) !== JSON.stringify(initial));
   const price = delvePrice(config);
   const reward = delveRewards[config.tier];
   const quote = config.kind !== "runs";
@@ -72,10 +75,12 @@ export default function Delves() {
 
   const patch = (value: Partial<DelveConfig>) => {
     if (draft.pending) return;
+    startSetup();
     setConfig((c) => ({ ...c, ...value }));
   };
   function chooseSpecial(kind: "nemesis" | "labyrinth") {
     if (draft.pending) return;
+    startSetup();
     setConfig((c) => ({
       ...c,
       kind,
@@ -88,6 +93,9 @@ export default function Delves() {
       ?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
   function book() {
+    if (open || draft.pending) return;
+    startSetup();
+    reportBookingEvent("delves", "form_opened");
     setOpen(true);
   }
   return (

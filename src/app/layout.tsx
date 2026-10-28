@@ -3,6 +3,7 @@ import { serviceContent } from "@/data/season";
 
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import BookingAnalytics from "@/components/Analytics/BookingAnalytics";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.scss";
 import { Sora, Rajdhani } from "next/font/google";
@@ -41,6 +42,10 @@ export default function RootLayout({
       <body className={`${sora.variable} ${rajdhani.variable}`}>
         {children}
 
+        <BookingAnalytics
+          websiteId={process.env.VERCEL_ENV === "production" ? process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID : undefined}
+          hostname={new URL(siteOrigin).hostname}
+        />
         <Suspense fallback={null}>
           <Analytics />
         </Suspense>
