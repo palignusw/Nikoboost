@@ -14,6 +14,10 @@ import {
   formatRole,
 } from "./hooks/useMythicPlusConfig";
 
+import BookingDraftNotice from "@/components/BookingDraft/BookingDraftNotice";
+import { useBookingDraft } from "@/components/BookingDraft/useBookingDraft";
+import { parseMythicDraft } from "@/lib/bookingDrafts";
+
 import Stepper from "./components/Stepper";
 import ReservationModal from "./components/ReservationModal";
 
@@ -72,6 +76,20 @@ export default function MythicPlus() {
 
   const [priceExpanded, setPriceExpanded] =
     useState(false);
+
+  const draft = useBookingDraft({
+    service: "mythic", value: config.draftValue,
+    dirty: Object.values(config.confirmed).some(Boolean) || config.runGoal !== "standard",
+    parse: parseMythicDraft,
+    restore: config.restoreDraft,
+    reset: () => {
+      config.resetDraft();
+      setCurrentStep(1);
+      setMaxUnlockedStep(1);
+      setValidationAttempted(false);
+      setPriceExpanded(false);
+    },
+  });
 
   // ========================================
   // STEP VALIDATION
@@ -281,7 +299,7 @@ export default function MythicPlus() {
     };
   }, [currentStep]);
 
-  const showMobilePrice = !reservationOpen;
+  const showMobilePrice = !reservationOpen && !draft.pending;
 
   const showPrice =
     config.confirmed.keyLevel &&
@@ -651,8 +669,10 @@ export default function MythicPlus() {
           </p>
         </header>
 
+        <BookingDraftNotice {...draft} />
         <div
           id="mythic-steps"
+          inert={draft.pending ? true : undefined}
           className={styles.stepperAnchor}
         >
           <Stepper
@@ -662,7 +682,7 @@ export default function MythicPlus() {
           />
         </div>
 
-        <div className={styles.layout}>
+        <div className={styles.layout} inert={draft.pending ? true : undefined}>
           <div
             ref={configuratorRef}
             className={styles.configurator}
@@ -908,6 +928,7 @@ export default function MythicPlus() {
       <ReservationModal
         open={reservationOpen}
         config={config}
+        onSuccess={draft.clear}
         onClose={() =>
           setReservationOpen(false)
         }

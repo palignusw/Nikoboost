@@ -1,4 +1,5 @@
 "use client";
+import { type ConfirmedChoices, type MythicDraft } from "@/lib/bookingDrafts";
 import { mythicDefaults, mythicSettings } from "@/data/season";
 
 import { useMemo, useState, type Dispatch, type SetStateAction } from "react";
@@ -40,17 +41,6 @@ export function formatRole(role: Role) {
   return role === "dps" ? "DPS" : role[0].toUpperCase() + role.slice(1);
 }
 
-type ConfirmedChoices = {
-  keyLevel: boolean;
-  runs: boolean;
-  participation: boolean;
-  playerClass: boolean;
-  role: boolean;
-  dungeon: boolean;
-  traders: boolean;
-  region: boolean;
-};
-
 export function useMythicPlusConfig() {
   // Default values are for estimated pricing only.
   // They are not confirmed user choices.
@@ -89,6 +79,31 @@ export function useMythicPlusConfig() {
     traders: false,
     region: false,
   });
+
+  const draftValue: MythicDraft = {
+    keyLevel, runs, runGoal, participation, region, role, playerClass,
+    specificDungeon, dungeonCounts, traders, confirmed,
+  };
+  function restoreDraft(value: MythicDraft) {
+    setKeyLevelState(value.keyLevel);
+    setRuns(value.runs);
+    setRunGoal(value.runGoal);
+    setParticipation(value.participation);
+    setRegionState(value.region);
+    setRoleState(value.role);
+    setPlayerClass(value.playerClass);
+    setSpecificDungeon(value.specificDungeon);
+    setDungeonCounts(value.dungeonCounts);
+    setTradersState(value.traders);
+    setConfirmed(value.confirmed);
+  }
+  function resetDraft() {
+    restoreDraft({ keyLevel: mythicDefaults.key, runs: 1, runGoal: "standard",
+      participation: "play", region: "EU", role: "dps", playerClass: "Rogue",
+      specificDungeon: false, dungeonCounts: createEmptyDungeonCounts(), traders: 0,
+      confirmed: { keyLevel: false, runs: false, participation: false, playerClass: false,
+        role: false, dungeon: false, traders: false, region: false } });
+  }
 
   // KEY LEVEL
 
@@ -423,6 +438,7 @@ export function useMythicPlusConfig() {
   const canReserve = stepComplete[1] && stepComplete[2] && stepComplete[3];
 
   return {
+    draftValue, restoreDraft, resetDraft,
     keyLevels,
     quickRunOptions,
     classes,
