@@ -18,6 +18,7 @@ import BookingDraftNotice from "@/components/BookingDraft/BookingDraftNotice";
 import { useBookingDraft } from "@/components/BookingDraft/useBookingDraft";
 import { parseMythicDraft } from "@/lib/bookingDrafts";
 
+import { reportBookingEvent } from "@/lib/bookingAnalytics";
 import Stepper from "./components/Stepper";
 import ReservationModal from "./components/ReservationModal";
 
@@ -528,8 +529,9 @@ export default function MythicPlus() {
   // ========================================
 
   function openReservation() {
-    if (!canReserve) return;
+    if (!canReserve || reservationOpen) return;
 
+    reportBookingEvent("mythic", "form_opened");
     setPriceExpanded(false);
     setReservationOpen(true);
   }

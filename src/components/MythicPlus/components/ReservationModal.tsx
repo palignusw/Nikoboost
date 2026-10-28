@@ -1,5 +1,6 @@
-
 "use client";
+
+import { reportBookingEvent } from "@/lib/bookingAnalytics";
 
 import {
   type FormEvent,
@@ -281,6 +282,7 @@ export default function ReservationModal({
       setReceipt(data.receipt as OrderReceipt);
       setOrderId(data.orderId);
       setFinalTotal(data.total);
+      reportBookingEvent("mythic", "sent");
       onSuccess?.();
 
       // Clear the submitted customer form.
@@ -289,6 +291,7 @@ export default function ReservationModal({
       setTime("");
       setScheduleMode("exact");
     } catch (submitError) {
+      reportBookingEvent("mythic", "send_failed");
       setError(
         submitError instanceof Error
           ? submitError.message

@@ -1,4 +1,5 @@
 "use client";
+import { reportBookingEvent } from "@/lib/bookingAnalytics";
 import { delveSpecialists, delveSettings } from "@/data/season";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
@@ -121,9 +122,11 @@ export default function DelveReservation({
           "Unexpected confirmation. Contact support before retrying.",
         );
       setReceipt(result);
+      reportBookingEvent("delves", "sent");
       onSuccess?.();
       dialog.current?.scrollTo({ top: 0 });
     } catch (err) {
+      reportBookingEvent("delves", "send_failed");
       setError(
         err instanceof Error && err.name === "TimeoutError"
           ? "Delivery was not confirmed. Check with support before retrying."
