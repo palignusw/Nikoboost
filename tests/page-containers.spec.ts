@@ -8,6 +8,10 @@ async function checkGrid(page: Page, path: string) {
     : page.getByRole("navigation", { name: "Breadcrumb", exact: true }).locator("..");
   const navigation = await nav.boundingBox();
   const body = await content.boundingBox();
+  if (path === "/mythic-plus-guide") {
+    const breadcrumb = await page.getByRole("navigation", { name: "Breadcrumb", exact: true }).boundingBox();
+    expect(breadcrumb!.y, "guide breadcrumb clears the fixed navigation").toBeGreaterThanOrEqual(navigation!.y + navigation!.height);
+  }
   expect(navigation).not.toBeNull();
   expect(body).not.toBeNull();
   expect(Math.abs(body!.x - navigation!.x), `${path} left edge`).toBeLessThan(1);

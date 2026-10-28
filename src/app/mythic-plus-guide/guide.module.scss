@@ -4,7 +4,7 @@
   @include layout.site-container;
   margin: 0 auto;
   color: $text-primary;
-  padding: 28px 0 80px;
+  padding: 120px 0 80px;
   font:
     14px/1.75 var(--font-sora),
     sans-serif;
@@ -306,7 +306,7 @@
 }
 @media (max-width: 600px) {
   .page {
-    padding-top: 18px;
+    padding-top: 100px;
   }
   .hero {
     gap: 24px;
