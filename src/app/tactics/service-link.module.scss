@@ -1,13 +1,13 @@
 @use "../../styles/variables" as *;
+@use "../../styles/layout" as layout;
 
 .wrap {
   background: $bg-main;
-  padding: 0 30px 48px;
+  padding: 0 0 48px;
   font-family: var(--font-sora), sans-serif;
 }
 .card {
-  max-width: 1220px;
-  margin: 0 auto;
+  @include layout.site-container;
   padding: 24px 28px;
   border: 1px solid $border;
   border-radius: 16px;
@@ -42,6 +42,6 @@
 }
 .label { color: $brand-light; font-size: 10px; font-weight: 600; letter-spacing: 0.12em; }
 @media (max-width: 600px) {
-  .wrap { padding: 0 16px 32px; }
+  .wrap { padding: 0 0 32px; }
   .card { padding: 20px; align-items: stretch; flex-direction: column; }
 }

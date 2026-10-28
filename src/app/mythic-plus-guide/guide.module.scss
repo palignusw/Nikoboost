@@ -1,6 +1,7 @@
 @use "../../styles/variables" as *;
+@use "../../styles/layout" as layout;
 .page {
-  width: min(1240px, calc(100% - 48px));
+  @include layout.site-container;
   margin: 0 auto;
   color: $text-primary;
   padding: 28px 0 80px;
@@ -305,7 +306,6 @@
 }
 @media (max-width: 600px) {
   .page {
-    width: calc(100% - 32px);
     padding-top: 18px;
   }
   .hero {
