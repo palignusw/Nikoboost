@@ -9,7 +9,7 @@ import { fetchWowUpdates, resolveUpdates, type UpdatesSnapshot } from "./wowUpda
 // The saved, explicitly labelled snapshot is used only when no cached result is available.
 const readVerifiedSnapshot = unstable_cache(
   () => fetchWowUpdates(),
-  ["official-wow-updates-v1", wowUpdatesConfig.sourceUrl],
+  ["midnight-notes-v2", wowUpdatesConfig.sourceUrl],
   { revalidate: wowUpdatesConfig.refreshSeconds, tags: ["official-wow-updates"] },
 );
 export function getWowUpdates() {

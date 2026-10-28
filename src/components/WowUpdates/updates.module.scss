@@ -87,3 +87,23 @@
   .homeSection { padding-block: 30px 44px; }
   .status { padding: 14px; }
 }
+
+.updatePicker {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 26px;
+  a { min-width: 0; padding: 15px; border: 1px solid $border; border-radius: 10px; background: $bg-secondary; transition: border-color .15s; span { display: block; color: $text-secondary; font-size: 9px; margin-bottom: 7px; } strong { display: block; font: 600 19px/1.2 var(--font-rajdhani), sans-serif; overflow-wrap: anywhere; } &:hover, &[aria-current="true"] { border-color: $brand-light; } &[aria-current="true"] { background: rgba($brand, .1); } }
+}
+.fullNotes { scroll-margin-top: 105px; border: 1px solid $border; border-radius: 16px; background: $bg-secondary; overflow: clip; }
+.notesHeader { padding: 30px; border-bottom: 1px solid $border; h2 { margin: 12px 0; font: 700 clamp(32px, 4vw, 48px)/1.1 var(--font-rajdhani), sans-serif; } > p:last-child { margin: 0; color: $text-secondary; font-size: 11px; } }
+.reader { padding: 28px 30px; }
+.readerTools { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; margin-bottom: 28px; label { display: block; width: min(100%, 500px); color: $text-secondary; font-size: 12px; } input { display: block; margin-top: 9px; width: 100%; min-height: 46px; padding: 11px 14px; border: 1px solid $border; border-radius: 8px; background: $bg-elevated; color: $text-primary; font: inherit; &:focus { outline: 1px solid $brand-light; } } p { color: $text-secondary; font-size: 11px; } }
+.readingLayout { display: grid; grid-template-columns: 230px minmax(0, 1fr); align-items: start; gap: 42px; }
+.contents { position: sticky; top: 105px; max-height: 65vh; overflow-y: auto; padding-right: 12px; scrollbar-width: thin; strong { font-size: 10px; letter-spacing: .08em; color: $brand-light; } a { display: block; padding: 11px 0; border-bottom: 1px solid $border; color: $text-secondary; font-size: 11px; line-height: 1.6; overflow-wrap: anywhere; small { display: block; color: $season-light; font-size: 9px; } &:hover { color: $text-primary; } } }
+.notesBody { min-width: 0; }
+.noteSection { scroll-margin-top: 105px; padding: 0 0 28px; margin-bottom: 28px; border-bottom: 1px solid $border; h3 { margin: 0 0 18px; font: 600 26px/1.25 var(--font-rajdhani), sans-serif; overflow-wrap: anywhere; } ul { margin: 0; padding: 0 0 0 19px; } li { padding: 9px 0 9px 6px; font-size: 13px; line-height: 1.85; color: $text-secondary; overflow-wrap: anywhere; &::marker { color: $brand-light; } } &:last-child { border: 0; margin-bottom: 0; } }
+.context { display: block; color: $text-primary; font-size: 12px; font-weight: 600; margin-bottom: 5px; }
+.noteDate { margin: 0 0 6px; color: $season-light; font-size: 10px; }
+.summaryNotice { padding: 16px; border: 1px solid $border; border-radius: 8px; color: $text-secondary; font-size: 12px; margin: 0 0 24px; }
+.readerFooter { border-top: 1px solid $border; padding-top: 20px; p { max-width: 850px; color: $text-secondary; font-size: 11px; } a { display: inline-flex; align-items: center; min-height: 44px; color: $brand-light; font-size: 12px; } }
+@media (max-width: 1000px) { .updatePicker { grid-template-columns: repeat(2, minmax(0, 1fr)); } .readingLayout { grid-template-columns: 180px minmax(0, 1fr); gap: 26px; } }
+@media (max-width: 700px) { .readingLayout { grid-template-columns: minmax(0, 1fr); gap: 24px; } .contents { position: static; max-height: 180px; border: 1px solid $border; border-radius: 8px; padding: 14px; } .reader, .notesHeader { padding: 20px; } .readerTools { align-items: stretch; flex-direction: column; gap: 4px; } .readerTools p { margin: 6px 0 0; } .updatePicker a { padding: 12px; } .updatePicker a strong { font-size: 17px; } .noteSection h3 { font-size: 24px; } }
+@media (prefers-reduced-motion: reduce) { .updatePicker a { transition: none; } }

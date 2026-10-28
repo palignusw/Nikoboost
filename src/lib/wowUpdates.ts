@@ -1,8 +1,9 @@
+import { parseMidnightContent, type NoteSection } from "./wowUpdateContent";
 import { wowUpdatesConfig as config } from "@/data/wow-updates-config";
 
 export type WowUpdate = {
   id: number; title: string; url: string; kind: "patch" | "hotfix";
-  publishedAt: string; updatedAt: string; scope: "retail" | "shared";
+  publishedAt: string; updatedAt: string; scope: "midnight"; sections: NoteSection[]; contentMode: "notes" | "summary";
 };
 export type UpdatesSnapshot = { checkedAt: string; items: WowUpdate[] };
 export type UpdatesFeed = UpdatesSnapshot & { mode: "cached" | "saved" | "checking" };
@@ -11,7 +12,7 @@ const record = (value: unknown): value is Record<string, unknown> =>
 const validDate = (value: unknown): value is string =>
   typeof value === "string" && /^\d{4}-\d{2}-\d{2}T/.test(value) && Number.isFinite(Date.parse(value));
 
-/** Read Blizzard's embedded JSON as data. Never execute a remote script or render its HTML. */
+/** Read Blizzard's embedded JSON as data. Never execute remote scripts or render raw HTML. */
 export function parseBlizzardUpdates(html: string): WowUpdate[] {
   if (new TextEncoder().encode(html).byteLength > config.maxResponseBytes) throw new Error("Source too large");
   const script = html.match(/<script\b(?=[^>]*\bid=["']model["'])[^>]*>([\s\S]*?)<\/script\s*>/i)?.[1];
@@ -26,15 +27,21 @@ export function parseBlizzardUpdates(html: string): WowUpdate[] {
         typeof entry.title !== "string" || !entry.title.trim() || entry.title.length > 200 || /[<>]/.test(entry.title) ||
         typeof entry.url !== "string" || !validDate(entry.published) || !validDate(entry.updated)) continue;
     const title = entry.title.trim();
-    // Shared hotfix posts cover several WoW editions; do not imply that every line concerns Retail.
+    // A shared title is insufficient: require Midnight in the actual source content.
     const kind = /^hotfixes\s*:/i.test(title) ? "hotfix" : /(?:content update|pre-expansion.*|patch) notes$/i.test(title) ? "patch" : null;
     if (!kind || /classic|anniversary|season of discovery|forever|\bptr\b|\bbeta\b/i.test(title)) continue;
+    if (typeof entry.content !== "string" || !/\bMidnight\b/i.test(`${title} ${entry.content}`) ||
+        Date.parse(entry.published) < Date.parse(config.midnightStart)) continue;
+    const versions = Array.isArray(entry.keywords) ? entry.keywords.filter((word): word is string => typeof word === "string" && /^\d+\.\d+(?:\.\d+)?$/.test(word)) : [];
+    if (!versions.length || versions.some((version) => !version.startsWith(`${config.patchMajor}.`))) continue;
+    const sections = parseMidnightContent(entry.content, kind);
+    if (!sections.length) continue;
     const match = entry.url.match(/^\/(?:en-us\/)?news\/(\d+)\/([a-z0-9-]+)\/?$/i);
     if (!match || Number(match[1]) !== entry.id) continue;
     const item: WowUpdate = {
       id: entry.id, title, kind, publishedAt: entry.published, updatedAt: entry.updated,
       url: `${config.sourceOrigin}/en-us/news/${entry.id}/${match[2]}`,
-      scope: kind === "hotfix" ? "shared" : "retail",
+      scope: "midnight", sections, contentMode: "notes",
     };
     const previous = items.get(item.id);
     if (!previous || Date.parse(previous.updatedAt) < Date.parse(item.updatedAt)) items.set(item.id, item);
@@ -80,6 +87,6 @@ export function updateDate(value: string) {
 }
 export function updateSummary(item: WowUpdate) {
   return item.kind === "hotfix"
-    ? "Gameplay fixes and other adjustments. Check the Retail section of Blizzard’s shared notes before your next run."
-    : "Content and system changes for the live game. Read Blizzard’s full notes before planning your next session.";
+    ? "Midnight balance changes and gameplay fixes. Read the changes here, grouped by date and topic."
+    : "Midnight content and system changes. Read the changes here before planning your next session.";
 }
