@@ -1,0 +1,233 @@
+{
+  "checkedAt": "2026-10-28T11:43:28.283967Z",
+  "items": [
+    {
+      "id": 24307310,
+      "title": "Hotfixes: October 27, 2026",
+      "url": "https://worldofwarcraft.blizzard.com/en-us/news/24307310/hotfixes-october-27-2026",
+      "kind": "hotfix",
+      "publishedAt": "2026-10-28T00:42:32.672Z",
+      "updatedAt": "2026-10-28T00:42:32.578Z",
+      "scope": "midnight",
+      "contentMode": "summary",
+      "sections": [
+        {
+          "title": "Class tuning",
+          "date": null,
+          "lines": [
+            {
+              "text": "Feral Druid and Fire Mage: damage increased by 5% outside PvP.",
+              "path": []
+            },
+            {
+              "text": "Restoration Druid: Verdancy gains 60% healing and Regrowth gains 10%, outside PvP; Improved Swiftmend grants 40% instead of 30%.",
+              "path": []
+            },
+            {
+              "text": "Marksmanship: Trick Shots ricochet bonus becomes 85%; Explosive Shot and Volley gain 10% damage.",
+              "path": []
+            },
+            {
+              "text": "Subtlety: ability damage falls 8%; Trickster’s Fazed bonus becomes 5%.",
+              "path": []
+            },
+            {
+              "text": "Affliction: Unstable Affliction gains 20% damage outside PvP. Destruction: Rain of Fire gains 20%.",
+              "path": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 24304162,
+      "title": "12.1.5 Content Update Notes",
+      "url": "https://worldofwarcraft.blizzard.com/en-us/news/24304162/1215-content-update-notes",
+      "kind": "patch",
+      "publishedAt": "2026-10-13T21:50:00.000Z",
+      "updatedAt": "2026-10-13T22:12:37.993Z",
+      "scope": "midnight",
+      "contentMode": "summary",
+      "sections": [
+        {
+          "title": "Content overview",
+          "date": null,
+          "lines": [
+            {
+              "text": "The campaign continues with The Promise of Tomorrow.",
+              "path": []
+            },
+            {
+              "text": "The Unbinding of Kith’ix adds a single-boss raid.",
+              "path": []
+            },
+            {
+              "text": "Labyrinths introduce a deeper challenge with rewards.",
+              "path": []
+            },
+            {
+              "text": "The update also covers Aqir Invasions, mid-season power progression, classes, Delves, dungeons, housing and PvP.",
+              "path": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 24296142,
+      "title": "Hotfixes: October 6, 2026",
+      "url": "https://worldofwarcraft.blizzard.com/en-us/news/24296142/hotfixes-october-6-2026",
+      "kind": "hotfix",
+      "publishedAt": "2026-10-07T02:12:00.000Z",
+      "updatedAt": "2026-10-17T01:37:21.966Z",
+      "scope": "midnight",
+      "contentMode": "summary",
+      "sections": [
+        {
+          "title": "Gameplay fixes",
+          "date": null,
+          "lines": [
+            {
+              "text": "This earlier Midnight hotfix collection covers class, dungeon and Delve corrections across multiple dates. Search the live notes after the source refresh for individual fixes.",
+              "path": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 24293281,
+      "title": "Curse of Ula'tek Content Update Notes",
+      "url": "https://worldofwarcraft.blizzard.com/en-us/news/24293281/curse-of-ulatek-content-update-notes",
+      "kind": "patch",
+      "publishedAt": "2026-08-06T17:11:00.000Z",
+      "updatedAt": "2026-09-02T17:46:31.661Z",
+      "scope": "midnight",
+      "contentMode": "summary",
+      "sections": [
+        {
+          "title": "Season 2 content",
+          "date": null,
+          "lines": [
+            {
+              "text": "The Coiled Isle expands the outdoor adventure.",
+              "path": []
+            },
+            {
+              "text": "Altar of Fangs adds a three-boss dungeon.",
+              "path": []
+            },
+            {
+              "text": "The Venomous Abyss raid brings the confrontation with Ula’tek.",
+              "path": []
+            },
+            {
+              "text": "Three new Delves, including a Nemesis Delve, accompany Midnight Season 2.",
+              "path": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 24287397,
+      "title": "Hotfixes: July 28, 2026",
+      "url": "https://worldofwarcraft.blizzard.com/en-us/news/24287397/hotfixes-july-28-2026",
+      "kind": "hotfix",
+      "publishedAt": "2026-07-29T01:38:00.000Z",
+      "updatedAt": "2026-09-02T18:46:59.018Z",
+      "scope": "midnight",
+      "contentMode": "summary",
+      "sections": [
+        {
+          "title": "Earlier hotfix collection",
+          "date": null,
+          "lines": [
+            {
+              "text": "This archived Midnight hotfix article contains gameplay corrections released before the later Season 2 updates. It is historical, not a statement of current balance.",
+              "path": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 24244888,
+      "title": "Revelations Content Update Notes",
+      "url": "https://worldofwarcraft.blizzard.com/en-us/news/24244888/revelations-content-update-notes",
+      "kind": "patch",
+      "publishedAt": "2026-06-16T16:59:00.000Z",
+      "updatedAt": "2026-09-02T18:49:20.179Z",
+      "scope": "midnight",
+      "contentMode": "summary",
+      "sections": [
+        {
+          "title": "Content overview",
+          "date": null,
+          "lines": [
+            {
+              "text": "Revelations adds adventures in Val and Naigtal, the Omnium Folio progression system and the Sporefall raid.",
+              "path": []
+            },
+            {
+              "text": "The update also introduces Loa Lorewalking activities and seasonal events.",
+              "path": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 24271855,
+      "title": "12.0.5 Content Update Notes",
+      "url": "https://worldofwarcraft.blizzard.com/en-us/news/24271855/1205-content-update-notes",
+      "kind": "patch",
+      "publishedAt": "2026-04-21T21:59:00.000Z",
+      "updatedAt": "2026-09-02T18:49:28.252Z",
+      "scope": "midnight",
+      "contentMode": "summary",
+      "sections": [
+        {
+          "title": "Content overview",
+          "date": null,
+          "lines": [
+            {
+              "text": "This update introduces Void Assaults, Ritual Sites, Voidforge progression, Decor Duels and Abyss Anglers.",
+              "path": []
+            },
+            {
+              "text": "Further changes cover classes, dungeons, raids and other game systems.",
+              "path": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 24244646,
+      "title": "Midnight Content Update Notes",
+      "url": "https://worldofwarcraft.blizzard.com/en-us/news/24244646/midnight-content-update-notes",
+      "kind": "patch",
+      "publishedAt": "2026-03-03T00:09:00.000Z",
+      "updatedAt": "2026-09-02T18:49:36.000Z",
+      "scope": "midnight",
+      "contentMode": "summary",
+      "sections": [
+        {
+          "title": "Midnight launch",
+          "date": null,
+          "lines": [
+            {
+              "text": "The expansion opens its campaign and new and reimagined zones, including Eversong Woods, Zul’Aman, Harandar and Voidstorm.",
+              "path": []
+            },
+            {
+              "text": "Launch notes cover the Haranir allied race, Delves and raids.",
+              "path": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

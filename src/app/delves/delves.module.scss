@@ -1,4 +1,5 @@
 @use "../../styles/variables" as *;
+@use "../../styles/layout" as layout;
 
 .page {
   --font-ui: var(--font-sora), Arial, sans-serif;
@@ -52,7 +53,7 @@
   }
 }
 .wrap {
-  width: min(1240px, calc(100% - 64px));
+  @include layout.site-container;
   margin-inline: auto;
 }
 .hero {
@@ -755,9 +756,6 @@
   }
 }
 @media (max-width: 800px) {
-  .wrap {
-    width: calc(100% - 40px);
-  }
   .heroGrid {
     grid-template-columns: 1fr;
     gap: 35px;
@@ -799,9 +797,6 @@
   }
 }
 @media (max-width: 550px) {
-  .wrap {
-    width: calc(100% - 32px);
-  }
   .hero {
     padding-top: 100px;
   }

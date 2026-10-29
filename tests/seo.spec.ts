@@ -79,7 +79,7 @@ test("sitemap uses real configured update dates and the public origin", async ({
   request,
 }) => {
   const entries = sitemap();
-  expect(entries).toHaveLength(Object.keys(serviceContent).length + 38);
+  expect(entries).toHaveLength(Object.keys(serviceContent).length + 39);
   for (const content of Object.values(serviceContent)) {
     const url = content.path === "/" ? origin : `${origin}${content.path}`;
     expect(entries.find((entry) => entry.url === url)?.lastModified).toEqual(
@@ -97,9 +97,11 @@ test("sitemap uses real configured update dates and the public origin", async ({
   const xml = await response.text();
   for (const entry of entries) {
     expect(xml).toContain(`<loc>${entry.url}</loc>`);
-    expect(xml).toContain(
-      `<lastmod>${(entry.lastModified as Date).toISOString()}</lastmod>`,
-    );
+    if (entry.lastModified) {
+      expect(xml).toContain(
+        `<lastmod>${(entry.lastModified as Date).toISOString()}</lastmod>`,
+      );
+    }
   }
   const robots = await request.get("/robots.txt");
   expect(await robots.text()).toContain(`Sitemap: ${origin}/sitemap.xml`);

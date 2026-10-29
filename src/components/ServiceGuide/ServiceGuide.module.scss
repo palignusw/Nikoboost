@@ -1,6 +1,7 @@
 @use "../../styles/variables" as *;
+@use "../../styles/layout" as layout;
 .section {
-  width: min(1240px, calc(100% - 48px));
+  @include layout.site-container;
   margin: 0 auto;
   padding: 64px 0;
   color: $text-primary;
@@ -74,7 +75,6 @@
 }
 @media (max-width: 700px) {
   .section {
-    width: calc(100% - 32px);
     padding: 44px 0;
   }
   .grid {

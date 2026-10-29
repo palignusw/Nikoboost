@@ -300,7 +300,7 @@ export default function MythicPlus() {
     };
   }, [currentStep]);
 
-  const showMobilePrice = !reservationOpen && !draft.pending;
+  const showMobilePrice = !reservationOpen && !draft.pending && configuratorVisible && !actionsNear;
 
   const showPrice =
     config.confirmed.keyLevel &&
