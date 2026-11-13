@@ -39,6 +39,7 @@ test("server validates requests, calculates trusted prices and deduplicates deli
     for (const mutate of [
       (p: ReturnType<typeof payload>) => { p.order.runs = -1; },
       (p: ReturnType<typeof payload>) => { p.order.keyLevel = 99; },
+      (p: ReturnType<typeof payload>) => { p.order.keyLevel = 16; },
       (p: ReturnType<typeof payload>) => { p.order.playerClass = "Rogue"; p.order.role = "healer"; },
       (p: ReturnType<typeof payload>) => { p.order.traders = 99; },
       (p: ReturnType<typeof payload>) => { p.order.specificDungeon = true; p.order.dungeonCounts = { [dungeons[0]]: 4, [dungeons[1]]: 1 }; },

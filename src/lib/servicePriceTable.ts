@@ -1,17 +1,17 @@
-import { mythicBasePrices, delvePrices, servicePricing } from "@/data/season";
+import { bookableMythicPrices, delvePrices, servicePricing } from "@/data/season";
 import { getBundleSaving } from "./bundlePricing";
 import { delvePrice } from "@/data/delves";
 
 /** The same base-minus-rounded-discount order used by the order API. */
 export function mythicTableTotal(level: number, runs: number) {
-  const base = mythicBasePrices[level] * runs;
+  const base = bookableMythicPrices[level] * runs;
   return (
     base -
     Math.round(base * getBundleSaving(runs, servicePricing.mythic.bundles))
   );
 }
 export function servicePriceRows(service: "mythic" | "delves") {
-  const prices = service === "mythic" ? mythicBasePrices : delvePrices;
+  const prices = service === "mythic" ? bookableMythicPrices : delvePrices;
   return Object.keys(prices)
     .map(Number)
     .sort((a, b) => a - b)

@@ -90,10 +90,16 @@ export const servicePricing = {
 // maxRuns — максимум забегов; quickRuns/bundles — быстрые кнопки.
 // crestMaxKey — самый высокий ключ, доступный для Crest Farming.
 export const mythicSettings = {
+  maxKey: 15, // Поднимите до 20, чтобы снова открыть ключи +16–20.
   crestMaxKey: 12,
   maxRuns: 50,
   quickRuns: [1, 4, 8],
 };
+// Full rates stay above; only these levels can be booked or listed for sale.
+export const bookableMythicPrices: Record<number, number> = Object.fromEntries(
+  Object.entries(mythicBasePrices).filter(([level]) => Number(level) <= mythicSettings.maxKey),
+);
+
 export const delveSettings = {
   heroArt: "midnight-delves",
   heroBackdrop: "/images/hero/midnight-hero.jpg",

@@ -119,6 +119,9 @@ test.describe("NikoBoost pricing", () => {
 
     await selectKey(page, 10);
 
+    await expect(page.getByRole("button", { name: /Mythic Plus 15,/ })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Mythic Plus 16,/ })).toHaveCount(0);
+
     const afkButton = page.getByText(
       "AFK / Minimal",
       { exact: true }
