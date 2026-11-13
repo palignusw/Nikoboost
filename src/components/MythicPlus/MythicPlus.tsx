@@ -300,7 +300,7 @@ export default function MythicPlus() {
     };
   }, [currentStep]);
 
-  const showMobilePrice = !reservationOpen && !draft.pending && configuratorVisible && !actionsNear;
+  const showMobilePrice = !reservationOpen && configuratorVisible && !actionsNear;
 
   const showPrice =
     config.confirmed.keyLevel &&
@@ -674,7 +674,6 @@ export default function MythicPlus() {
         <BookingDraftNotice {...draft} />
         <div
           id="mythic-steps"
-          inert={draft.pending ? true : undefined}
           className={styles.stepperAnchor}
         >
           <Stepper
@@ -684,7 +683,7 @@ export default function MythicPlus() {
           />
         </div>
 
-        <div className={styles.layout} inert={draft.pending ? true : undefined}>
+        <div className={styles.layout}>
           <div
             ref={configuratorRef}
             className={styles.configurator}

@@ -25,14 +25,18 @@ export function useBookingDraft<T>({ service, value, dirty, parse, restore, rese
   }, [key]);
   const raw = useSyncExternalStore(subscribe, snapshot, serverSnapshot);
   const [checked, setChecked] = useState(false);
-  const [pending, setPending] = useState<T | null>(null);
+  const [restored, setRestored] = useState(false);
   if (raw !== undefined && !checked) {
-    setPending(readBookingDraft(raw, parse));
     setChecked(true);
+    const stored = readBookingDraft(raw, parse);
+    if (stored) {
+      restore(stored);
+      setRestored(true);
+    }
   }
   const serialized = JSON.stringify(value);
   useEffect(() => {
-    if (!checked || pending) return;
+    if (!checked) return;
     if (!dirty) {
       try {
         if (localStorage.getItem(key)) {
@@ -55,18 +59,12 @@ export function useBookingDraft<T>({ service, value, dirty, parse, restore, rese
       failedWrites.add(key);
       window.dispatchEvent(new Event(CHANGE));
     }
-  }, [checked, pending, dirty, serialized, key, parse, snapshot]);
+  }, [checked, dirty, serialized, key, parse, snapshot]);
 
   function clear() {
     try { localStorage.removeItem(key); failedWrites.delete(key); window.dispatchEvent(new Event(CHANGE)); } catch { /* Optional storage. */ }
   }
-  function startOver() { clear(); reset(); setPending(null); }
-  function resume() {
-    const current = readBookingDraft(snapshot(), parse);
-    if (current) restore(current);
-    else { clear(); reset(); }
-    setPending(null);
-  }
-  return { pending: !!pending, saved: !!readBookingDraft(raw, parse), ready: checked,
-    unavailable: raw === UNAVAILABLE, resume, startOver, clear };
+  function startOver() { clear(); reset(); setRestored(false); }
+  return { restored, saved: !!readBookingDraft(raw, parse), ready: checked,
+    unavailable: raw === UNAVAILABLE, startOver, clear };
 }
