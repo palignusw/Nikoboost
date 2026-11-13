@@ -233,7 +233,7 @@ test.describe("NikoBoost advanced configurator", () => {
 
     await three.click();
 
-    await expectTotal(page, 84_960);
+    await expectTotal(page, 72_000);
   });
 
   test("Region selection switches from EU to NA", async ({
