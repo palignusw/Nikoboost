@@ -31,7 +31,7 @@ test("draft validation rejects expired, foreign-season and unsafe values", () =>
 });
 
 for (const service of ["mythic", "delves"] as const) {
-  test(`${service} settings can be resumed and cleared`, async ({ page }, info) => {
+  test(`${service} settings restore automatically and can be edited or cleared`, async ({ page }, info) => {
     const key = draftKey(service);
     const value = service === "mythic" ? mythic : delve;
     const encoded = encodeBookingDraft(value);
@@ -47,7 +47,7 @@ for (const service of ["mythic", "delves"] as const) {
     await expect(notice).toContainText("Contact details are not saved");
     await notice.scrollIntoViewIfNeeded();
     await page.screenshot({ path: info.outputPath(`tactics-draft-${service}-resume.png`) });
-    await notice.getByRole("button", { name: "Continue setup" }).click();
+    await expect(notice).toContainText("Your saved settings were restored");
     if (service === "delves") {
       await expect(page.getByTestId("delve-total")).toHaveText("360,000 gold");
       await expect(page.getByRole("button", { name: /Bountiful runs/ })).toHaveAttribute("aria-pressed", "true");
@@ -55,10 +55,17 @@ for (const service of ["mythic", "delves"] as const) {
       await expect(page.getByRole("button", { name: /^4 runs,/ })).toHaveClass(/activeOption/);
       await expect(page.getByRole("button", { name: /Mythic Plus 10,/ })).toHaveClass(/activeOption/);
     }
-    // A visit/resume alone must not extend the retention period.
+    // Automatic restoration alone must not extend the retention period.
     expect(await page.evaluate((key) => JSON.parse(localStorage.getItem(key)!).updatedAt, key)).toBe(JSON.parse(encoded).updatedAt);
+    if (service === "delves") {
+      await page.getByRole("button", { name: /1 Single run/ }).click();
+      await expect.poll(() => page.evaluate((key) => JSON.parse(localStorage.getItem(key)!).value.runs, key)).toBe(1);
+    } else {
+      await page.getByRole("button", { name: /Mythic Plus 11,/ }).click();
+      await expect(page.getByRole("button", { name: /Mythic Plus 11,/ })).toHaveClass(/activeOption/);
+    }
     await page.reload();
-    await expect(notice.getByRole("button", { name: "Continue setup" })).toBeVisible();
+    await expect(notice).toContainText("Your saved settings were restored");
     await notice.getByRole("button", { name: "Start over" }).click();
     await expect.poll(() => page.evaluate((key) => localStorage.getItem(key), key)).toBeNull();
     if (service === "delves") await expect(page.getByTestId("delve-total")).toHaveText("190,000 gold");
@@ -85,7 +92,7 @@ test("expired and corrupt drafts do not block booking", async ({ page }) => {
   }, { key: draftKey("delves"), expired: encodeBookingDraft(delve, Date.now() - DRAFT_TTL - 1) });
   await page.goto("/delves");
   const notice = page.getByRole("complementary", { name: "Saved run settings" });
-  await expect(notice.getByRole("button", { name: "Continue setup" })).toHaveCount(0);
+  await expect(notice.getByRole("button", { name: "Start over" })).toHaveCount(0);
   await page.getByRole("button", { name: /8 3 Vault choices/ }).click();
   await expect(page.getByTestId("delve-total")).toHaveText("360,000 gold");
 });

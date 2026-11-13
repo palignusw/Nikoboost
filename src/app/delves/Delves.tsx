@@ -74,12 +74,10 @@ export default function Delves() {
   const surchargePercent = servicePricing.delves.specific * 100;
 
   const patch = (value: Partial<DelveConfig>) => {
-    if (draft.pending) return;
     startSetup();
     setConfig((c) => ({ ...c, ...value }));
   };
   function chooseSpecial(kind: "nemesis" | "labyrinth") {
-    if (draft.pending) return;
     startSetup();
     setConfig((c) => ({
       ...c,
@@ -93,7 +91,7 @@ export default function Delves() {
       ?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
   function book() {
-    if (open || draft.pending) return;
+    if (open) return;
     startSetup();
     reportBookingEvent("delves", "form_opened");
     setOpen(true);
@@ -179,7 +177,7 @@ export default function Delves() {
             </p>
           </div>
           <BookingDraftNotice {...draft} />
-          <div className={styles.builderGrid} inert={draft.pending ? true : undefined}>
+          <div className={styles.builderGrid}>
             <div className={styles.configurator}>
               <div className={styles.stepHeading}>
                 <span>01</span>

@@ -18,7 +18,7 @@ export async function openReservation(page: Page) {
   await page.goto("/");
   const draft = page.getByRole("complementary", { name: "Saved run settings" });
   await expect(draft).toBeVisible();
-  if (await draft.getByRole("button", { name: "Continue setup" }).count()) {
+  if (await draft.getByRole("button", { name: "Start over" }).count()) {
     await draft.getByRole("button", { name: "Start over" }).click();
   }
   await runSetup(page);
