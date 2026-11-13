@@ -21,7 +21,7 @@ const questions = [
   {
     question: "Can I play normally during the run?",
     answer:
-      "Yes. Choose I Play if you want to participate normally with the group. You can also choose AFK / Minimal Participation, which costs more because the group has to carry more of the run.",
+      "Yes. Choose I Play if you want to participate normally with the group. You can also choose AFK / Minimal Participation, if you prefer to participate less. Some mechanics may still require movement.",
   },
   {
     question: "Can I choose specific dungeons?",

@@ -346,7 +346,7 @@ export default function RunSetup({ config }: { config: MythicPlusConfig }) {
             }
             title="AFK / Minimal"
             description="Minimal participation. Some mechanics may still require movement."
-            price={`+${Math.round(AFK_SURCHARGE * 100)}%`}
+            price={AFK_SURCHARGE > 0 ? `+${Math.round(AFK_SURCHARGE * 100)}%` : "NO EXTRA"}
             onClick={() => config.handleParticipation("afk")}
           />
         </div>

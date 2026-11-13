@@ -114,7 +114,7 @@ test.describe("NikoBoost pricing", () => {
     ).toBeVisible();
   });
 
-  test("AFK adds 10% to the base price", async ({ page }) => {
+  test("AFK has no extra charge", async ({ page }) => {
     await openConfigurator(page);
 
     await selectKey(page, 10);
@@ -126,7 +126,7 @@ test.describe("NikoBoost pricing", () => {
 
     await afkButton.click();
 
-    const expected = GOLD.key10 * 1.1;
+    const expected = GOLD.key10;
 
     await expectTotal(page, expected);
   });

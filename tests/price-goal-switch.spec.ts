@@ -11,7 +11,7 @@ test("switching Standard Run and Crest Farming recalculates the price", async ({
   await page.getByRole("button", { name: /4 runs, save 5 percent/ }).click();
   await expect(total).toContainText("273,600");
 
-  // AFK adds 10% in both services; only Standard includes role/trader extras.
+  // Only Standard applies the selected Healer surcharge.
   await page.getByRole("button", { name: /I Play/ }).first().click();
   await page.getByRole("button", { name: /Continue/ }).first().click();
   await page.getByRole("button", { name: /Select Shaman/ }).click();
