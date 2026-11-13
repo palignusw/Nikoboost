@@ -118,6 +118,8 @@ test("homepage exposes a compact updates block and links to the on-site reader",
     await page.locator("#mythic-steps").scrollIntoViewIfNeeded();
     await expect(page.getByRole("region", { name: "Live order price", exact: true })).toBeVisible();
   }
+  // Wait for the streamed content to replace the temporary fallback.
+  await expect(section.getByRole("note", { name: "Update source status" })).not.toContainText("checking for newer notes", { timeout: 15_000 });
   await section.scrollIntoViewIfNeeded();
   await expect(page.getByRole("region", { name: "Live order price", exact: true })).toBeHidden();
   await page.screenshot({ path: info.outputPath("tactics-wow-updates-home.png") });

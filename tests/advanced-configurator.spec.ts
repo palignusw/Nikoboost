@@ -201,7 +201,7 @@ test.describe("NikoBoost advanced configurator", () => {
     await expectTotal(page, 273_600);
   });
 
-  test("Rogue allows four loot traders", async ({
+  test("Rogue allows four loot traders without a surcharge", async ({
     page,
   }) => {
     await openDungeons(page, {
@@ -215,10 +215,7 @@ test.describe("NikoBoost advanced configurator", () => {
 
     await expect(four).toHaveClass(/activeTrader/);
 
-    // +10 run: 72,000
-    // Four traders: +25%
-    // Total: 90,000
-    await expectTotal(page, 90_000);
+    await expectTotal(page, 72_000);
   });
 
   test("Mage cannot select four loot traders", async ({
@@ -236,7 +233,7 @@ test.describe("NikoBoost advanced configurator", () => {
 
     await three.click();
 
-    await expectTotal(page, 84_960);
+    await expectTotal(page, 72_000);
   });
 
   test("Region selection switches from EU to NA", async ({

@@ -114,10 +114,13 @@ test.describe("NikoBoost pricing", () => {
     ).toBeVisible();
   });
 
-  test("AFK adds 10% to the base price", async ({ page }) => {
+  test("AFK has no extra charge", async ({ page }) => {
     await openConfigurator(page);
 
     await selectKey(page, 10);
+
+    await expect(page.getByRole("button", { name: /Mythic Plus 15,/ })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Mythic Plus 16,/ })).toHaveCount(0);
 
     const afkButton = page.getByText(
       "AFK / Minimal",
@@ -126,7 +129,7 @@ test.describe("NikoBoost pricing", () => {
 
     await afkButton.click();
 
-    const expected = GOLD.key10 * 1.1;
+    const expected = GOLD.key10;
 
     await expectTotal(page, expected);
   });

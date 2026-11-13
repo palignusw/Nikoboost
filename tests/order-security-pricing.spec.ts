@@ -39,6 +39,7 @@ test("server validates requests, calculates trusted prices and deduplicates deli
     for (const mutate of [
       (p: ReturnType<typeof payload>) => { p.order.runs = -1; },
       (p: ReturnType<typeof payload>) => { p.order.keyLevel = 99; },
+      (p: ReturnType<typeof payload>) => { p.order.keyLevel = 16; },
       (p: ReturnType<typeof payload>) => { p.order.playerClass = "Rogue"; p.order.role = "healer"; },
       (p: ReturnType<typeof payload>) => { p.order.traders = 99; },
       (p: ReturnType<typeof payload>) => { p.order.specificDungeon = true; p.order.dungeonCounts = { [dungeons[0]]: 4, [dungeons[1]]: 1 }; },
@@ -52,15 +53,16 @@ test("server validates requests, calculates trusted prices and deduplicates deli
     const response = await submit(data, { ip: "192.0.2.100" });
     expect(response.status).toBe(200);
     const body = await response.json();
-    expect(body.total).toBe(300_960); // 288000 + 10% traders, then 5% discount.
+    expect(body.total).toBe(273_600); // Traders have no surcharge; the 5% bundle discount still applies.
     expect(sent?.allowed_mentions.parse).toEqual([]);
     const repeated = await submit(data, { ip: "192.0.2.100" });
     expect((await repeated.json()).orderId).toBe(body.orderId);
     expect(deliveries).toBe(1);
     for (const [goal, participation, expected] of [
-      ["standard", "play", 342_000],
+      ["standard", "play", 314_640],
       ["crest", "play", 273_600],
-      ["crest", "afk", 300_960],
+      ["crest", "afk", 273_600],
+      ["standard", "afk", 273_600],
     ] as const) {
       const p = payload(); p.order.runGoal = goal; p.order.participation = participation; p.order.role = "healer";
       const result = await submit(p);

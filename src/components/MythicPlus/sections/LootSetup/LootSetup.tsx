@@ -55,8 +55,8 @@ export default function LootSetup({
             </strong>
 
             <p>
-              Add teammates with matching armor types
-              who can trade eligible loot to you.
+              Request teammates with matching armor types who can trade eligible loot.
+              We confirm availability before the run.
             </p>
           </div>
         </div>
@@ -85,7 +85,7 @@ export default function LootSetup({
                     ? `${amount} loot traders unavailable`
                     : amount === 0
                       ? "No loot traders, personal loot"
-                      : `${amount} loot traders, ${surcharge}% extra`
+                      : `${amount} loot traders, ${surcharge > 0 ? `${surcharge}% extra` : "no extra charge"}`
                 }
                 onClick={() => {
                   if (!unavailable) {
@@ -123,7 +123,7 @@ export default function LootSetup({
                 <span className={styles.traderPrice}>
                   {unavailable
                     ? "Unavailable"
-                    : amount === 0
+                    : surcharge === 0
                       ? "NO EXTRA"
                       : `+${surcharge}%`}
                 </span>

@@ -63,11 +63,11 @@ export const servicePricing = {
   mythic: {
     // Максимум loot traders для каждой брони.
     maxTraders: { Cloth: 3, Leather: 4, Mail: 3, Plate: 4 },
-    traders: { 0: 0, 1: 0.05, 2: 0.1, 3: 0.18, 4: 0.25 } as Record<
+    traders: { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0 } as Record<
       number,
       number
     >,
-    afk: 0.1, // +10% за AFK / minimal participation
+    afk: 0, // На старте без доплаты за AFK
     specific: 0.1, // +10% только на назначенные конкретные подземелья
     // Доплата за роль покупателя: 0.15 = +15%.
     roles: { dps: 0, tank: 0.15, healer: 0.15 },
@@ -90,10 +90,16 @@ export const servicePricing = {
 // maxRuns — максимум забегов; quickRuns/bundles — быстрые кнопки.
 // crestMaxKey — самый высокий ключ, доступный для Crest Farming.
 export const mythicSettings = {
+  maxKey: 15, // Поднимите до 20, чтобы снова открыть ключи +16–20.
   crestMaxKey: 12,
   maxRuns: 50,
   quickRuns: [1, 4, 8],
 };
+// Full rates stay above; only these levels can be booked or listed for sale.
+export const bookableMythicPrices: Record<number, number> = Object.fromEntries(
+  Object.entries(mythicBasePrices).filter(([level]) => Number(level) <= mythicSettings.maxKey),
+);
+
 export const delveSettings = {
   heroArt: "midnight-delves",
   heroBackdrop: "/images/hero/midnight-hero.jpg",

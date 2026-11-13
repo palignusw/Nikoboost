@@ -18,7 +18,7 @@ export type ArmorType = "Cloth" | "Leather" | "Mail" | "Plate";
  * Редактируйте mythicBasePrices в src/data/season.ts.
  */
 
-export { mythicBasePrices as basePrices } from "./season";
+export { bookableMythicPrices as basePrices } from "./season";
 
 export const classArmor: Record<string, ArmorType> = {
   Mage: "Cloth",

@@ -120,17 +120,19 @@ export default function GoldPrices() {
             <article>
               <h3>Mythic+ options</h3>
               <p>
-                AFK / Minimal Participation adds{" "}
-                {percent(servicePricing.mythic.afk)} to the base run price. Tank
+                {servicePricing.mythic.afk > 0
+                  ? `AFK / Minimal Participation adds ${percent(servicePricing.mythic.afk)} to the base run price.`
+                  : "AFK / Minimal Participation has no extra charge."}{" "}Tank
                 adds {percent(servicePricing.mythic.roles.tank)} and Healer adds{" "}
                 {percent(servicePricing.mythic.roles.healer)}. You still control
                 your character in every mode.
               </p>
               <p>
                 Specific dungeons add {percent(servicePricing.mythic.specific)}{" "}
-                only to the runs you allocate. Matching-armor loot traders add a
-                percentage based on their count; drops and trade eligibility are
-                not guaranteed.
+                only to the runs you allocate. {Object.values(servicePricing.mythic.traders).some((rate) => rate > 0)
+                  ? "Matching-armor loot trader pricing depends on the requested count."
+                  : "Matching-armor loot trader requests have no extra charge."}{" "}
+                Availability, drops and trade eligibility are not guaranteed.
               </p>
             </article>
             <article>
@@ -237,8 +239,7 @@ export default function GoldPrices() {
                 Why can the configurator show a different price?
               </summary>
               <p>
-                These tables use the base setups described above. Role,
-                participation, traders and specific destinations can change the
+                These tables use the base setups described above. Role and specific destinations can change the
                 total. Crest Farming is a separate Mythic+ goal; use its
                 configurator for that quote.
               </p>
